@@ -621,9 +621,15 @@ class RomMLibrarySyncService @Inject constructor(
             }
             passClock.mark("syncPlatformMetadata x${platforms.size}")
 
-            val enabledPlatforms = platforms.filter { platform ->
-                val local = platformDao.getById(storagePlatformId(platform))
-                local?.syncEnabled != false
+            val localPlatforms = platforms.associateWith { platformDao.getById(storagePlatformId(it)) }
+            val enabledPlatforms = platforms.filter { localPlatforms[it]?.syncEnabled != false }
+            val passPlatforms = enabledPlatforms.filterNot { localPlatforms[it]?.skipFullSync == true }
+            val skipsPlatforms = passPlatforms.size < enabledPlatforms.size
+            if (skipsPlatforms) {
+                Logger.info(
+                    TAG,
+                    "doSyncLibrary: ${enabledPlatforms.size - passPlatforms.size} platforms set to skip the full pass"
+                )
             }
 
             val syncStartedAt = Instant.now()
@@ -638,8 +644,8 @@ class RomMLibrarySyncService @Inject constructor(
             }
 
             _syncProgress.value = _syncProgress.value.copy(
-                platformsTotal = enabledPlatforms.size,
-                platforms = enabledPlatforms.map { platform ->
+                platformsTotal = passPlatforms.size,
+                platforms = passPlatforms.map { platform ->
                     PlatformSyncRow(
                         platformId = storagePlatformId(platform),
                         name = platform.name,
@@ -648,8 +654,8 @@ class RomMLibrarySyncService @Inject constructor(
                 }
             )
 
-            for ((index, platform) in enabledPlatforms.withIndex()) {
-                onProgress?.invoke(index + 1, enabledPlatforms.size, platform.name)
+            for ((index, platform) in passPlatforms.withIndex()) {
+                onProgress?.invoke(index + 1, passPlatforms.size, platform.name)
 
                 _syncProgress.value = _syncProgress.value.copy(
                     currentPlatform = platform.name,
@@ -681,7 +687,7 @@ class RomMLibrarySyncService @Inject constructor(
 
             userPreferencesRepository.clearSyncResume()
 
-            val completeUnresumedPass = errors.isEmpty() && platformsResumed == 0
+            val completeUnresumedPass = errors.isEmpty() && platformsResumed == 0 && !skipsPlatforms
             if (completeUnresumedPass) {
                 siblingSplitRepair.retryBlockedSaveSyncMoves()
                 siblingSplitRepair.runOnce()
@@ -1059,7 +1065,8 @@ class RomMLibrarySyncService @Inject constructor(
             lastScanned = existing?.lastScanned,
             syncEnabled = existing?.syncEnabled ?: true,
             customRomPath = existing?.customRomPath,
-            combineContent = existing?.combineContent ?: false
+            combineContent = existing?.combineContent ?: false,
+            skipFullSync = existing?.skipFullSync ?: false
         )
 
         if (existing == null) {
@@ -1111,6 +1118,7 @@ class RomMLibrarySyncService @Inject constructor(
                 platformDao.update(local.copy(
                     isVisible = legacy.isVisible,
                     syncEnabled = legacy.syncEnabled,
+                    skipFullSync = legacy.skipFullSync,
                     customRomPath = legacy.customRomPath ?: local.customRomPath
                 ))
             }
@@ -1773,6 +1781,7 @@ class RomMLibrarySyncService @Inject constructor(
                 platformDao.update(newPlatform.copy(
                     isVisible = old.isVisible,
                     syncEnabled = old.syncEnabled,
+                    skipFullSync = old.skipFullSync,
                     customRomPath = old.customRomPath ?: newPlatform.customRomPath,
                     sortOrder = old.sortOrder
                 ))

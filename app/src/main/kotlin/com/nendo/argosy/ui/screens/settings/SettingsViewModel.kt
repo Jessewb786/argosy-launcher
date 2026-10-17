@@ -1832,6 +1832,23 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun togglePlatformSkipFullSync(platformId: Long, skip: Boolean) {
+        storageDelegate.togglePlatformSkipFullSync(viewModelScope, platformId, skip)
+        _uiState.update { state ->
+            state.copy(
+                emulators = state.emulators.copy(
+                    platforms = state.emulators.platforms.map { cfg ->
+                        if (cfg.platform.id == platformId) {
+                            cfg.copy(platform = cfg.platform.copy(skipFullSync = skip))
+                        } else {
+                            cfg
+                        }
+                    }
+                )
+            )
+        }
+    }
+
     /**
      * Turning Combine Content off stops enforcing the flat layout but never moves anything on its
      * own, so the games it is still holding flat are offered back to their own folders here. Games

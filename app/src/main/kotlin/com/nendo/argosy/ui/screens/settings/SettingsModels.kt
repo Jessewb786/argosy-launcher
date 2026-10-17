@@ -967,6 +967,7 @@ data class PlatformStorageConfig(
     val downloadedCount: Int = 0,
     val syncEnabled: Boolean,
     val combineContent: Boolean = false,
+    val skipFullSync: Boolean = false,
     val customRomPath: String?,
     val effectivePath: String,
     val isExpanded: Boolean = false,

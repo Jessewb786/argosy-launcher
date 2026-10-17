@@ -3365,6 +3365,11 @@
     <!-- Second line of that row. "DLC" is paid add-on content and "extcontent" a folder name;
          leave both as they are. -->
     <string name="settings_platform_combine_content_subtitle">All games in one folder, all updates and DLC in extcontent</string>
+    <!-- Row title. Switch: when on, the full library sync passes over this console. -->
+    <string name="settings_platform_skip_full_sync_title">Skip in Full Sync</string>
+    <!-- Second line of that row. "Incremental sync" is the quick sync that fetches only games
+         changed since the last one. -->
+    <string name="settings_platform_skip_full_sync_subtitle">Incremental sync still checks it for changes</string>
     <!-- Row that fetches just this console. Verb phrase. -->
     <string name="settings_platform_sync_now_title">Sync Now</string>
     <!-- Second line of that row while it runs. -->

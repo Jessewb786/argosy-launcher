@@ -1800,6 +1800,8 @@
     <string name="settings_platform_sync_toggle_subtitle">Inclure cette plateforme dans la synchro de la bibliothèque</string>
     <string name="settings_platform_combine_content_title">Combiner le contenu</string>
     <string name="settings_platform_combine_content_subtitle">Tous les jeux dans un seul dossier, toutes les mises à jour et le DLC dans extcontent</string>
+    <string name="settings_platform_skip_full_sync_title">Ignorer lors de la synchronisation complète</string>
+    <string name="settings_platform_skip_full_sync_subtitle">La synchronisation incrémentielle vérifie toujours les changements</string>
     <string name="settings_platform_sync_now_title">Synchroniser maintenant</string>
     <string name="settings_platform_sync_now_busy">Synchro en cours...</string>
     <string name="settings_platform_sync_now_subtitle">Synchroniser cette plateforme avec RomM</string>

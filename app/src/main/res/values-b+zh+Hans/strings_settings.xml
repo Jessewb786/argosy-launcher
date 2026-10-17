@@ -1711,6 +1711,8 @@
     <string name="settings_platform_sync_toggle_subtitle">在库同步中包含此平台</string>
     <string name="settings_platform_combine_content_title">合并内容</string>
     <string name="settings_platform_combine_content_subtitle">所有游戏放在同一文件夹，所有更新与DLC放在extcontent中</string>
+    <string name="settings_platform_skip_full_sync_title">完整同步时跳过</string>
+    <string name="settings_platform_skip_full_sync_subtitle">增量同步仍会检查其变更</string>
     <string name="settings_platform_sync_now_title">立即同步</string>
     <string name="settings_platform_sync_now_busy">正在同步...</string>
     <string name="settings_platform_sync_now_subtitle">与RomM同步此平台</string>

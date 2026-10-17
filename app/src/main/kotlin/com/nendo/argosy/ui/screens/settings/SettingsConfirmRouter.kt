@@ -1480,6 +1480,10 @@ private fun routePlatformDetailConfirm(vm: SettingsViewModel, state: SettingsUiS
                 ?.combineContent ?: false
             vm.togglePlatformCombineContent(config.platform.id, !current)
         }
+        PlatformDetailItem.SkipFullSync -> {
+            val current = storageConfig?.skipFullSync ?: false
+            vm.togglePlatformSkipFullSync(config.platform.id, !current)
+        }
         PlatformDetailItem.SyncNow -> vm.syncPlatform(config.platform.id, config.platform.getDisplayName())
         PlatformDetailItem.RemoveFiles -> vm.requestRemoveLocalFiles()
         PlatformDetailItem.BiosDownload -> vm.downloadBiosForPlatform(config.platform.slug)

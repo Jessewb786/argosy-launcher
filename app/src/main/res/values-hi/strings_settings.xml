@@ -1753,6 +1753,8 @@
     <string name="settings_platform_sync_toggle_subtitle">इस प्लेटफ़ॉर्म को लाइब्रेरी सिंक में शामिल करें</string>
     <string name="settings_platform_combine_content_title">सामग्री मिलाएँ</string>
     <string name="settings_platform_combine_content_subtitle">सभी गेम एक फ़ोल्डर में, सभी अपडेट और DLC extcontent में</string>
+    <string name="settings_platform_skip_full_sync_title">पूर्ण सिंक में छोड़ें</string>
+    <string name="settings_platform_skip_full_sync_subtitle">इंक्रीमेंटल सिंक अब भी बदलावों की जाँच करता है</string>
     <string name="settings_platform_sync_now_title">अभी सिंक करें</string>
     <string name="settings_platform_sync_now_busy">सिंक चल रही है...</string>
     <string name="settings_platform_sync_now_subtitle">इस प्लेटफ़ॉर्म को RomM के साथ सिंक करें</string>
