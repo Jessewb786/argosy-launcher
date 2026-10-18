@@ -175,6 +175,7 @@
     <string name="ingame_settings_controller_type_title">玩家%1$d控制器</string>
     <string name="ingame_settings_controller_type_pending">将在下次启动时生效</string>
     <string name="ingame_settings_controller_type_core_default">由核心选择</string>
+    <string name="ingame_settings_controller_type_auto">自动 (%1$s)</string>
     <string name="ingame_settings_controller_grip_title">控制器手柄支架</string>
     <string name="ingame_settings_controller_grip_subtitle">将界面上移，避开手柄支架遮挡的区域</string>
     <string name="ingame_settings_input_mapping_title">按键映射</string>

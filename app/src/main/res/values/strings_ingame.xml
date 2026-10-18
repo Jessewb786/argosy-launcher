@@ -395,6 +395,8 @@
     <!-- Second line under that row when nothing has been picked, so the emulation engine
          decides. -->
     <string name="ingame_settings_controller_type_core_default">Chosen by the core</string>
+    <!-- %1$s is a controller device name as the emulator core reports it, untranslated -->
+    <string name="ingame_settings_controller_type_auto">Auto (%1$s)</string>
     <!-- Row on the controls tab. Noun phrase: the moulded handle some handhelds clip on,
          which hides the bottom of the screen. -->
     <string name="ingame_settings_controller_grip_title">Controller Grip</string>

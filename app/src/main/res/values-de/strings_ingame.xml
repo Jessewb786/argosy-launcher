@@ -178,6 +178,7 @@
     <string name="ingame_settings_controller_type_title">Controller von Spieler %1$d</string>
     <string name="ingame_settings_controller_type_pending">Gilt ab dem nächsten Start</string>
     <string name="ingame_settings_controller_type_core_default">Vom Core gewählt</string>
+    <string name="ingame_settings_controller_type_auto">Auto (%1$s)</string>
     <string name="ingame_settings_controller_grip_title">Controller-Griff</string>
     <string name="ingame_settings_controller_grip_subtitle">Oberfläche aus dem vom Griff verdeckten Bereich verschieben</string>
     <string name="ingame_settings_input_mapping_title">Tastenbelegung</string>

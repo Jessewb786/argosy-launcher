@@ -2845,6 +2845,8 @@
     <string name="settings_builtin_controls_controller_type_title">Player %1$d Controller</string>
     <!-- Second line under that row. -->
     <string name="settings_builtin_controls_controller_type_subtitle">The controller the game sees. Takes effect the next time a game starts.</string>
+    <!-- %1$s is a controller device name as the emulator core reports it, untranslated -->
+    <string name="settings_builtin_controls_controller_type_auto">Auto (%1$s)</string>
 
     <!-- Row title. Noun phrase: the left stick sends the same inputs as the direction pad.
          "D-Pad" is the cross-shaped direction control; keep the abbreviation. -->

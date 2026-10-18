@@ -101,6 +101,8 @@ data class ControllerPortOption(
     val port: Int,
     val options: List<String>,
     val selectedIndex: Int,
+    val autoIndex: Int?,
+    val followsAuto: Boolean,
     val isOverridden: Boolean,
     val pendingRestart: Boolean = false
 )
@@ -899,13 +901,18 @@ private fun InGameControlsSection(
                     val portState = state.controllerPorts.firstOrNull { it.port == item.port }
                     if (portState != null) {
                         val focused = isFocused(item)
+                        val autoName = portState.autoIndex?.let { portState.options.getOrNull(it) }
                         CyclePreference(
                             title = stringResource(
                                 R.string.ingame_settings_controller_type_title,
                                 item.port + 1
                             ),
-                            value = portState.options.getOrElse(portState.selectedIndex) {
-                                stringResource(R.string.ingame_settings_controller_type_default_fallback)
+                            value = if (portState.followsAuto && autoName != null) {
+                                stringResource(R.string.ingame_settings_controller_type_auto, autoName)
+                            } else {
+                                portState.options.getOrElse(portState.selectedIndex) {
+                                    stringResource(R.string.ingame_settings_controller_type_default_fallback)
+                                }
                             },
                             isFocused = focused,
                             subtitle = when {

@@ -184,6 +184,7 @@
     <string name="ingame_settings_controller_type_title">Контроллер игрока %1$d</string>
     <string name="ingame_settings_controller_type_pending">Применится при следующем запуске</string>
     <string name="ingame_settings_controller_type_core_default">Выбирается ядром</string>
+    <string name="ingame_settings_controller_type_auto">Авто (%1$s)</string>
     <string name="ingame_settings_controller_grip_title">Рукоятка контроллера</string>
     <string name="ingame_settings_controller_grip_subtitle">Сдвинуть интерфейс из зоны, которую закрывает рукоятка</string>
     <string name="ingame_settings_input_mapping_title">Раскладка кнопок</string>

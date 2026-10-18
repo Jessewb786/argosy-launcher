@@ -1963,10 +1963,13 @@ class LibretroActivity : ComponentActivity() {
             if (devices.size < 2) return@mapIndexedNotNull null
             val stored = if (perGame) gameControllerTypes[port] else platformControllerTypes[port]
             val effective = effectiveControllerType(port)
+            val deviceIds = devices.map { it.id }
             ControllerPortOption(
                 port = port,
                 options = devices.map { it.description ?: getString(R.string.ingame_libretro_controller_port_device_fallback, it.id) },
-                selectedIndex = devices.indexOfFirst { it.id == effective }.coerceAtLeast(0),
+                selectedIndex = CorePortDeviceCatalog.selectedDeviceIndex(deviceIds, effective),
+                autoIndex = CorePortDeviceCatalog.autoDeviceIndex(deviceIds),
+                followsAuto = effective == null,
                 isOverridden = stored != null,
                 pendingRestart = effective != null && effective != appliedControllerTypes[port]
             )
@@ -1986,8 +1989,7 @@ class LibretroActivity : ComponentActivity() {
     private fun cycleControllerType(port: Int, direction: Int) {
         val devices = corePortDevices.getOrNull(port) ?: return
         if (devices.isEmpty()) return
-        val current = effectiveControllerType(port)
-        val currentIndex = devices.indexOfFirst { it.id == current }.coerceAtLeast(0)
+        val currentIndex = CorePortDeviceCatalog.selectedDeviceIndex(devices.map { it.id }, effectiveControllerType(port))
         val next = devices[(currentIndex + direction).mod(devices.size)]
         setControllerType(port, next.id)
     }

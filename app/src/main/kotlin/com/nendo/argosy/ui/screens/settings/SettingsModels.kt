@@ -783,7 +783,8 @@ data class ControllerPortChoiceUi(
     val port: Int,
     val deviceIds: List<Int>,
     val deviceNames: List<String>,
-    val selectedIndex: Int
+    val selectedIndex: Int,
+    val autoIndex: Int
 )
 
 data class BuiltinControlsState(

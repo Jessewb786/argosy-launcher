@@ -281,14 +281,23 @@ fun BuiltinControlsSection(
                 is BuiltinControlsItem.ControllerType -> {
                     val choice = controlsState.controllerPorts.firstOrNull { it.port == item.port }
                     if (choice != null) {
+                        val autoLabel = stringResource(
+                            R.string.settings_builtin_controls_controller_type_auto,
+                            choice.deviceNames.getOrElse(choice.autoIndex) { "" }
+                        )
+                        val options = remember(choice, autoLabel) {
+                            choice.deviceNames.mapIndexed { index, name ->
+                                if (index == choice.autoIndex) autoLabel else name
+                            }
+                        }
                         CyclePreference(
                             title = stringResource(R.string.settings_builtin_controls_controller_type_title, item.port + 1),
-                            value = choice.deviceNames.getOrElse(choice.selectedIndex) { "" },
+                            value = options.getOrElse(choice.selectedIndex) { "" },
                             subtitle = stringResource(R.string.settings_builtin_controls_controller_type_subtitle),
                             isFocused = isFocused(item),
                             onClick = { viewModel.stepControllerType(item.port, 1) },
                             onPrev = { viewModel.stepControllerType(item.port, -1) },
-                            options = choice.deviceNames,
+                            options = options,
                             onSelect = { index -> viewModel.selectControllerType(item.port, index) }
                         )
                     }
