@@ -88,6 +88,12 @@ class SaveCacheManager @Inject constructor(
         val success: Boolean get() = this != Failed
     }
 
+    sealed interface LocalSaveProbe {
+        data object Absent : LocalSaveProbe
+        data object Unreadable : LocalSaveProbe
+        data class Present(val contentHash: String) : LocalSaveProbe
+    }
+
     private val cacheBaseDir: File
         get() = com.nendo.argosy.util.AppPaths.saveCacheDir(context.filesDir)
 
@@ -1336,19 +1342,30 @@ class SaveCacheManager @Inject constructor(
         savePath: String,
         gameId: Long? = null,
         emulatorId: String? = null
-    ): String? = withContext(Dispatchers.IO) {
+    ): String? = (probeLocalSave(savePath, gameId, emulatorId) as? LocalSaveProbe.Present)?.contentHash
+
+    /**
+     * The save at [savePath] hashed as [calculateLocalSaveHash] hashes it, telling a save that is
+     * not there apart from one that is there and cannot be read.
+     */
+    suspend fun probeLocalSave(
+        savePath: String,
+        gameId: Long? = null,
+        emulatorId: String? = null
+    ): LocalSaveProbe = withContext(Dispatchers.IO) {
         val owner = if (gameId == null || emulatorId == null) saveOwnershipDao.getLatestByPath(savePath) else null
         val ownerGameId = gameId ?: owner?.gameId
         if (ownerGameId != null) {
             when (val collected = sigilSaveHandler.collect(ownerGameId, emulatorId ?: owner?.emulatorId)) {
                 SigilCollect.NotRouted -> Unit
-                is SigilCollect.Found -> return@withContext collected.contentHash
-                SigilCollect.Absent, is SigilCollect.Unreadable -> return@withContext null
+                is SigilCollect.Found -> return@withContext LocalSaveProbe.Present(collected.contentHash)
+                SigilCollect.Absent -> return@withContext LocalSaveProbe.Absent
+                is SigilCollect.Unreadable -> return@withContext LocalSaveProbe.Unreadable
             }
         }
-        if (!fal.exists(savePath)) return@withContext null
+        if (!fal.exists(savePath)) return@withContext LocalSaveProbe.Absent
         fal.prepareSaveAccess(savePath)
-        try {
+        val hash = try {
             val saveFile = fal.getTransformedFile(savePath)
             val gciMembers = gciUnitMembers(savePath)?.takeIf { it.size > 1 }
             if (fal.isDirectory(savePath)) {
@@ -1365,6 +1382,7 @@ class SaveCacheManager @Inject constructor(
             Logger.error(TAG,"Failed to calculate hash for $savePath", e)
             null
         }
+        hash?.let { LocalSaveProbe.Present(it) } ?: LocalSaveProbe.Unreadable
     }
 
     private suspend fun unitHashFor(savePath: String, gameId: Long?, emulatorId: String?): String? {

@@ -53,11 +53,17 @@ can disagree about the same game.
 
     serverHasNewer = !(serverHash == lastUploadedHash) && ourDevice.isCurrent != true
 
-A server-side `isCurrent` flag overrides hashes. With Secure Saves on nothing hashes the local
-save before launch; `localDirty` is only the `needsRemoteSync` flag on cache rows. No entry
-point writes the active cached version back to disk when the disk differs from it (model step
-2 is unimplemented). The built-in SRAM restore (`SaveStateManager.restoreResumeSave`) writes
-the active row unconditionally and skips GameCube entirely.
+A server-side `isCurrent` flag overrides hashes. `localDirty` is only the `needsRemoteSync` flag
+on cache rows. The disk-against-active decision itself is one function,
+`ActiveSaveDiskJudge.judge`: a disk matching the version's known forms is left as it is, a disk
+matching a newer unsynced version activates that version, a differing disk is adopted with
+Secure Saves off (never another account's) and cached with `cacheAsRollback` before the version
+is written with Secure Saves on; a failed rollback writes nothing. `SaveSyncOrchestrator.reconcileDisk`
+(pre-launch and the cross-emulator migrator) and the built-in SRAM restore
+(`SaveStateManager.placeCachedSave`, behind every resume door: the active row, the slot's latest,
+the most recent save and the hardcore save) both act on its verdict. The built-in restore runs
+it offline too, and treats a disk save it cannot read as one it must not write over. It still
+skips GameCube entirely.
 
 With Secure Saves off, `refreshCacheFromSystem` runs instead and does the opposite of step 2:
 a differing disk save becomes a new active row flagged for upload. Folder saves are judged

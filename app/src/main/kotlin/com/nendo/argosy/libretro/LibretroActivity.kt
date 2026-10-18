@@ -207,6 +207,7 @@ class LibretroActivity : ComponentActivity() {
     @Inject lateinit var saveUnitResolver: com.nendo.argosy.data.sync.SaveUnitResolver
     @Inject lateinit var sigilSaveHandler: com.nendo.argosy.data.sync.platform.SigilSaveHandler
     @Inject lateinit var activeSaveRepository: com.nendo.argosy.data.repository.ActiveSaveRepository
+    @Inject lateinit var activeSaveDiskJudge: com.nendo.argosy.data.repository.ActiveSaveDiskJudge
     @Inject lateinit var ambientLedManager: AmbientLedManager
     @Inject lateinit var socialRepository: SocialRepository
     @Inject lateinit var argosSocialService: ArgosSocialService
@@ -797,6 +798,9 @@ class LibretroActivity : ComponentActivity() {
             gameId = gameId,
             activeSaveRepository = activeSaveRepository,
             saveCacheManager = saveCacheManager,
+            diskJudge = activeSaveDiskJudge,
+            secureSaves = secureSavesEnabled,
+            ownerUserId = launchPreferences.rommUserId,
             usesExternalMemcard = com.nendo.argosy.data.platform.PlatformDefinitions.getCanonicalSlug(platformSlug) == "gc",
             channelName = channelName,
             isVariant = variantFileId >= 0,
