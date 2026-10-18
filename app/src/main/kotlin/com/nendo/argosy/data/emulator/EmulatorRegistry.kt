@@ -505,6 +505,9 @@ object EmulatorRegistry {
             packageName = "info.cemu.cemu",
             displayName = "Cemu",
             supportedPlatforms = setOf("wiiu"),
+            launchConfig = LaunchConfig.Custom(
+                activityClass = "info.cemu.cemu.emulation.EmulationActivity"
+            ),
             downloadUrl = "https://github.com/SSimco/Cemu/releases",
             releaseSource = ReleaseSource.GitHub("SSimco/Cemu")
         ),
@@ -514,6 +517,9 @@ object EmulatorRegistry {
             packageName = "info.cemu.cemu",
             displayName = "Cemu (Dual Screen)",
             supportedPlatforms = setOf("wiiu"),
+            launchConfig = LaunchConfig.Custom(
+                activityClass = "info.cemu.cemu.emulation.EmulationActivity"
+            ),
             downloadUrl = "https://github.com/SapphireRhodonite/Cemu/releases",
             releaseSource = ReleaseSource.GitHub("SapphireRhodonite/Cemu")
         ),
