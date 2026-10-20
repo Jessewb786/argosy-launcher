@@ -214,15 +214,18 @@ folder:
 
 The low half is the last eight characters of the id, so the split form, the flat
 `000500001012bd00` and the low id alone all resolve to the same folder, in lowercase as
-Cemu writes it. Before this handler the split id was joined onto the base whole, which
+Cemu writes it. The category is the high half of a full id. When it differs from the
+category directory the base ends in, the folder is its sibling: a demo id
+`00050002/<low id>` resolves to `mlc01/usr/save/00050002/<low id>`. A low id alone carries
+no category and stays under the base. Before this handler the split id was joined onto the base whole, which
 pointed every restore at `00050000/00050000/1012bd00` and never found the save Cemu
 actually wrote.
 
 An archive comes in one of two shapes. Argosy uploads the title folder under its own
 name (`1012bd00/meta`, `1012bd00/user`), which matches exactly. Other clients upload the
 contents of `user` (`80000001/`, `common/`): those roots name no title, so the archive
-is placed on the resolved destination, each root under the title's `user` folder. A root
-naming a different title is refused.
+is placed on the resolved destination, each root under the title's `user` folder. An archive
+with any other root, such as a different title's folder, is refused.
 
 ### GameCube (`GciSaveHandler`)
 

@@ -69,6 +69,15 @@ class WiiUFolderHandlerTest {
     }
 
     @Test
+    fun `a demo id resolves under its own category beside the base`() {
+        val demo = cemuSave(File(base.parentFile, "00050002/$lowId"))
+
+        assertEquals(demo.path, handler.constructSavePath(base.path, "00050002/$lowId"))
+        assertEquals(demo.path, handler.findSaveFolderBySaveId(base.path, "00050002$lowId"))
+        assertNull(handler.findSaveFolderBySaveId(base.path, splitId))
+    }
+
+    @Test
     fun `split id finds the existing title folder`() {
         val title = cemuSave(File(base, lowId))
 
@@ -124,6 +133,18 @@ class WiiUFolderHandlerTest {
 
         assertNull(handler.matchArchive(prepared.file, splitId))
         assertFalse(handler.extractDownload(prepared.file, saveContext(localSavePath = null)).success)
+        assertFalse(File(base, lowId).exists())
+    }
+
+    @Test
+    fun `archive mixing another title with common is refused`() = runTest {
+        val archive = zipOf(
+            "10143500/user/80000001/gen0.sav" to byteArrayOf(1),
+            "common/dummy.sav" to byteArrayOf(2)
+        )
+
+        assertNull(handler.matchArchive(archive, splitId))
+        assertFalse(handler.extractDownload(archive, saveContext(localSavePath = null)).success)
         assertFalse(File(base, lowId).exists())
     }
 
