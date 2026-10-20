@@ -50,7 +50,7 @@ class PlatformSaveHandlerRegistry @Inject constructor(
         FolderSaveHandler(context, fal, saveArchiver, platformSlug = "vita"),
         PspFolderHandler(context, fal, saveArchiver),
         FolderSaveHandler(context, fal, saveArchiver, platformSlug = "wii"),
-        FolderSaveHandler(context, fal, saveArchiver, platformSlug = "wiiu"),
+        WiiUFolderHandler(context, fal, saveArchiver),
         N3dsFolderHandler(context, fal, saveArchiver),
         Ps2FolderHandler(context, fal, saveArchiver),
         Ps3FolderHandler(context, fal, saveArchiver),
