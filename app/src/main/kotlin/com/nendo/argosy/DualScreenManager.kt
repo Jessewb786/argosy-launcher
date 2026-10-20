@@ -1778,14 +1778,17 @@ class DualScreenManager(
 
     /**
      * Whether the emulator has left the screen a launcher surface just resumed on. The emulator
-     * reports stopped only after the launcher resumes, so a first answer of "still there" is asked
-     * again after [EMULATOR_SETTLE_MS] while [launcherStillInFront] holds.
+     * reports stopped only after the launcher resumes. A first answer of "still there" is asked
+     * again every [EMULATOR_SETTLE_MS], up to [EMULATOR_SETTLE_CHECKS] times, while
+     * [launcherStillInFront] holds.
      */
-    suspend fun emulatorLeftScreen(context: Context, launcherStillInFront: () -> Boolean): Boolean {
-        if (!isEmulatorStillOnScreen(context)) return true
-        delay(EMULATOR_SETTLE_MS)
-        return launcherStillInFront() && !isEmulatorStillOnScreen(context)
-    }
+    suspend fun emulatorLeftScreen(context: Context, launcherStillInFront: () -> Boolean): Boolean =
+        awaitEmulatorLeft(
+            stillOnScreen = { isEmulatorStillOnScreen(context) },
+            launcherStillInFront = launcherStillInFront,
+            checks = EMULATOR_SETTLE_CHECKS,
+            intervalMs = EMULATOR_SETTLE_MS
+        )
 
     /**
      * Ends the session whose emulator [emulatorLeftScreen] reported gone. On a dual-screen device it
@@ -2342,6 +2345,7 @@ class DualScreenManager(
 
     companion object {
         private const val EMULATOR_SETTLE_MS = 2_000L
+        private const val EMULATOR_SETTLE_CHECKS = 8
         private const val EMULATOR_RELEASE_ATTEMPTS = 6
         private const val EMULATOR_RELEASE_INTERVAL_MS = 5_000L
         const val ACTION_WIZARD_STATE = "com.nendo.argosy.WIZARD_STATE"
