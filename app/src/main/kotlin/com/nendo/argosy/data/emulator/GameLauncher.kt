@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.core.content.FileProvider
@@ -987,7 +988,8 @@ class GameLauncher @Inject constructor(
             return buildBuiltInIntent(romFile, game, variantFileId, discM3uPath)
         }
 
-        val command = buildEffectiveCommand(emulator, romFile, game, forResume) ?: return null
+        val built = buildEffectiveCommand(emulator, romFile, game, forResume) ?: return null
+        val command = built.pinnedPastPathPattern(romFile.extension) { path -> resolveViewActivity(built, path) }
 
         Logger.info(TAG, buildString {
             append("[Command] method=${command.launchMethod}")
@@ -1924,6 +1926,19 @@ class GameLauncher @Inject constructor(
             "com.android.externalstorage.documents",
             "$volumeId:$relativePath"
         )
+    }
+
+    private fun resolveViewActivity(command: EffectiveLaunchCommand, pathOverride: String?): String? {
+        val dataUri = command.dataUri ?: return null
+        val uri = if (pathOverride == null) dataUri else dataUri.buildUpon().path(pathOverride).build()
+        val intent = Intent(command.action)
+        intent.setPackage(command.packageName)
+        command.categories.forEach { intent.addCategory(it) }
+        if (command.mimeType != null) intent.setDataAndType(uri, command.mimeType) else intent.data = uri
+        return context.packageManager
+            .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            .firstOrNull { it.activityInfo.packageName == command.packageName }
+            ?.activityInfo?.name
     }
 
     private fun getMimeType(file: File): String {
