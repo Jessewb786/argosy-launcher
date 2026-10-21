@@ -1779,19 +1779,27 @@ class DualScreenManager(
     /**
      * Whether the emulator has left the display a launcher surface just took focus on. Focus on the
      * game's own display ([onGameDisplay]) past [EMULATOR_SETTLE_MS] into the session answers yes.
-     * A first answer of "still there" on another display, and any answer for a younger session,
-     * is asked again after [EMULATOR_SETTLE_MS] while [launcherStillInFront] holds.
+     * A younger session first waits [EMULATOR_SETTLE_MS]. A remaining answer of "still there" is
+     * asked again every [EMULATOR_SETTLE_MS], up to [EMULATOR_SETTLE_CHECKS] times, while
+     * [launcherStillInFront] holds.
      */
     suspend fun emulatorLeftScreen(
         context: Context,
         onGameDisplay: Boolean,
         launcherStillInFront: () -> Boolean
     ): Boolean {
-        val settling = isSessionSettling()
-        if (onGameDisplay && !settling) return true
-        if (!settling && !isEmulatorStillOnScreen(context)) return true
-        delay(EMULATOR_SETTLE_MS)
-        return launcherStillInFront() && !isEmulatorStillOnScreen(context)
+        if (isSessionSettling()) {
+            delay(EMULATOR_SETTLE_MS)
+            if (!launcherStillInFront()) return false
+        } else if (onGameDisplay) {
+            return true
+        }
+        return awaitEmulatorLeft(
+            stillOnScreen = { isEmulatorStillOnScreen(context) },
+            launcherStillInFront = launcherStillInFront,
+            checks = EMULATOR_SETTLE_CHECKS,
+            intervalMs = EMULATOR_SETTLE_MS
+        )
     }
 
     private fun isSessionSettling(): Boolean {
@@ -2356,6 +2364,7 @@ class DualScreenManager(
 
     companion object {
         private const val EMULATOR_SETTLE_MS = 2_000L
+        private const val EMULATOR_SETTLE_CHECKS = 8
         private const val EMULATOR_RELEASE_ATTEMPTS = 6
         private const val EMULATOR_RELEASE_INTERVAL_MS = 5_000L
         const val ACTION_WIZARD_STATE = "com.nendo.argosy.WIZARD_STATE"
