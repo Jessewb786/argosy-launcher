@@ -1585,6 +1585,11 @@
     <string name="settings_builtin_controls_hotkeys_subtitle">Настроить сочетания для меню, перемотки вперёд и назад</string>
     <string name="settings_builtin_controls_limit_hotkeys_title">Горячие клавиши только для игрока 1</string>
     <string name="settings_builtin_controls_limit_hotkeys_subtitle">Горячие клавиши работают только с контроллером игрока 1</string>
+    <string name="settings_builtin_controls_select_as_back_title">Select как «Назад»</string>
+    <string name="settings_builtin_controls_select_as_back_subtitle">Для контроллеров, у которых Select отправляет «Назад». В режиме «Авто» «Назад» работает как Select на контроллерах без кнопки Select.</string>
+    <string name="settings_builtin_controls_select_as_back_auto">Авто</string>
+    <string name="settings_builtin_controls_select_as_back_on">Вкл</string>
+    <string name="settings_builtin_controls_select_as_back_off">Выкл</string>
     <string name="settings_builtin_controls_toggle_ff_title">Переключение перемотки вперёд</string>
     <string name="settings_builtin_controls_toggle_ff_subtitle">Нажмите один раз, чтобы начать, ещё раз - чтобы остановить (выкл = удерживать для перемотки)</string>
     <string name="settings_builtin_controls_ff_pitch_title">Сохранять высоту звука</string>

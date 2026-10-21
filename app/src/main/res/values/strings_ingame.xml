@@ -426,6 +426,11 @@
     <string name="ingame_settings_limit_hotkeys_title">Limit Hotkeys to Player 1</string>
     <!-- Second line under that row. -->
     <string name="ingame_settings_limit_hotkeys_subtitle">Only player 1 controller can trigger hotkeys</string>
+    <!-- Row title. Noun phrase: the controller's Select button reaching the app as Back. "Select"
+         and "Back" are button names. -->
+    <string name="ingame_settings_select_as_back_title">Select as Back</string>
+    <!-- Second line of that row: what the three options do. -->
+    <string name="ingame_settings_select_as_back_subtitle">For controllers whose Select sends Back. Auto plays Back as Select on controllers without a Select button.</string>
     <!-- Row on the controls tab. Verb phrase: makes the fast forward shortcut a switch rather
          than something held down. -->
     <string name="ingame_settings_toggle_fast_forward_title">Toggle Fast Forward</string>

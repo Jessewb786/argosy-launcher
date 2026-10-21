@@ -1543,6 +1543,11 @@
     <string name="settings_builtin_controls_hotkeys_subtitle">Configurer les raccourcis pour le menu, l\'avance rapide, le rembobinage</string>
     <string name="settings_builtin_controls_limit_hotkeys_title">Limiter les raccourcis au joueur 1</string>
     <string name="settings_builtin_controls_limit_hotkeys_subtitle">Seule la manette du joueur 1 peut déclencher les raccourcis</string>
+    <string name="settings_builtin_controls_select_as_back_title">Select comme Retour</string>
+    <string name="settings_builtin_controls_select_as_back_subtitle">Pour les manettes dont Select envoie Retour. Auto traite Retour comme Select sur les manettes sans bouton Select.</string>
+    <string name="settings_builtin_controls_select_as_back_auto">Auto</string>
+    <string name="settings_builtin_controls_select_as_back_on">Activé</string>
+    <string name="settings_builtin_controls_select_as_back_off">Désactivé</string>
     <string name="settings_builtin_controls_toggle_ff_title">Basculer l\'avance rapide</string>
     <string name="settings_builtin_controls_toggle_ff_subtitle">Appuyer une fois pour démarrer, encore pour arrêter (désactivé = maintenir pour avancer rapidement)</string>
     <string name="settings_builtin_controls_ff_pitch_title">Préserver la hauteur audio</string>

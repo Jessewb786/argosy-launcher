@@ -1553,6 +1553,11 @@
     <string name="settings_builtin_controls_hotkeys_subtitle">Configura los atajos para el menú, avance rápido y rebobinado</string>
     <string name="settings_builtin_controls_limit_hotkeys_title">Limitar atajos al jugador 1</string>
     <string name="settings_builtin_controls_limit_hotkeys_subtitle">Solo el mando del jugador 1 puede activar los atajos</string>
+    <string name="settings_builtin_controls_select_as_back_title">Select como Atrás</string>
+    <string name="settings_builtin_controls_select_as_back_subtitle">Para mandos cuyo Select envía Atrás. Automático usa Atrás como Select en mandos sin botón Select.</string>
+    <string name="settings_builtin_controls_select_as_back_auto">Automático</string>
+    <string name="settings_builtin_controls_select_as_back_on">Activado</string>
+    <string name="settings_builtin_controls_select_as_back_off">Desactivado</string>
     <string name="settings_builtin_controls_toggle_ff_title">Alternar avance rápido</string>
     <string name="settings_builtin_controls_toggle_ff_subtitle">Pulsa una vez para iniciar, otra vez para detener (desactivado = mantener para avanzar rápido)</string>
     <string name="settings_builtin_controls_ff_pitch_title">Conservar el tono del audio</string>

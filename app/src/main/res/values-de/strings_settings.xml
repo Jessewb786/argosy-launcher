@@ -1508,6 +1508,11 @@
     <string name="settings_builtin_controls_hotkeys_subtitle">Kurzbefehle für Menü, Vorspulen, Rewind konfigurieren</string>
     <string name="settings_builtin_controls_limit_hotkeys_title">Hotkeys auf Spieler 1 beschränken</string>
     <string name="settings_builtin_controls_limit_hotkeys_subtitle">Nur der Controller von Spieler 1 kann Hotkeys auslösen</string>
+    <string name="settings_builtin_controls_select_as_back_title">Select als Zurück</string>
+    <string name="settings_builtin_controls_select_as_back_subtitle">Für Controller, deren Select-Taste Zurück sendet. Automatisch nutzt Zurück als Select bei Controllern ohne Select-Taste.</string>
+    <string name="settings_builtin_controls_select_as_back_auto">Automatisch</string>
+    <string name="settings_builtin_controls_select_as_back_on">An</string>
+    <string name="settings_builtin_controls_select_as_back_off">Aus</string>
     <string name="settings_builtin_controls_toggle_ff_title">Vorspulen umschalten</string>
     <string name="settings_builtin_controls_toggle_ff_subtitle">Einmal drücken zum Starten, erneut zum Stoppen (aus = halten zum Vorspulen)</string>
     <string name="settings_builtin_controls_ff_pitch_title">Tonhöhe beibehalten</string>

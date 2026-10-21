@@ -2866,6 +2866,17 @@
     <string name="settings_builtin_controls_limit_hotkeys_title">Limit Hotkeys to Player 1</string>
     <!-- Second line of that row. -->
     <string name="settings_builtin_controls_limit_hotkeys_subtitle">Only player 1 controller can trigger hotkeys</string>
+    <!-- Row title. Noun phrase: the controller's Select button reaching the app as Back. "Select"
+         and "Back" are button names. -->
+    <string name="settings_builtin_controls_select_as_back_title">Select as Back</string>
+    <!-- Second line of that row: what the three options do. -->
+    <string name="settings_builtin_controls_select_as_back_subtitle">For controllers whose Select sends Back. Auto plays Back as Select on controllers without a Select button.</string>
+    <!-- Option of that row: decide per controller. -->
+    <string name="settings_builtin_controls_select_as_back_auto">Auto</string>
+    <!-- Option of that row: Back is always Select in game. -->
+    <string name="settings_builtin_controls_select_as_back_on">On</string>
+    <!-- Option of that row: Back always opens the in-game menu. -->
+    <string name="settings_builtin_controls_select_as_back_off">Off</string>
     <!-- Row title. Verb phrase: fast forward switches on and off rather than needing a held
          button. -->
     <string name="settings_builtin_controls_toggle_ff_title">Toggle Fast Forward</string>

@@ -445,6 +445,13 @@ internal fun routeSetBuiltinFastForwardMode(vm: SettingsViewModel, mode: com.nen
     }
 }
 
+internal fun routeSetBuiltinSelectAsBack(vm: SettingsViewModel, mode: com.nendo.argosy.data.local.entity.SelectAsBackMode) {
+    vm._uiState.update { it.copy(builtinControls = it.builtinControls.copy(selectAsBack = mode)) }
+    vm.viewModelScope.launch {
+        vm.libretroSettingsRepo.setBuiltinSelectAsBack(mode)
+    }
+}
+
 internal fun routeSetBuiltinFastForwardPreservePitch(vm: SettingsViewModel, enabled: Boolean) {
     vm._uiState.update { it.copy(builtinControls = it.builtinControls.copy(fastForwardPreservePitch = enabled)) }
     vm.viewModelScope.launch {

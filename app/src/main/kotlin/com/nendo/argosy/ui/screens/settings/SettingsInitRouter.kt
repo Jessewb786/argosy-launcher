@@ -944,6 +944,7 @@ internal fun routeLoadSettings(vm: SettingsViewModel) {
                     speedrunPanelSide = refreshSettings.speedrunPanelSide,
                     speedrunPanelWidthPercent = refreshSettings.speedrunPanelWidthPercent,
                     fastForwardMode = refreshSettings.fastForwardMode,
+                    selectAsBack = refreshSettings.selectAsBack,
                     fastForwardPreservePitch = refreshSettings.fastForwardPreservePitch,
                     analogAsDpad = refreshSettings.analogAsDpad,
                     dpadAsAnalog = refreshSettings.dpadAsAnalog,

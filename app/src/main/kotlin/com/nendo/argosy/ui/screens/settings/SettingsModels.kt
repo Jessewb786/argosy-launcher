@@ -795,6 +795,7 @@ data class BuiltinControlsState(
     val speedrunPanelSide: String = "Right",
     val speedrunPanelWidthPercent: Int = 30,
     val fastForwardMode: com.nendo.argosy.data.local.entity.FastForwardMode = com.nendo.argosy.data.local.entity.FastForwardMode.HOLD,
+    val selectAsBack: com.nendo.argosy.data.local.entity.SelectAsBackMode = com.nendo.argosy.data.local.entity.SelectAsBackMode.AUTO,
     val fastForwardPreservePitch: Boolean = false,
     val analogAsDpad: Boolean = false,
     val dpadAsAnalog: Boolean = false,

@@ -191,6 +191,8 @@
     <string name="ingame_settings_hotkeys_subtitle">Tastenkürzel für Menü, Vorlauf und Rücklauf einrichten</string>
     <string name="ingame_settings_limit_hotkeys_title">Hotkeys auf Spieler 1 beschränken</string>
     <string name="ingame_settings_limit_hotkeys_subtitle">Nur der Controller von Spieler 1 kann Hotkeys auslösen</string>
+    <string name="ingame_settings_select_as_back_title">Select als Zurück</string>
+    <string name="ingame_settings_select_as_back_subtitle">Für Controller, deren Select-Taste Zurück sendet. Automatisch nutzt Zurück als Select bei Controllern ohne Select-Taste.</string>
     <string name="ingame_settings_toggle_fast_forward_title">Vorlauf umschalten</string>
     <string name="ingame_settings_toggle_fast_forward_subtitle">Einmal drücken zum Starten, erneut zum Stoppen (aus = gedrückt halten für Vorlauf)</string>
     <string name="ingame_settings_preserve_pitch_title">Tonhöhe beibehalten</string>

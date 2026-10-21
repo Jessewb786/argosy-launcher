@@ -42,6 +42,7 @@ class EffectiveLibretroSettingsResolver @Inject constructor(
             fastForwardEnabled = perPlatform?.fastForwardEnabled ?: global.fastForwardEnabled,
             fastForwardSpeed = perPlatform?.fastForwardSpeed ?: global.fastForwardSpeed,
             fastForwardMode = global.fastForwardMode,
+            selectAsBack = global.selectAsBack,
             fastForwardPreservePitch = global.fastForwardPreservePitch,
             rewindEnabled = if (isHeavyPlatform) false
                            else (perPlatform?.rewindEnabled ?: global.rewindEnabled),

@@ -296,6 +296,8 @@ class LibretroActivity : ComponentActivity() {
     private var canEnableBFI = false
 
     private var limitHotkeysToPlayer1 by mutableStateOf(true)
+    private var selectAsBack by mutableStateOf(com.nendo.argosy.data.local.entity.SelectAsBackMode.AUTO)
+    private val backAsSelect = BackAsSelectTranslator { selectAsBack }
     private var firstFrameRendered = false
     private var framesSinceSample = 0
     private var measuredFps by mutableIntStateOf(0)
@@ -889,6 +891,7 @@ class LibretroActivity : ComponentActivity() {
         videoSettings.applySettings(settings)
         videoSettings.resolveCustomShader(settings)
         limitHotkeysToPlayer1 = settings.limitHotkeysToPlayer1
+        selectAsBack = settings.selectAsBack
         videoSettings.onRewindToggled = { enabled ->
             if (enabled && !hardcoreMode) {
                 setupRewind(settings)
@@ -2363,6 +2366,7 @@ class LibretroActivity : ComponentActivity() {
                 dpadAsAnalog = videoSettings.currentDpadAsAnalog,
                 limitHotkeysToPlayer1 = limitHotkeysToPlayer1,
                 fastForwardMode = videoSettings.fastForwardMode,
+                selectAsBack = selectAsBack,
                 fastForwardPreservePitch = videoSettings.fastForwardPreservePitch,
                 controllerOrderCount = inputConfig.controllerOrderCount,
                 gripReserveMode = gripReserveModeState,
@@ -3084,6 +3088,12 @@ class LibretroActivity : ComponentActivity() {
                     preferencesRepository.setBuiltinFastForwardMode(action.mode)
                 }
             }
+            is InGameControlsAction.SetSelectAsBack -> {
+                selectAsBack = action.mode
+                lifecycleScope.launch {
+                    preferencesRepository.setBuiltinSelectAsBack(action.mode)
+                }
+            }
             is InGameControlsAction.SetFastForwardPreservePitch -> {
                 videoSettings.fastForwardPreservePitch = action.enabled
                 audioController.setPitchPreservationEnabled(action.enabled)
@@ -3253,7 +3263,7 @@ class LibretroActivity : ComponentActivity() {
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         observeVirtualPad(event)
         connectedControllerTracker.noteInput(event)
-        return dispatchKeyFrom(event, KeyPressGate.Source.Key, coreBound = true)
+        return dispatchKeyFrom(backAsSelect.translate(event), KeyPressGate.Source.Key, coreBound = true)
     }
 
     private fun observeVirtualPad(event: android.view.InputEvent) {
