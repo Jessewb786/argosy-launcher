@@ -276,10 +276,10 @@ class SaveChannelDelegate @Inject constructor(
 
     fun dismissDeleteConfirmation() = savesDelegate.dismissDeleteConfirmation()
 
-    fun confirmDeleteChannel(
+    fun confirmDelete(
         scope: CoroutineScope,
         onSaveStatusChanged: (SaveStatusEvent) -> Unit
-    ) = savesDelegate.confirmDeleteChannel(scope, onSaveStatusChanged)
+    ) = savesDelegate.confirmDelete(scope, onSaveStatusChanged)
 
     fun dismissMigrateConfirmation() = savesDelegate.dismissMigrateConfirmation()
 
@@ -361,7 +361,7 @@ class SaveChannelDelegate @Inject constructor(
             SaveTab.SAVES -> {
                 when (state.saveFocusColumn) {
                     SaveFocusColumn.SLOTS -> savesDelegate.showRenameSlotDialog()
-                    SaveFocusColumn.HISTORY -> {}
+                    SaveFocusColumn.HISTORY -> savesDelegate.showDeleteVersionConfirmation()
                 }
             }
             SaveTab.STATES -> {

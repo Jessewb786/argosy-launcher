@@ -1594,7 +1594,7 @@ class GameDetailViewModel @Inject constructor(
 
     fun dismissDeleteConfirmation() = saveManagement.saveChannelDelegate.dismissDeleteConfirmation()
 
-    fun confirmDeleteChannel() = saveManagement.saveChannelDelegate.confirmDeleteChannel(viewModelScope, ::handleSaveStatusChanged)
+    fun confirmDelete() = saveManagement.saveChannelDelegate.confirmDelete(viewModelScope, ::handleSaveStatusChanged)
 
     fun dismissMigrateConfirmation() = saveManagement.saveChannelDelegate.dismissMigrateConfirmation()
 
@@ -2700,7 +2700,7 @@ class GameDetailViewModel @Inject constructor(
             when {
                 state.reviewEditor != null -> confirmReviewEditorAction()
                 saveState.showRenameDialog -> confirmRename()
-                saveState.showDeleteConfirmation -> confirmDeleteChannel()
+                saveState.showDeleteConfirmation -> confirmDelete()
                 saveState.showRestoreConfirmation -> restoreSave(syncToServer = false)
                 saveState.showMigrateConfirmation -> confirmMigrateChannel()
                 saveState.showDeleteLegacyConfirmation -> confirmDeleteLegacyChannel()

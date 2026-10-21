@@ -115,6 +115,12 @@
     <string name="ui_save_channel_footer_rename">Rename</string>
     <!-- Footer hint on a save slot. Verb: erases the slot. -->
     <string name="ui_save_channel_footer_delete_slot">Delete</string>
+    <!-- Footer hint on the Archived slot. Verb phrase: erases every archived save on this
+         device. -->
+    <string name="ui_save_channel_footer_delete_archived">Delete all</string>
+    <!-- Footer hint on one save in the history list. Verb: erases that one save on this
+         device. -->
+    <string name="ui_save_channel_footer_delete_version">Delete</string>
     <!-- Footer hint on a save in the history list. Verb: puts that save back in play. -->
     <string name="ui_save_channel_footer_restore_save">Restore</string>
     <!-- Footer hint on a save in the history list. Verb phrase: copies it into a slot the user
@@ -229,6 +235,21 @@
     <string name="ui_save_channel_delete_slot_message">Delete \"%1$s\"?</string>
     <!-- Note under that body, saying what deleting reaches. -->
     <string name="ui_save_channel_delete_slot_note">This will remove it from the server and local storage. This cannot be undone.</string>
+    <!-- Heading of the confirmation before one save in the history list is erased. Noun
+         phrase, rendered in caps. -->
+    <string name="ui_save_channel_delete_version_title">DELETE SAVE</string>
+    <!-- Body of that confirmation. %1$s is when the save was made, already formatted. -->
+    <string name="ui_save_channel_delete_version_message">Delete the save from %1$s?</string>
+    <!-- Heading of the confirmation before every archived save is erased. Noun phrase,
+         rendered in caps. -->
+    <string name="ui_save_channel_delete_archived_title">DELETE ARCHIVED SAVES</string>
+    <!-- Body of that confirmation. %1$d is how many archived saves there are. -->
+    <plurals name="ui_save_channel_delete_archived_message">
+        <item quantity="one">Delete %1$d archived save?</item>
+        <item quantity="other">Delete %1$d archived saves?</item>
+    </plurals>
+    <!-- Note under a save or archived-saves deletion: only this device's copies go. -->
+    <string name="ui_save_channel_delete_local_note">This removes the copy on this device. A copy on the server stays. This cannot be undone.</string>
 
     <!-- Heading of the warning shown when a save state was written by a different build of the
          emulator core. Rendered in caps. -->
@@ -363,6 +384,12 @@
     <string name="ui_save_channel_notice_renamed">Renamed to \'%1$s\'</string>
     <!-- Brief message after a save slot is erased. %1$s is its name. -->
     <string name="ui_save_channel_notice_slot_deleted">Deleted save slot \'%1$s\'</string>
+    <!-- Brief message after saves were erased from the history list or the Archived slot.
+         %1$d is how many. -->
+    <plurals name="ui_save_channel_notice_versions_deleted">
+        <item quantity="one">Deleted %1$d save</item>
+        <item quantity="other">Deleted %1$d saves</item>
+    </plurals>
     <!-- Brief message after a save slot is erased on this device but the server copies could not
          be removed. %1$s is its name. -->
     <string name="ui_save_channel_notice_slot_deleted_server_failed">Deleted save slot \'%1$s\' here; the server copy could not be removed</string>
