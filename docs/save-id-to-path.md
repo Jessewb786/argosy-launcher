@@ -187,7 +187,7 @@ returns the *parent*, not a match, because there is no single folder. All of
 that lives in `PrefixBundleFolderHandler`, shared with PS3; what PSP owns is
 the PARAM.SFO test that keeps installed game data out of the bundle.
 
-### Vita, Wii, Wii U (plain `FolderSaveHandler`)
+### Vita, Wii (plain `FolderSaveHandler`)
 
 `FOLDER_EXACT`, one directory named exactly for the id:
 
@@ -198,6 +198,34 @@ the PARAM.SFO test that keeps installed game data out of the bundle.
 For Wii the base is the NAND's `Wii/title/00010000`: under the standalone app's files for
 `dolphin_wii`, and `<builtin saves>/User/Wii/title/00010000` for the built-in Dolphin core
 (`argosy_wii`). Both upload through the same handler, so a game's save moves between the two.
+
+### Wii U (`WiiUFolderHandler`)
+
+`save_id` is `FOLDER_SPLIT`, the title id split as `00050000/1012bd00`. Cemu's base is
+already the category directory, `mlc01/usr/save/00050000`, so only the low half names the
+folder:
+
+```
+<base>/<low id>
+  meta/
+  user/<persistent id>/...
+  user/common/...
+```
+
+The low half is the last eight characters of the id, so the split form, the flat
+`000500001012bd00` and the low id alone all resolve to the same folder, in lowercase as
+Cemu writes it. The category is the high half of a full id. When it differs from the
+category directory the base ends in, the folder is its sibling: a demo id
+`00050002/<low id>` resolves to `mlc01/usr/save/00050002/<low id>`. A low id alone carries
+no category and stays under the base. Before this handler the split id was joined onto the base whole, which
+pointed every restore at `00050000/00050000/1012bd00` and never found the save Cemu
+actually wrote.
+
+An archive comes in one of two shapes. Argosy uploads the title folder under its own
+name (`1012bd00/meta`, `1012bd00/user`), which matches exactly. Other clients upload the
+contents of `user` (`80000001/`, `common/`): those roots name no title, so the archive
+is placed on the resolved destination, each root under the title's `user` folder. An archive
+with any other root, such as a different title's folder, is refused.
 
 ### GameCube (`GciSaveHandler`)
 
