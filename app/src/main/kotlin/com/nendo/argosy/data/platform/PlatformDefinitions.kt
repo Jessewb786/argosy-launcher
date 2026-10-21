@@ -446,7 +446,7 @@ object PlatformDefinitions {
         // =====================================================================
         PlatformDef("psx", "PlayStation", "PS1", setOf("bin", "iso", "img", "chd", "pbp", "cue", "ecm", "mdf", "mds", "toc", "zip", "7z"), 200),
         PlatformDef("ps2", "PlayStation 2", "PS2", setOf("iso", "bin", "chd", "gz", "cso", "zso", "zip", "7z"), 210),
-        PlatformDef("ps3", "PlayStation 3", "PS3", setOf("iso", "pkg", "zip", "7z"), 220),
+        PlatformDef("ps3", "PlayStation 3", "PS3", setOf("iso", "chd", "pkg", "zip", "7z"), 220),
         PlatformDef("ps4", "PlayStation 4", "PS4", setOf("pkg", "zip", "7z"), 230),
         PlatformDef("ps5", "PlayStation 5", "PS5", emptySet(), 240),
 

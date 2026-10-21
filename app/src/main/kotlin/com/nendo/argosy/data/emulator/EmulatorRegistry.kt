@@ -937,6 +937,16 @@ object EmulatorRegistry {
             downloadUrl = "https://github.com/ikhoeyZX/Vita3K-Android/releases",
             releaseSource = ReleaseSource.GitHub("ikhoeyZX/Vita3K-Android")
         ),
+        EmulatorDef(
+            id = "vita3k-plus",
+            packageName = "org.vita3kplus.emulator",
+            displayName = "Vita3K+",
+            supportedPlatforms = setOf("vita"),
+            launchAction = Intent.ACTION_MAIN,
+            launchConfig = LaunchConfig.Vita3K(),
+            downloadUrl = "https://github.com/nckstwrt/Vita3K-Plus/releases",
+            releaseSource = ReleaseSource.GitHub("nckstwrt/Vita3K-Plus")
+        ),
 
         // NOTE: Redream has known Android 13+ issues - explicit activity launches fail
         // https://github.com/TapiocaFox/Daijishou/issues/487
@@ -1065,6 +1075,20 @@ object EmulatorRegistry {
             defaultLaunchMethod = LaunchMethod.SHELL,
             downloadUrl = "https://github.com/rfandango/XenDroid/releases",
             packagePatterns = listOf("xendroid.compose*")
+        ),
+        EmulatorDef(
+            id = "xendroid-plus",
+            packageName = "xendroid.compose.fork",
+            displayName = "XenDroid+",
+            supportedPlatforms = setOf("xbox360"),
+            launchAction = "xendroid.intent.action.xendroid",
+            launchConfig = LaunchConfig.Custom(
+                activityClass = "xendroid.compose.EmulatorHostActivity",
+                intentExtras = mapOf("game_uri" to ExtraValue.FilePath)
+            ),
+            defaultLaunchMethod = LaunchMethod.SHELL,
+            downloadUrl = "https://github.com/phforner0/Xendroid-Plus/releases",
+            releaseSource = ReleaseSource.GitHub("phforner0/Xendroid-Plus")
         ),
         EmulatorDef(
             id = "ax360e",
@@ -1219,7 +1243,7 @@ object EmulatorRegistry {
         "psp" to listOf(
             BUILTIN_ID, "ppsspp", "ppsspp_gold", "ppsspp_legacy", "retroarch", "retroarch_64", "retroarch_32"
         ),
-        "vita" to listOf("vita3k-zx", "vita3k"),
+        "vita" to listOf("vita3k-zx", "vita3k", "vita3k-plus"),
         "n64" to listOf(
             BUILTIN_ID, "mupen64plus_fz", "mupen64plus_fz_pro", "retroarch", "retroarch_64", "retroarch_32"
         ),
@@ -1272,7 +1296,7 @@ object EmulatorRegistry {
         "pokemini" to listOf(BUILTIN_ID, "retroarch", "retroarch_64", "retroarch_32"),
         "gameandwatch" to listOf(BUILTIN_ID, "retroarch", "retroarch_64", "retroarch_32"),
         "xbox" to listOf("hakux"),
-        "xbox360" to listOf("xendroid", "ax360e", "ax360e_free"),
+        "xbox360" to listOf("xendroid", "ax360e", "ax360e_free", "xendroid-plus"),
         "steam" to listOf("gamehub", "gamehub_lite", "gamenative"),
         "windows" to listOf("gamenative"),
         "pc" to listOf("gamenative"),

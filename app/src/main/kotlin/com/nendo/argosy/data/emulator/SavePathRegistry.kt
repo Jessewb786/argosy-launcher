@@ -536,6 +536,14 @@ object SavePathRegistry {
             saveExtensions = listOf("*"),
             usesFolderBasedSaves = true
         ),
+        "vita3k-plus" to SavePathConfig(
+            emulatorId = "vita3k-plus",
+            defaultPaths = listOf(
+                "{extStorage}/Android/data/org.vita3kplus.emulator/files/VITA/ux0/user/00/savedata"
+            ),
+            saveExtensions = listOf("*"),
+            usesFolderBasedSaves = true
+        ),
 
         /**
          * PS3 - folder-based saves, one directory per artifact under a single hardcoded user.
@@ -577,6 +585,14 @@ object SavePathRegistry {
             emulatorId = "xendroid",
             defaultPaths = listOf(
                 "{extStorage}/Android/data/xendroid.compose/files/compose/content"
+            ),
+            saveExtensions = listOf("*"),
+            usesFolderBasedSaves = true
+        ),
+        "xendroid-plus" to SavePathConfig(
+            emulatorId = "xendroid-plus",
+            defaultPaths = listOf(
+                "{extStorage}/Android/data/xendroid.compose.fork/files/compose/content"
             ),
             saveExtensions = listOf("*"),
             usesFolderBasedSaves = true
@@ -800,11 +816,13 @@ object SavePathRegistry {
         "info.cemu.cemu" to "cemu",
         "org.vita3k.emulator" to "vita3k",
         "org.vita3k.emulator.ikhoeyZX" to "vita3k-zx",
+        "org.vita3kplus.emulator" to "vita3k-plus",
         "com.github.stenzek.duckstation" to "duckstation",
         "aenu.aps3e" to "aps3e",
         "com.armsx3" to "armsx3",
         "com.armsx3.play" to "armsx3_play",
         "xendroid.compose" to "xendroid",
+        "xendroid.compose.fork" to "xendroid-plus",
         "com.rfandango.haku_x" to "hakux"
     )
 
