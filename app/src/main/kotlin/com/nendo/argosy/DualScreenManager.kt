@@ -1777,12 +1777,11 @@ class DualScreenManager(
     }
 
     /**
-     * Whether the emulator has left the screen a launcher surface just resumed on. The emulator
-     * reports stopped only after the launcher resumes, so a first answer of "still there" is asked
-     * again after [EMULATOR_SETTLE_MS] while [launcherStillInFront] holds.
+     * Whether the emulator has left the screen a launcher surface just resumed on, answered after
+     * [EMULATOR_SETTLE_MS] while [launcherStillInFront] holds. An emulator that has not shown its
+     * first window yet reads the same as one that exited.
      */
     suspend fun emulatorLeftScreen(context: Context, launcherStillInFront: () -> Boolean): Boolean {
-        if (!isEmulatorStillOnScreen(context)) return true
         delay(EMULATOR_SETTLE_MS)
         return launcherStillInFront() && !isEmulatorStillOnScreen(context)
     }
