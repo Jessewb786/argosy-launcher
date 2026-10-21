@@ -952,7 +952,8 @@ object EmulatorRegistry {
             displayName = "Flycast",
             supportedPlatforms = setOf("dreamcast", "naomi", "atomiswave"),
             launchConfig = LaunchConfig.Custom(
-                activityClass = "com.flycast.emulator.MainActivity"
+                activityClass = "com.flycast.emulator.MainActivity",
+                defaultDataBinding = RomBindingFormat.ABSOLUTE_PATH
             ),
             defaultLaunchMethod = LaunchMethod.SHELL,
             downloadUrl = "https://play.google.com/store/apps/details?id=com.flycast.emulator"

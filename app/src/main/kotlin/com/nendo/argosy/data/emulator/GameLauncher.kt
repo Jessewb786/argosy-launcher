@@ -1540,9 +1540,10 @@ class GameLauncher @Inject constructor(
         }
 
         if (emulator.launchAction == Intent.ACTION_VIEW) {
-            val uri = fileUri ?: getFileUri(romFile)
+            val bindsPath = config.defaultDataBinding == RomBindingFormat.ABSOLUTE_PATH
+            val uri = if (bindsPath) Uri.parse(romFile.absolutePath) else fileUri ?: getFileUri(romFile)
             val mimeType = config.mimeTypeOverride ?: getMimeType(romFile)
-            val grantUris = mutableListOf(uri)
+            val grantUris = if (bindsPath) mutableListOf() else mutableListOf(uri)
             if (documentUri != null && documentUri !in grantUris) {
                 grantUris += documentUri!!
             }
@@ -1560,7 +1561,7 @@ class GameLauncher @Inject constructor(
                     config.defaultIntentFlags(emulator)
                 },
                 grantReadUriTo = grantUris,
-                clipDataUri = documentUri ?: uri
+                clipDataUri = documentUri ?: uri.takeUnless { bindsPath }
             )
         }
 
