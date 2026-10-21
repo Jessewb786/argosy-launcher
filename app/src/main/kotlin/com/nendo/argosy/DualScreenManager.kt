@@ -1777,20 +1777,34 @@ class DualScreenManager(
     }
 
     /**
-     * Whether the emulator has left the screen a launcher surface just resumed on, answered after
-     * [EMULATOR_SETTLE_MS] while [launcherStillInFront] holds. An emulator that has not shown its
-     * first window yet reads the same as one that exited.
+     * Whether the emulator has left the display a launcher surface just took focus on. Focus on the
+     * game's own display ([onGameDisplay]) past [EMULATOR_SETTLE_MS] into the session answers yes.
+     * A first answer of "still there" on another display, and any answer for a younger session,
+     * is asked again after [EMULATOR_SETTLE_MS] while [launcherStillInFront] holds.
      */
-    suspend fun emulatorLeftScreen(context: Context, launcherStillInFront: () -> Boolean): Boolean {
+    suspend fun emulatorLeftScreen(
+        context: Context,
+        onGameDisplay: Boolean,
+        launcherStillInFront: () -> Boolean
+    ): Boolean {
+        val settling = isSessionSettling()
+        if (onGameDisplay && !settling) return true
+        if (!settling && !isEmulatorStillOnScreen(context)) return true
         delay(EMULATOR_SETTLE_MS)
         return launcherStillInFront() && !isEmulatorStillOnScreen(context)
     }
 
+    private fun isSessionSettling(): Boolean {
+        val startedAt = playSessionTracker.activeSession.value?.startTime ?: return false
+        return java.time.Duration.between(startedAt, java.time.Instant.now()).toMillis() < EMULATOR_SETTLE_MS
+    }
+
     /**
      * Ends the session whose emulator [emulatorLeftScreen] reported gone. On a dual-screen device it
-     * then kills the stopped emulator along with any presentation window it left on the other
-     * display, retrying until the process is cached or a new session starts. On any other device
-     * [SessionEndCoordinator] stops the emulator once its session end completes.
+     * kills the stopped emulator at once, alongside the session end's save sync, so a presentation
+     * window it left on the other display goes away without waiting on the sync; it retries until
+     * the process is cached or a new session starts. On any other device [SessionEndCoordinator]
+     * stops the emulator once its session end completes.
      */
     fun endSessionAfterEmulatorLeft() {
         val emulatorPackage = sessionStateStore.getEmulatorPackage()
@@ -1798,12 +1812,11 @@ class DualScreenManager(
         emulatorDisplayId = null
         sessionStateStore.clearSession()
         rederiveRolesFromLayout()
-        val sessionEnd = sessionEndCoordinator.endClosedSession()
-        broadcastSessionCleared()
+        sessionEndCoordinator.endClosedSession()
+        if (_swappedIsGameActive.value) onSessionChanged(-1L) else broadcastSessionCleared()
         if (emulatorPackage == null || !_isDualScreenDevice.value) return
         if (emulatorPackage == com.nendo.argosy.data.emulator.EmulatorRegistry.BUILTIN_PACKAGE) return
         scope.launch {
-            sessionEnd.join()
             releaseStoppedEmulator(
                 emulatorPackage = emulatorPackage,
                 endedSession = endedSession,
@@ -1832,7 +1845,9 @@ class DualScreenManager(
             if (playSessionTracker.activeSession.value == null &&
                 preferencesRepository.getPersistedSession() == null
             ) return@launch
-            if (!emulatorLeftScreen(activity) { activity.hasWindowFocus() }) return@launch
+            if (!emulatorLeftScreen(activity, onGameDisplay = gameDisplay == ownDisplay) { activity.hasWindowFocus() }) {
+                return@launch
+            }
             Log.d(TAG, "Launcher focused on display $ownDisplay and the game is gone, ending session")
             endSessionAfterEmulatorLeft()
         }

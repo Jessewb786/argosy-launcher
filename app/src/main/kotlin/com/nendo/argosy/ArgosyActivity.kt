@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.nendo.argosy.ui.dualscreen.onDisplay
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -400,8 +401,9 @@ class ArgosyActivity : ComponentActivity() {
                                 connectedControllerTracker.activeLayout
                             ) {
                                 com.nendo.argosy.ui.components.ProvideStatusBarItems(preferences) {
+                                    val ownDisplay = androidx.compose.ui.platform.LocalView.current.display?.displayId
                                     com.nendo.argosy.ui.dualscreen.PresentationSlotContent(
-                                        slot,
+                                        slot.onDisplay(ownDisplay, gameDisplay.value),
                                         showsNotifications = true
                                     )
                                 }
