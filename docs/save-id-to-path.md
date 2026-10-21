@@ -197,7 +197,9 @@ the PARAM.SFO test that keeps installed game data out of the bundle.
 
 For Wii the base is the NAND's `Wii/title/00010000`: under the standalone app's files for
 `dolphin_wii`, and `<builtin saves>/User/Wii/title/00010000` for the built-in Dolphin core
-(`argosy_wii`). Both upload through the same handler, so a game's save moves between the two.
+(`argosy_wii`). Wherever Sigil routes them (`dolphin_standalone` and the libretro `dolphin`
+layout), both go through Sigil instead, and this handler only reads archives uploaded before
+Sigil units.
 
 ### Wii U (`WiiUFolderHandler`)
 

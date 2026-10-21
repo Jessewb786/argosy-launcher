@@ -827,6 +827,17 @@ class SigilSaveHandler @Inject constructor(
         return PreparedSave(file, isTemporary = true, originalPaths = listOf(localPath), sigilState = collected.pending)
     }
 
+    /**
+     * The game's own save files under its route, never a container other games share and never
+     * the root itself. Empty when the game owns nothing there or Sigil cannot list the root.
+     */
+    override suspend fun sourcePathsFor(localPath: String, context: SaveContext): List<String> =
+        withContext(Dispatchers.IO) {
+            val route = route(context.gameId, context.emulatorId) ?: return@withContext emptyList()
+            val location = locate(route, context.gameId) ?: return@withContext emptyList()
+            location.own.map { File(route.root, it).path }
+        }
+
     override suspend fun extractDownload(tempFile: File, context: SaveContext): ExtractResult =
         when (val restored = restore(context.gameId, tempFile, context.emulatorId)) {
             is SigilRestore.Restored -> ExtractResult(true, route(context.gameId, context.emulatorId)?.root)
