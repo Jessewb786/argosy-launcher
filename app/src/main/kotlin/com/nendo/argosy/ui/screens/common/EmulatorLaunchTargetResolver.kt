@@ -3,6 +3,7 @@ package com.nendo.argosy.ui.screens.common
 import android.content.Context
 import android.os.Bundle
 import com.nendo.argosy.DualScreenManagerHolder
+import com.nendo.argosy.data.emulator.EmulatorRegistry
 import com.nendo.argosy.data.preferences.EmulatorDisplayTarget
 import com.nendo.argosy.data.preferences.SessionStateStore
 import com.nendo.argosy.data.preferences.UserPreferencesRepository
@@ -30,9 +31,13 @@ class EmulatorLaunchTargetResolver @Inject constructor(
 ) {
     private val sessionStateStore by lazy { SessionStateStore(context) }
 
-    suspend fun launchOptionsFor(gameId: Long, overrideDisplayId: Int? = null): Bundle? {
+    suspend fun launchOptionsFor(
+        gameId: Long,
+        overrideDisplayId: Int? = null,
+        emulatorPackage: String? = null
+    ): Bundle? {
         val rolesSwapped = sessionStateStore.isRolesSwapped()
-        val displayId = overrideDisplayId ?: targetDisplayId(
+        val displayId = overrideDisplayId ?: bothScreensDisplayId(emulatorPackage) ?: targetDisplayId(
             stored = EmulatorDisplayTarget.fromString(
                 emulatorConfigRepository.getEffectiveDisplayTarget(gameId)
             ),
@@ -62,6 +67,12 @@ class EmulatorLaunchTargetResolver @Inject constructor(
         gamesDefault: EmulatorDisplayTarget,
         rolesSwapped: Boolean
     ): Int? = displayAffinityHelper.getDisplayTargetId(placementTarget(stored, gamesDefault), rolesSwapped)
+
+    private fun bothScreensDisplayId(emulatorPackage: String?): Int? {
+        val emulator = emulatorPackage?.let(EmulatorRegistry::getByPackage) ?: return null
+        if (!emulator.drawsBothScreens || !displayAffinityHelper.hasSecondaryDisplay) return null
+        return displayAffinityHelper.largestDisplayId()
+    }
 
     private fun placedOn(displayId: Int?, rolesSwapped: Boolean): Int =
         displayId ?: displayAffinityHelper.getEmulatorDisplayId(rolesSwapped)

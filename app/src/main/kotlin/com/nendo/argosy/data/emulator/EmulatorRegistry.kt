@@ -26,7 +26,12 @@ data class EmulatorDef(
     val defaultLaunchMethod: LaunchMethod = LaunchMethod.INTENT,
     val downloadUrl: String? = null,
     val releaseSource: ReleaseSource? = null,
-    val packagePatterns: List<String> = emptyList()
+    val packagePatterns: List<String> = emptyList(),
+    /**
+     * The emulator draws its own second screen. Its game opens on the largest display, and the
+     * other display is left to the emulator.
+     */
+    val drawsBothScreens: Boolean = false
 )
 
 data class EmulatorFamily(
@@ -694,7 +699,8 @@ object EmulatorRegistry {
                 defaultDataBinding = RomBindingFormat.FILE_PROVIDER
             ),
             downloadUrl = "https://github.com/SapphireRhodonite/melonDS-android/releases",
-            releaseSource = ReleaseSource.GitHub("SapphireRhodonite/melonDS-android")
+            releaseSource = ReleaseSource.GitHub("SapphireRhodonite/melonDS-android"),
+            drawsBothScreens = true
         ),
         EmulatorDef(
             id = "seedlessds",
@@ -707,6 +713,20 @@ object EmulatorRegistry {
             ),
             downloadUrl = "https://github.com/SapphireRhodonite/SeedlessDS/releases",
             releaseSource = ReleaseSource.GitHub("SapphireRhodonite/SeedlessDS")
+        ),
+        EmulatorDef(
+            id = "pokedaisy",
+            packageName = "com.pokedaisy.app",
+            displayName = "PokeDaisy",
+            supportedPlatforms = setOf("gb", "gbc", "gba", "nds"),
+            launchAction = Intent.ACTION_MAIN,
+            launchConfig = LaunchConfig.Custom(
+                activityClass = "com.pokedaisy.app.LaunchActivity",
+                intentExtras = mapOf("rom" to ExtraValue.FilePath)
+            ),
+            downloadUrl = "https://github.com/lidor30/pokedaisy/releases",
+            releaseSource = ReleaseSource.GitHub("lidor30/pokedaisy"),
+            drawsBothScreens = true
         ),
         EmulatorDef(
             id = "pizza_boy_gba",
@@ -1196,7 +1216,7 @@ object EmulatorRegistry {
         "n64" to listOf(
             BUILTIN_ID, "mupen64plus_fz", "mupen64plus_fz_pro", "retroarch", "retroarch_64", "retroarch_32"
         ),
-        "nds" to listOf(BUILTIN_ID, "drastic", "seedlessds", "melonds", "melondualds", "retroarch", "retroarch_64", "retroarch_32"),
+        "nds" to listOf(BUILTIN_ID, "drastic", "seedlessds", "melonds", "melondualds", "retroarch", "retroarch_64", "retroarch_32", "pokedaisy"),
         "3ds" to listOf(
             "azahar", "citra_mmj", "borked3ds", "citra", BUILTIN_ID,
             "retroarch", "retroarch_64", "retroarch_32"
@@ -1205,9 +1225,9 @@ object EmulatorRegistry {
         "wii" to listOf("dolphin", "dolphin_handheld", "dolphin_cs", "retroarch", "retroarch_64", "retroarch_32"),
         "wiiu" to listOf("cemu", "cemu_dualscreen"),
         "switch" to listOf("eden", "eden_duo", "lemon", "citron", "sudachi", "ryujinx", "yuzu", "strato", "skyline"),
-        "gba" to listOf(BUILTIN_ID, "pizza_boy_gba_pro", "pizza_boy_gba", "linkboy", "retroarch", "retroarch_64", "retroarch_32"),
-        "gb" to listOf(BUILTIN_ID, "pizza_boy_gb_pro", "pizza_boy_gb", "linkboy", "retroarch", "retroarch_64", "retroarch_32"),
-        "gbc" to listOf(BUILTIN_ID, "pizza_boy_gb_pro", "pizza_boy_gb", "linkboy", "retroarch", "retroarch_64", "retroarch_32"),
+        "gba" to listOf(BUILTIN_ID, "pizza_boy_gba_pro", "pizza_boy_gba", "linkboy", "retroarch", "retroarch_64", "retroarch_32", "pokedaisy"),
+        "gb" to listOf(BUILTIN_ID, "pizza_boy_gb_pro", "pizza_boy_gb", "linkboy", "retroarch", "retroarch_64", "retroarch_32", "pokedaisy"),
+        "gbc" to listOf(BUILTIN_ID, "pizza_boy_gb_pro", "pizza_boy_gb", "linkboy", "retroarch", "retroarch_64", "retroarch_32", "pokedaisy"),
         "nes" to listOf(BUILTIN_ID, "retroarch", "retroarch_64", "retroarch_32"),
         "snes" to listOf(BUILTIN_ID, "retroarch", "retroarch_64", "retroarch_32"),
         "genesis" to listOf(BUILTIN_ID, "md_emu", "retroarch", "retroarch_64", "retroarch_32"),

@@ -1,5 +1,6 @@
 package com.nendo.argosy.ui.screens.common
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -22,7 +23,9 @@ class GameStartRouterTest {
     private val appContext = mockk<Context>(relaxed = true)
     private val resolver = mockk<EmulatorLaunchTargetResolver>()
     private val options = mockk<Bundle>()
-    private val intent = mockk<Intent>(relaxed = true)
+    private val intent = mockk<Intent>(relaxed = true) {
+        every { component } returns mockk<ComponentName> { every { packageName } returns EMULATOR }
+    }
 
     @After
     fun tearDown() {
@@ -35,7 +38,7 @@ class GameStartRouterTest {
             every { startGame(any()) } returns Result.success(Unit)
         }
         DualScreenManagerHolder.instance = manager
-        coEvery { resolver.launchOptionsFor(7L, 2) } returns options
+        coEvery { resolver.launchOptionsFor(7L, 2, EMULATOR) } returns options
         var failure: Throwable? = null
 
         GameStartRouter(appContext, resolver, this)
@@ -43,7 +46,7 @@ class GameStartRouterTest {
         advanceUntilIdle()
 
         coVerifyOrder {
-            resolver.launchOptionsFor(7L, 2)
+            resolver.launchOptionsFor(7L, 2, EMULATOR)
             manager.startGame(GameLaunchRequest(intent, options))
         }
         verify(exactly = 0) { appContext.startActivity(any(), any()) }
@@ -52,7 +55,7 @@ class GameStartRouterTest {
 
     @Test
     fun `without a manager the application starts the game as a new task`() = runTest {
-        coEvery { resolver.launchOptionsFor(7L, null) } returns options
+        coEvery { resolver.launchOptionsFor(7L, null, EMULATOR) } returns options
 
         GameStartRouter(appContext, resolver, this).start(gameId = 7L, intent = intent)
         advanceUntilIdle()
@@ -67,7 +70,7 @@ class GameStartRouterTest {
         DualScreenManagerHolder.instance = mockk<DualScreenManager> {
             every { startGame(any()) } returns Result.failure(refusal)
         }
-        coEvery { resolver.launchOptionsFor(7L, null) } returns options
+        coEvery { resolver.launchOptionsFor(7L, null, EMULATOR) } returns options
         var failure: Throwable? = null
 
         GameStartRouter(appContext, resolver, this)
@@ -82,7 +85,7 @@ class GameStartRouterTest {
         val manager = mockk<DualScreenManager>(relaxed = true)
         DualScreenManagerHolder.instance = manager
         val broken = IllegalStateException("db closed")
-        coEvery { resolver.launchOptionsFor(7L, null) } throws broken
+        coEvery { resolver.launchOptionsFor(7L, null, EMULATOR) } throws broken
         var failure: Throwable? = null
 
         GameStartRouter(appContext, resolver, this)
@@ -91,5 +94,9 @@ class GameStartRouterTest {
 
         assertSame(broken, failure)
         verify(exactly = 0) { manager.startGame(any()) }
+    }
+
+    private companion object {
+        const val EMULATOR = "com.pokedaisy.app"
     }
 }

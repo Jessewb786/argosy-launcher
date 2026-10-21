@@ -377,6 +377,21 @@ object SavePathRegistry {
             saveExtensions = listOf("dsv", "sav"),
             savesBesideRom = true
         ),
+        "pokedaisy" to SavePathConfig(
+            emulatorId = "pokedaisy",
+            defaultPaths = listOf(
+                "{extStorage}/Android/data/com.pokedaisy.app/files/saves"
+            ),
+            saveExtensions = listOf("sav", "srm")
+        ),
+        "pokedaisy_nds" to SavePathConfig(
+            emulatorId = "pokedaisy",
+            defaultPaths = listOf(
+                "{extStorage}/Android/data/com.pokedaisy.app/files/saves"
+            ),
+            saveExtensions = listOf("sav", "srm"),
+            savesBesideRom = true
+        ),
         "melonds" to SavePathConfig(
             emulatorId = "melonds",
             defaultPaths = listOf(
@@ -777,6 +792,7 @@ object SavePathRegistry {
         "me.magnum.melondualds" to "melondualds",
         "com.dsemu.drastic" to "drastic",
         "com.seedlessds.app" to "seedlessds",
+        "com.pokedaisy.app" to "pokedaisy",
         "it.dbtecno.pizzaboygba" to "pizza_boy_gba",
         "it.dbtecno.pizzaboy" to "pizza_boy_gb",
         "it.dbtecno.pizzaboygbapro" to "pizza_boy_gba_pro",

@@ -40,7 +40,11 @@ class GameStartRouter internal constructor(
     ) {
         scope.launch {
             val result = try {
-                val options = launchTargetResolver.launchOptionsFor(gameId, overrideDisplayId)
+                val options = launchTargetResolver.launchOptionsFor(
+                    gameId,
+                    overrideDisplayId,
+                    intent.component?.packageName ?: intent.`package`
+                )
                 startResolved(GameLaunchRequest(intent, options))
             } catch (e: CancellationException) {
                 throw e
