@@ -1049,7 +1049,8 @@ class SettingsViewModel @Inject constructor(
     fun forceSyncSteamLibrary() = steamDelegate.forceSyncLibraryWithOverwrite(context, viewModelScope)
     fun disconnectSteam() = steamDelegate.disconnectSteam(context, viewModelScope)
     fun resetSteamLibrary() = steamDelegate.resetLibrary(viewModelScope)
-    fun showAddSteamGameDialog() = steamDelegate.showAddSteamGameDialog()
+    fun showAddSteamGameDialog(launcherPackage: String? = null) =
+        steamDelegate.showAddSteamGameDialog(launcherPackage)
     fun openGameNativeSyncDirPicker(folder: com.nendo.argosy.data.launcher.GameNativeSyncFolder) =
         steamDelegate.openStoreSyncDirPicker(viewModelScope, folder)
     fun setGameNativeSyncDir(folder: com.nendo.argosy.data.launcher.GameNativeSyncFolder, path: String) =
@@ -1077,8 +1078,6 @@ class SettingsViewModel @Inject constructor(
     }
     fun confirmGameNativeFoldersRow() = steamDelegate.confirmGameNativeFoldersRow(viewModelScope)
     val openGameNativeSyncDirPickerEvent get() = steamDelegate.openStoreSyncDirPicker
-    @Suppress("UNUSED_PARAMETER")
-    fun showAddSteamGameDialog(launcherPackage: String?) = steamDelegate.showAddSteamGameDialog()
     fun dismissAddSteamGameDialog() = steamDelegate.dismissAddSteamGameDialog()
     fun setAddGameAppId(appId: String) = steamDelegate.setAddGameAppId(appId)
     fun confirmAddSteamGame() = steamDelegate.confirmAddSteamGame(context, viewModelScope)

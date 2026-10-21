@@ -1500,6 +1500,7 @@ data class SteamSettingsState(
     // Manual add
     val showAddGameDialog: Boolean = false,
     val addGameAppId: String = "",
+    val addGameLauncherPackage: String? = null,
     val addGameError: String? = null,
     val isAddingGame: Boolean = false,
 
