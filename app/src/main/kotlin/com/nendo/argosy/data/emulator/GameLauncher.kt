@@ -1937,8 +1937,10 @@ class GameLauncher @Inject constructor(
         if (command.mimeType != null) intent.setDataAndType(uri, command.mimeType) else intent.data = uri
         return context.packageManager
             .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-            .firstOrNull { it.activityInfo.packageName == command.packageName }
-            ?.activityInfo?.name
+            .filter { it.activityInfo.packageName == command.packageName }
+            .map { it.activityInfo.name }
+            .distinct()
+            .singleOrNull()
     }
 
     private fun getMimeType(file: File): String {

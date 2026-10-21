@@ -128,8 +128,9 @@ fun EffectiveLaunchCommand.toIntent(context: Context): Intent {
 /**
  * This command pinned to the activity [resolve] finds for a dot-free probe path ending in
  * [romExtension], when the package-only intent for the real path resolves to none. [resolve] takes
- * null for the real path or the probe path. Unchanged when an activity is already named, the
- * command is not a VIEW of a data URI, or the probe also misses.
+ * null for the real path or the probe path, and answers only when exactly one activity matches.
+ * Unchanged when an activity is already named, the command is not a VIEW of a data URI, or the
+ * probe also misses.
  */
 fun EffectiveLaunchCommand.pinnedPastPathPattern(
     romExtension: String,
