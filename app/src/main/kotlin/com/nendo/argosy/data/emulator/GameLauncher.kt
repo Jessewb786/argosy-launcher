@@ -1915,13 +1915,6 @@ class GameLauncher @Inject constructor(
                 Logger.warn(TAG, "Cannot build document URI for non-documentable path: ${file.absolutePath}")
                 return null
             }
-        // Build a plain document URI (content://com.android.externalstorage.documents/document/...)
-        // rather than a tree-delegated URI. The tree form embeds a caller-scoped tree grant, which
-        // only resolves when the *receiver* holds a persistent SAF grant on that tree. Argosy uses
-        // MANAGE_EXTERNAL_STORAGE and never holds tree grants for ROM folders, so the tree form
-        // was effectively relying on the receiver app having its own grant -- fragile across
-        // emulator updates. The plain document form is what a caller-delegated
-        // FLAG_GRANT_READ_URI_PERMISSION can actually hand off.
         return DocumentsContract.buildDocumentUri(
             "com.android.externalstorage.documents",
             "$volumeId:$relativePath"
