@@ -187,7 +187,7 @@ returns the *parent*, not a match, because there is no single folder. All of
 that lives in `PrefixBundleFolderHandler`, shared with PS3; what PSP owns is
 the PARAM.SFO test that keeps installed game data out of the bundle.
 
-### Vita, Wii (plain `FolderSaveHandler`)
+### Vita (plain `FolderSaveHandler`)
 
 `FOLDER_EXACT`, one directory named exactly for the id:
 
@@ -195,13 +195,22 @@ the PARAM.SFO test that keeps installed game data out of the bundle.
 <base>/<save_id>
 ```
 
-For Wii the base is the NAND's `Wii/title/00010000`: under the standalone app's files for
+### Wii (`CategorySplitFolderHandler`)
+
+`save_id` is `FOLDER_SPLIT`, the ticket's category and code, `00010000/524d4745`. The base is
+the NAND's category directory `Wii/title/00010000`: under the standalone app's files for
 `dolphin_wii`, and `<builtin saves>/User/Wii/title/00010000` for the built-in Dolphin core
-(`argosy_wii`). Wherever Sigil routes them (`dolphin_standalone` and the libretro `dolphin`
-layout), both go through Sigil instead, and this handler only reads archives uploaded before
-Sigil units.
+(`argosy_wii`). The folder is the low id under it, `<base>/524d4745`, with the same id rules
+as Wii U below: split, flat and bare low ids address one folder, and another `0001xxxx`
+category resolves beside the base. Uploads and restores go through Sigil
+(`dolphin_standalone` and the libretro `dolphin` layout); pre-launch discovery and active-cache
+placement still find the folder through this handler. Joining the split id whole pointed both
+at `00010000/00010000/524d4745`.
 
 ### Wii U (`WiiUFolderHandler`)
+
+`WiiUFolderHandler` is the same `CategorySplitFolderHandler` over `0005xxxx` categories, plus
+the user-folder archive shape below.
 
 `save_id` is `FOLDER_SPLIT`, the title id split as `00050000/1012bd00`. Cemu's base is
 already the category directory, `mlc01/usr/save/00050000`, so only the low half names the

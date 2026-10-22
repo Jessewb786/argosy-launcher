@@ -43,7 +43,7 @@ class PlatformSaveHandlerRegistry @Inject constructor(
     private val folderHandlers: Map<String, FolderSaveHandler> = listOf(
         FolderSaveHandler(context, fal, saveArchiver, platformSlug = "vita"),
         PspFolderHandler(context, fal, saveArchiver),
-        FolderSaveHandler(context, fal, saveArchiver, platformSlug = "wii"),
+        CategorySplitFolderHandler(context, fal, saveArchiver, platformSlug = "wii", categoryDir = Regex("0001[0-9a-fA-F]{4}")),
         WiiUFolderHandler(context, fal, saveArchiver),
         N3dsFolderHandler(context, fal, saveArchiver),
         Ps2FolderHandler(context, fal, saveArchiver),
