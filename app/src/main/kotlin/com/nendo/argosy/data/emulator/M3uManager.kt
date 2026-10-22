@@ -29,7 +29,11 @@ class M3uManager @Inject constructor(
 ) {
     companion object {
         private val SUPPORTED_PLATFORMS = setOf("psx", "saturn", "dreamcast", "dc", "amiga")
-        private val DISC_IMAGE_EXTENSIONS = setOf("cue", "gdi", "chd", "iso", "bin", "img", "mdf", "cdi", "adf", "adz", "dms", "fdi", "ipf")
+        private val DISC_IMAGE_EXTENSIONS = setOf(
+            "cue", "gdi", "ccd", "mds", "toc", "chd", "iso", "bin", "img", "mdf", "cdi", "nrg", "ecm", "pbp",
+            "cso", "zso", "gz", "gcm", "gcz", "rvz", "ciso", "wia", "wbfs",
+            "adf", "adz", "dms", "fdi", "ipf"
+        )
 
         fun supportsM3u(platformSlug: String): Boolean = platformSlug in SUPPORTED_PLATFORMS
 
