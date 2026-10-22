@@ -5,6 +5,7 @@ import com.nendo.argosy.data.local.dao.GameDao
 import com.nendo.argosy.data.local.dao.GameDiscDao
 import com.nendo.argosy.data.local.entity.GameDiscEntity
 import com.nendo.argosy.data.local.entity.GameEntity
+import com.nendo.argosy.util.DiscSheets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -100,24 +101,10 @@ class M3uManager @Inject constructor(
             if (!cueFile.exists() || cueFile.extension.lowercase() != "cue") return false
             val parentDir = cueFile.parentFile ?: return false
 
-            val referencedFiles = parseCueFiles(cueFile)
+            val referencedFiles = DiscSheets.cueTrackNames(cueFile)
             if (referencedFiles.isEmpty()) return false
 
             return referencedFiles.all { fileName -> File(parentDir, fileName).exists() }
-        }
-
-        private fun parseCueFiles(cueFile: File): List<String> {
-            return try {
-                cueFile.readLines()
-                    .filter { it.trim().uppercase().startsWith("FILE ") }
-                    .mapNotNull { line ->
-                        Regex("FILE\\s+\"([^\"]+)\"", RegexOption.IGNORE_CASE)
-                            .find(line)?.groupValues?.getOrNull(1)
-                    }
-            } catch (e: Exception) {
-                Log.w(TAG, "Failed to parse cue: ${e.message}")
-                emptyList()
-            }
         }
     }
 

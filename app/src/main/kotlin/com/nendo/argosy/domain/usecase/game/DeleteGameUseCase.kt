@@ -11,6 +11,7 @@ import com.nendo.argosy.data.local.entity.OrphanedFileEntity
 import com.nendo.argosy.data.local.entity.SyncType
 import com.nendo.argosy.data.model.GameSource
 import com.nendo.argosy.data.music.MusicDirectoryManager
+import com.nendo.argosy.data.platform.PlatformDefinitions
 import com.nendo.argosy.data.repository.GameRepository
 import com.nendo.argosy.data.repository.SaveCacheManager
 import com.nendo.argosy.data.repository.SteamRepository
@@ -18,6 +19,7 @@ import com.nendo.argosy.data.repository.SteamResult
 import com.nendo.argosy.data.storage.StorageAttributionRepository
 import com.nendo.argosy.data.storage.StorageCategory
 import com.nendo.argosy.data.sync.SyncPayloadCodec
+import com.nendo.argosy.util.DiscSheets
 import com.nendo.argosy.util.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -88,6 +90,7 @@ class DeleteGameUseCase @Inject constructor(
                     if (parent != null && !isPlatformFolder && isInsidePlatformFolder) {
                         parent.deleteRecursively()
                     } else {
+                        deleteDiscCompanions(file, game.platformSlug)
                         file.delete()
                     }
                 }
@@ -122,6 +125,17 @@ class DeleteGameUseCase @Inject constructor(
             if (!parentCanonical.startsWith(platformCanonical)) continue
             if (file.isFile && !file.delete()) {
                 Logger.warn(TAG, "Failed to delete shared add-on ${file.name}")
+            }
+        }
+    }
+
+    private suspend fun deleteDiscCompanions(launchFile: File, platformSlug: String) {
+        if (!DiscSheets.isLoader(launchFile.name)) return
+        val romExtensions = PlatformDefinitions.getBySlug(platformSlug)?.extensions ?: return
+        for (companion in DiscSheets.companions(launchFile, romExtensions)) {
+            if (!companion.delete()) {
+                Logger.warn(TAG, "Failed to delete disc track ${companion.name}, adding to orphan index")
+                orphanedFileDao.insert(OrphanedFileEntity(path = companion.absolutePath))
             }
         }
     }

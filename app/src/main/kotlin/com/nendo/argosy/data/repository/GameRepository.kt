@@ -9,6 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeoutOrNull
 import com.nendo.argosy.data.download.ZipExtractor
 import com.nendo.argosy.data.emulator.M3uManager
+import com.nendo.argosy.util.DiscSheets
 import com.nendo.argosy.util.FileNames
 import com.nendo.argosy.data.local.dao.GameArtDao
 import com.nendo.argosy.data.local.dao.GameDao
@@ -185,9 +186,9 @@ class GameRepository @Inject constructor(
             .filter { it.isNotEmpty() }
             .toSet()
 
-        val topLevelMatch = rootFiles
-            .filter { it.extension.lowercase() in validExtensions }
-            .maxByOrNull { it.length() }
+        val topLevelRoms = rootFiles.filter { it.extension.lowercase() in validExtensions }
+        val topLevelMatch = topLevelRoms.filter { DiscSheets.isLoader(it.name) }.minByOrNull { it.name }
+            ?: topLevelRoms.maxByOrNull { it.length() }
         if (topLevelMatch != null) return topLevelMatch
 
         if (platformSlug == "wiiu") {
