@@ -157,9 +157,11 @@ stored `localContentHash`, and restore verification.
   this from Sigil's layout, `unkeyed` shared files against present members). While disconnected,
   the route follows the last snapshot capability the stored server reported
   (`RomMConnectionManager.snapshotsEnabled`); a server never reached keeps the legacy handler and
-  format under the same shared-container exception. A built-in core with a Sigil layout whose
-  config keeps folders or GCI files (PSP, 3DS, Wii, GameCube) downloads and restores through
-  Sigil wherever it uploads through Sigil (`PlatformSaveHandlerRegistry.isSigilRoutedFor`).
+  format under the same shared-container exception. A built-in or RetroArch core with a Sigil
+  layout whose config keeps folders or GCI files (PSP, 3DS, Wii, GameCube) downloads and restores
+  through Sigil wherever it uploads through Sigil (`PlatformSaveHandlerRegistry.isSigilRoutedFor`).
+  RetroArch's PPSSPP core keeps its memory stick in the save folder RetroArch hands it; its Citra
+  core, and Azahar's core, keep their user folder (`Citra/`, `Azahar/`) inside that save folder.
   Without a Sigil route, the libretro and built-in GameCube cores build the unit in
   `GciSaveHandler`.
 - Each `save_cache` row records the format of its bytes in `saveFormat` at write time: `neutral`

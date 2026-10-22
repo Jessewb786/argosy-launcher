@@ -238,7 +238,7 @@ object SavePathRegistry {
             emulatorId = "citra_mmj",
             defaultPaths = listOf(
                 "{extStorage}/citra-emu/sdmc/Nintendo 3DS",
-                "{extStorage}/Android/data/org.citra.emu/files/sdmc/Nintendo 3DS"
+                "{extStorage}/Android/data/org.citra.emu/files/citra-emu/sdmc/Nintendo 3DS"
             ),
             saveExtensions = listOf("*"),
             usesFolderBasedSaves = true

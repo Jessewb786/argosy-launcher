@@ -138,7 +138,10 @@ class SigilSaveHandler @Inject constructor(
                 "yuzu", "eden", "citron", "sudachi", "lemon", "skyline", "strato", "ryujinx", "kenjinx"
             ).associateWith { it } + ("eden_duo" to "eden"),
             "wiiu" to mapOf("cemu" to "cemu", "cemu_dualscreen" to "cemu"),
-            "3ds" to mapOf("citra" to "citra", "azahar" to "azahar", "lime3ds" to "lime3ds")
+            "3ds" to mapOf(
+                "citra" to "citra", "citra_mmj" to "citra", "borked3ds" to "citra",
+                "azahar" to "azahar", "lime3ds" to "lime3ds"
+            )
         )
 
         private val ROOT_ANCHORS: Map<String, List<String>> = mapOf(
@@ -173,11 +176,12 @@ class SigilSaveHandler @Inject constructor(
             "gb" to GB_CORES,
             "gbc" to GB_CORES,
             "n64" to setOf("mupen64plus_next", "parallel_n64"),
-            "wii" to setOf("dolphin")
+            "wii" to setOf("dolphin"),
+            "psp" to setOf("ppsspp"),
+            "3ds" to setOf("citra")
         )
 
         private val BUILTIN_LIBRETRO_LAYOUTS: Map<String, Set<String>> = mapOf(
-            "psp" to setOf("ppsspp"),
             "psx" to setOf("mednafen_psx_hw", "pcsx_rearmed"),
             "3ds" to setOf("azahar"),
             "gc" to setOf("dolphin"),
@@ -186,8 +190,7 @@ class SigilSaveHandler @Inject constructor(
 
         const val GENERIC_LIBRETRO_LAYOUT = "libretro"
 
-        private const val AZAHAR_LAYOUT = "azahar"
-        private const val AZAHAR_USER_DIR = "Azahar"
+        private val LIBRETRO_USER_DIRS: Map<String, String> = mapOf("azahar" to "Azahar", "citra" to "Citra")
 
         private val LIBRETRO_LAYOUT_ALIASES: Map<String, String> = mapOf(
             "mupen64plus_next_gles3" to "mupen64plus_next",
@@ -488,7 +491,7 @@ class SigilSaveHandler @Inject constructor(
         } else {
             saveUnitResolver.optionsFor(core, game.id.takeIf { game.perGameSettingsEnabled })
         }
-        val root = if (retroArch) retroArchRoot(game, emulatorId, core) else builtinRoot(game, layout, options)
+        val root = if (retroArch) retroArchRoot(game, emulatorId, core, layout) else builtinRoot(game, layout, options)
         if (root == null) {
             Logger.warn(TAG, "[SaveSync] SIGIL | no root for layout=$layout emulator=$emulatorId")
             return null
@@ -508,18 +511,20 @@ class SigilSaveHandler @Inject constructor(
             options[FLYCAST_PER_CONTENT_VMUS]?.let { it !in FLYCAST_PER_GAME_VALUES } == true
         return when {
             sharedVmus -> File(AppPaths.libretroSystemDir(context.filesDir), FLYCAST_SHARED_DIR).absolutePath
-            layout == AZAHAR_LAYOUT -> File(builtinSaveBase.forGame(game), AZAHAR_USER_DIR).absolutePath
             layout == PCSX2_LAYOUT -> pcsx2MemcardRoot(AppPaths.libretroSystemDir(context.filesDir))
-            else -> builtinSaveBase.forGame(game)
+            else -> withUserDir(builtinSaveBase.forGame(game), layout)
         }
     }
 
-    private suspend fun retroArchRoot(game: GameEntity, emulatorId: String, core: String): String? {
+    private suspend fun retroArchRoot(game: GameEntity, emulatorId: String, core: String, layout: String): String? {
         val dirs = retroArchPathResolver.resolveSaveDirectories(
             RetroArchPathResolver.Request(emulatorId = emulatorId, coreName = core, romPath = game.localPath)
-        )
+        ).map { withUserDir(it, layout) }
         return dirs.firstOrNull { fal.isDirectory(it) } ?: dirs.firstOrNull()
     }
+
+    private fun withUserDir(saveDir: String, layout: String): String =
+        LIBRETRO_USER_DIRS[layout]?.let { File(saveDir, it).absolutePath } ?: saveDir
 
     private suspend fun optionsFor(layout: String, gameId: Long, configEmulatorId: String): Map<String, String> {
         if (layout != PCSX2_STANDALONE_LAYOUT) return emptyMap()
