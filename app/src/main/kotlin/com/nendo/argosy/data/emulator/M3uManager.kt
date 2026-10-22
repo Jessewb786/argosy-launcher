@@ -5,7 +5,6 @@ import com.nendo.argosy.data.local.dao.GameDao
 import com.nendo.argosy.data.local.dao.GameDiscDao
 import com.nendo.argosy.data.local.entity.GameDiscEntity
 import com.nendo.argosy.data.local.entity.GameEntity
-import com.nendo.argosy.util.DiscSheets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -99,16 +98,6 @@ class M3uManager @Inject constructor(
                 Log.w(TAG, "Failed to parse m3u: ${e.message}")
                 emptyList()
             }
-        }
-
-        fun isCueComplete(cueFile: File): Boolean {
-            if (!cueFile.exists() || cueFile.extension.lowercase() != "cue") return false
-            val parentDir = cueFile.parentFile ?: return false
-
-            val referencedFiles = DiscSheets.cueTrackNames(cueFile)
-            if (referencedFiles.isEmpty()) return false
-
-            return referencedFiles.all { fileName -> File(parentDir, fileName).exists() }
         }
     }
 

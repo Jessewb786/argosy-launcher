@@ -11,26 +11,34 @@ object DiscSheets {
     val LOADER_EXTENSIONS = setOf("cue", "gdi", "ccd", "mds", "toc")
 
     private val CUE_FILE_LINE = Regex("^\\s*FILE\\s+\"([^\"]+)\"", RegexOption.IGNORE_CASE)
+    private val GDI_TRACK_LINE = Regex("^\\s*\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\"([^\"]+)\"|(\\S+))")
 
     fun isLoader(name: String): Boolean =
         name.substringAfterLast('.', "").lowercase() in LOADER_EXTENSIONS
 
-    fun cueTrackNames(cueFile: File): List<String> =
-        runCatching { cueFile.readLines() }.getOrDefault(emptyList())
-            .mapNotNull { CUE_FILE_LINE.find(it)?.groupValues?.getOrNull(1) }
+    /**
+     * The track file names a `.cue` or `.gdi` lists, in sheet order. Empty for any other sheet or
+     * an unreadable file.
+     */
+    fun trackNames(sheet: File): List<String> {
+        val lines = runCatching { sheet.readLines() }.getOrDefault(emptyList())
+        return when (sheet.extension.lowercase()) {
+            "cue" -> lines.mapNotNull { CUE_FILE_LINE.find(it)?.groupValues?.getOrNull(1) }
+            "gdi" -> lines.drop(1).mapNotNull { line ->
+                GDI_TRACK_LINE.find(line)?.groupValues?.let { it[2].ifEmpty { it[3] } }
+            }
+            else -> emptyList()
+        }
+    }
 
     /**
-     * Files in [loader]'s own directory that belong to it: what a `.cue` lists, and siblings
-     * sharing its stem whose extension is in [romExtensions]. Never the loader itself, and never a
-     * file outside that directory.
+     * Files in [loader]'s own directory that belong to it: the tracks a `.cue` or `.gdi` lists,
+     * and siblings sharing its stem whose extension is in [romExtensions]. Never the loader
+     * itself, and never a file outside that directory.
      */
     fun companions(loader: File, romExtensions: Set<String>): List<File> {
         val dir = loader.parentFile ?: return emptyList()
-        val listed = if (loader.extension.equals("cue", ignoreCase = true)) {
-            cueTrackNames(loader).map { File(dir, it) }
-        } else {
-            emptyList()
-        }
+        val listed = trackNames(loader).map { File(dir, it) }
         val sameStem = dir.listFiles().orEmpty().filter {
             it.isFile && it.nameWithoutExtension.equals(loader.nameWithoutExtension, ignoreCase = true) &&
                 it.extension.lowercase() in romExtensions

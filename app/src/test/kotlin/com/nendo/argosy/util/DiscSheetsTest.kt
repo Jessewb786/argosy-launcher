@@ -38,6 +38,28 @@ class DiscSheetsTest {
     }
 
     @Test
+    fun `a gdi's companions are the tracks it lists, quoted or bare`() {
+        val dir = tempDir.newFolder("dc")
+        val gdi = touch(
+            dir,
+            "Game (USA).gdi",
+            "3\r\n" +
+                "1 0 4 2352 \"Game (USA) (Track 1).bin\" 0\r\n" +
+                "2 450 0 2352 \"Game (USA) (Track 2).bin\" 0\r\n" +
+                "3 45000 4 2352 track03.bin 0\r\n"
+        )
+        touch(dir, "Game (USA) (Track 1).bin")
+        touch(dir, "Game (USA) (Track 2).bin")
+        touch(dir, "track03.bin")
+        touch(dir, "Game (USA).A1.bin")
+
+        assertEquals(
+            setOf("Game (USA) (Track 1).bin", "Game (USA) (Track 2).bin", "track03.bin"),
+            names(DiscSheets.companions(gdi, setOf("gdi", "cdi", "chd", "bin", "cue", "zip", "7z")))
+        )
+    }
+
+    @Test
     fun `saves and other games beside the sheet are never companions`() {
         val dir = tempDir.newFolder("psx")
         val cue = touch(dir, "Game.cue", "FILE \"Game.bin\" BINARY\n")
