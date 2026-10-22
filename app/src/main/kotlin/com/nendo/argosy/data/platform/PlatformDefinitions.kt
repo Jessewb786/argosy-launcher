@@ -438,8 +438,8 @@ object PlatformDefinitions {
         PlatformDef("pokemini", "Pokemon Mini", "PokeMini", setOf("min", "zip", "7z"), 167),
         PlatformDef("nds", "Nintendo DS", "NDS", setOf("nds", "dsi", "ids", "bin", "zip", "7z"), 170),
         PlatformDef("dsi", "Nintendo DSi", "DSi", setOf("nds", "dsi", "ids", "zip", "7z"), 172),
-        PlatformDef("3ds", "Nintendo 3DS", "3DS", setOf("3ds", "cci", "cia", "cxi", "app", "z3ds", "zcci", "zcxi", "zip", "7z"), 175),
-        PlatformDef("n3ds", "New Nintendo 3DS", "N3DS", setOf("3ds", "cci", "cia", "cxi", "app", "z3ds", "zcci", "zcxi", "zip", "7z"), 177),
+        PlatformDef("3ds", "Nintendo 3DS", "3DS", setOf("3ds", "cci", "cia", "cxi", "app", "3dsx", "z3ds", "zcci", "zcxi", "zcia", "z3dsx", "bcci", "bcxi", "bcia", "zip", "7z"), 175),
+        PlatformDef("n3ds", "New Nintendo 3DS", "N3DS", setOf("3ds", "cci", "cia", "cxi", "app", "3dsx", "z3ds", "zcci", "zcxi", "zcia", "z3dsx", "bcci", "bcxi", "bcia", "zip", "7z"), 177),
 
         // =====================================================================
         // SONY CONSOLES (200-249) - Chronological order
