@@ -1,9 +1,8 @@
 package com.nendo.argosy.ui.dualscreen
 
 /**
- * The slot the companion renders, or null to hold black. While the companion shows the presentation
- * side because a game is active, any slot but [PresentationSlot.InGame] is the launcher's leftover
- * from before the launch, so it is held back until the in-game state has loaded.
+ * The slot the companion renders, or null to hold black: while [showsDashboard], any slot but
+ * [PresentationSlot.InGame] is held back.
  */
 fun companionSlotToRender(showsDashboard: Boolean, slot: PresentationSlot): PresentationSlot? =
     if (showsDashboard && slot !is PresentationSlot.InGame) null else slot
@@ -17,8 +16,7 @@ fun dashboardArrivalMs(showsDashboard: Boolean, reduced: Boolean, arrivalMs: Int
 
 /**
  * How long the companion's launcher dissolves into the black hold when a game goes active:
- * [veilMs], the top panel's veil rate, so both panels sink together; zero under reduced motion or
- * when no game dashboard is taking over.
+ * [veilMs], or zero under reduced motion or when no game dashboard is taking over.
  */
 fun companionHandoffMs(showsDashboard: Boolean, reduced: Boolean, veilMs: Int): Int =
     if (showsDashboard && !reduced) veilMs else 0

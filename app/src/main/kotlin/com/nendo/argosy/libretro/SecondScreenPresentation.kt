@@ -18,29 +18,10 @@ import com.nendo.argosy.ui.theme.generated.ComponentDefaults
 import com.nendo.argosy.util.hideSystemBars
 
 /**
- * The console's other screen, on the other display.
- *
- * The window this owns is created and destroyed by the display's own lifecycle, so the surface is
- * handed out and withdrawn through [onSurfaceChanged] rather than held: a surface that outlives
- * its window is drawn into forever without ever reaching the screen, which is what leaves a second
- * display frozen on its last frame after a suspend.
- *
- * The surface is ordered above its window and neither carries a background, because a SurfaceView
- * composites behind the window it lives in: an opaque background on either paints over the hole
- * the surface shows through, and the display stays black no matter what is drawn into it.
- *
- * It is also not cancelable, and never takes window focus. A Presentation is a dialog: Back would
- * otherwise dismiss it mid-game, and touching it would move focus off the emulator so the pad went
- * dead until the game's own display was tapped again. Not being focusable still delivers touches
- * inside its bounds; only the keys go elsewhere, which is where they belong.
- *
- * Built with [arrivesCovered] before the game's first frame, it opens black and fades the game in
- * on [reveal] over [ComponentDefaults.LaunchOverlay.arrivalMs], in step with the main screen's
- * GameArrival. No View can draw over a surface ordered on top, so the cover is the window itself:
- * a dim behind it holds the display black while the window's alpha, which its surface inherits,
- * rises from 0. The dim itself rises from 0 to full over [ComponentDefaults.LaunchOverlay.veilMs]
- * once the window shows, so the panel behind breathes out to black instead of cutting to it.
- * Built after the first frame, it shows the game at once.
+ * The console's other screen on a second display. It hands its surface out and withdraws it
+ * through [onSurfaceChanged] with the window's lifecycle, is not cancelable and never takes key
+ * focus. Built with [arrivesCovered], it opens black and fades the game in on [reveal] over
+ * [ComponentDefaults.LaunchOverlay.arrivalMs]; built without it, it shows the game at once.
  */
 class SecondScreenPresentation(
     context: Context,

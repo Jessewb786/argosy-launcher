@@ -28,10 +28,9 @@ private var SemanticsPropertyReceiver.veilAlpha by VeilAlpha
 
 /**
  * A full-size black layer that fades in over [ComponentDefaults.LaunchOverlay.veilMs] while
- * [veiled] holds and out again when it drops, at an even rate per frame. A veil first drawn while
- * [veiled] holds starts where a fade begun at [veiledSinceMs] (the Launching step's start on the
- * elapsed-realtime clock) would stand, so one recreated mid-fade carries on. Reduced motion cuts at
- * once. It takes no input and draws nothing while clear.
+ * [veiled] holds and out when it drops. First drawn while [veiled], it starts where a fade begun
+ * at [veiledSinceMs] (elapsed realtime) would stand. Reduced motion cuts at once; it takes no
+ * input and draws nothing while clear.
  */
 @Composable
 fun LaunchVeil(veiled: Boolean, modifier: Modifier = Modifier, veiledSinceMs: Long? = null) {

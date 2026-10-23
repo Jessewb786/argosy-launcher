@@ -7,9 +7,8 @@ import android.os.Bundle
 import android.window.SplashScreen
 
 /**
- * The start options every game window opens with: its display when one is resolved, and a plain
- * colour starting window instead of the launcher's icon where the platform lets a start ask for
- * one. A start from the home app gets the icon style unless it asks otherwise.
+ * The start options every game window opens with: its display when one is resolved, and a solid
+ * colour starting window where the platform supports one.
  */
 object GameLaunchOptions {
 

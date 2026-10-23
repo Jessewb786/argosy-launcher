@@ -18,10 +18,9 @@ import javax.inject.Inject
 
 /**
  * Builds the launch intent, joining the caller's [LaunchProgressTracker] launch or opening one.
- * A fresh external launch owes a play session: with sessionAtWindow the result carries it as
- * [LaunchResult.Success.session] for the caller to start once the game's window is requested,
- * otherwise it is started here. LibretroActivity opens in-process sessions. A fresh launch first
- * runs [CrossEmulatorSaveMigrator] unless the caller passes savesPrepared.
+ * With sessionAtWindow a fresh external launch returns its play session as
+ * [LaunchResult.Success.session] for the caller to start; without it the session starts here.
+ * A fresh launch runs [CrossEmulatorSaveMigrator] first unless savesPrepared is passed.
  */
 class LaunchGameUseCase @Inject constructor(
     private val gameLauncher: GameLauncher,

@@ -25,9 +25,8 @@ fun veilsDisplay(
 ): Boolean = gameDisplayId != null && gameDisplayId == displayId && veilFor(progress)
 
 /**
- * Whether the game opens on the control surface on [surfaceDisplayId]: always with no
- * presentation surface beside it, and otherwise only when [gameDisplayId], the display the launch
- * placed the game on, is this one.
+ * Whether the game opens on the control surface on [surfaceDisplayId]: always when there is no
+ * presentation surface, and with one only when [gameDisplayId] is this display.
  */
 fun opensOnSurface(hasPresentationSurface: Boolean, gameDisplayId: Int?, surfaceDisplayId: Int?): Boolean =
     !hasPresentationSurface || (gameDisplayId != null && gameDisplayId == surfaceDisplayId)
@@ -40,11 +39,9 @@ fun darkensForLaunch(progress: LaunchProgress?, gameOpensHere: Boolean): Boolean
     gameOpensHere && veilFor(progress)
 
 /**
- * The veil's opacity when it first draws. A veil whose Launching step began [elapsedMs] ago stands
- * where one that faded in from that start over [veilMs] would be, so a recreated veil carries on
- * instead of cutting to black and a launch that enters at Launching still fades in over the full
- * [veilMs]. A veil that is not [veiled], whose start is unknown, or under [reducedMotion], starts
- * at its target.
+ * The veil's opacity when it first draws: where a fade over [veilMs] begun [elapsedMs] ago would
+ * stand. A veil that is not [veiled], whose start is unknown, or under [reducedMotion], starts at
+ * its target.
  */
 fun veilStartAlpha(veiled: Boolean, elapsedMs: Long?, veilMs: Int, reducedMotion: Boolean): Float {
     val target = if (veiled) 1f else 0f

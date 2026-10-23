@@ -107,9 +107,6 @@ class LibretroAudioController(
     }
 
     private companion object {
-        /**
-         * Twenty steps a second is smooth to the ear and light on the main thread.
-         */
         const val RISE_TICK_MS = 50L
     }
 }

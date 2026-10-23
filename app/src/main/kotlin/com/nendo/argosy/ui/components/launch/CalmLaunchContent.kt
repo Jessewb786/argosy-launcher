@@ -64,11 +64,9 @@ import kotlinx.coroutines.delay
 private val Defaults = ComponentDefaults.LaunchOverlay
 
 /**
- * The quiet launch column: cover art, title and Cancel at equal spacing. The status block (bar,
- * line, percent) makes room and fades in only once [LaunchOverlayState] says the step has waited
- * out its patience or a failure needs saying, and leaves by the reverse motion. Cancel's slot is
- * always held, empty once the launch can no longer be cancelled, so the column keeps its place
- * when Launching begins and when the screen is recreated during it.
+ * The quiet launch column: cover art, title and Cancel at equal spacing. The status block fades
+ * in once [LaunchOverlayState] says the step has outlasted its patience or a failure needs
+ * showing. Cancel's slot is always held, empty once the launch cannot be cancelled.
  */
 @Composable
 fun CalmLaunchContent(

@@ -1361,15 +1361,6 @@ class DualScreenManager(
     private var launchWasLive = false
     private val focusedLaunchers = HashMap<Int, java.lang.ref.WeakReference<android.app.Activity>>()
 
-    /**
-     * When a live launch clears, re-asks [onLauncherWindowFocused] for each display's last focused
-     * launcher window that still holds focus, so a game start that never produced a window does not
-     * leave its session running. Focus is read a main-loop turn after the fall, so a focus loss
-     * already queued for the window applies first. A launch going live cancels a focus check in
-     * flight, since that check was about the previous game. The previous value lives on the
-     * manager, so an edge that straddles [rebind] is still seen; the collector runs on the bound
-     * activity's scope because with no activity bound there is no launcher window to re-ask.
-     */
     private fun observeLaunchLive() {
         launchLiveObserverJob?.cancel()
         launchLiveObserverJob = scope.launch {

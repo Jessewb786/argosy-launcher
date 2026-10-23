@@ -8,9 +8,8 @@ enum class LaunchHostSignal { COMPOSED, STARTED, STOPPED, LEFT_COMPOSITION }
 
 /**
  * Whether [signal] tells the launch tracker that its host stopped. A stop or a departure counts
- * only when the host activity is not being recreated, since a recreation looks the same and must
- * not end a Launching whose game window does not exist yet. A return, the overlay composing or the
- * host starting again, counts only once a real stop was recorded, [stopRecorded].
+ * only when the host activity is not being recreated; a return, the overlay composing or the host
+ * starting again, counts only once a real stop was recorded, [stopRecorded].
  */
 fun shouldReportHostStopped(
     isChangingConfigurations: Boolean,
