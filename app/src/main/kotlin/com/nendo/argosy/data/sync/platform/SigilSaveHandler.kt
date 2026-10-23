@@ -13,6 +13,7 @@ import com.nendo.argosy.util.AppPaths
 import com.nendo.argosy.data.emulator.SavePathConfig
 import com.nendo.argosy.data.emulator.SavePathRegistry
 import com.nendo.argosy.data.emulator.SwitchProfileParser
+import com.nendo.argosy.data.emulator.savepath.FlycastStandaloneConfig
 import com.nendo.argosy.data.emulator.savepath.PpssppMemoryStick
 import com.nendo.argosy.data.local.dao.EmulatorConfigDao
 import com.nendo.argosy.data.local.dao.GameDao
@@ -141,7 +142,8 @@ class SigilSaveHandler @Inject constructor(
             "3ds" to mapOf(
                 "citra" to "citra", "citra_mmj" to "citra", "borked3ds" to "citra",
                 "azahar" to "azahar", "lime3ds" to "lime3ds"
-            )
+            ),
+            "dreamcast" to mapOf("flycast" to FLYCAST_STANDALONE_LAYOUT)
         )
 
         private val ROOT_ANCHORS: Map<String, List<String>> = mapOf(
@@ -209,6 +211,7 @@ class SigilSaveHandler @Inject constructor(
         private const val FLYCAST_PER_CONTENT_VMUS = "reicast_per_content_vmus"
         private val FLYCAST_PER_GAME_VALUES = setOf("VMU A1", "All VMUs")
         private const val FLYCAST_SHARED_DIR = "dc"
+        private const val FLYCAST_STANDALONE_LAYOUT = "flycast_standalone"
 
         private const val PCSX2_SLOT1_OPTION = "Slot1_Filename"
 
@@ -469,13 +472,29 @@ class SigilSaveHandler @Inject constructor(
             ?: emulatorPackage?.let { SavePathRegistry.getConfigForPlatformByPackage(it, game.platformSlug) }
             ?: return@withContext null
         val layout = layoutFor(config.emulatorId, game.platformSlug) ?: return@withContext null
-        val root = rootFor(game, config, layout, emulatorPackage) ?: return@withContext null
+        val found = rootFor(game, config, layout, emulatorPackage) ?: return@withContext null
+        if (layout == FLYCAST_STANDALONE_LAYOUT) return@withContext flycastStandaloneRoute(found, emulatorPackage)
         SigilRoute(
             layout = layout,
-            root = root,
+            root = found,
             emulatorPackage = emulatorPackage,
-            profile = profileFor(layout, emulatorPackage, root),
+            profile = profileFor(layout, emulatorPackage, found),
             options = optionsFor(layout, game.id, config.emulatorId)
+        )
+    }
+
+    private fun flycastStandaloneRoute(dataDir: String, emulatorPackage: String?): SigilRoute? {
+        val settings = FlycastStandaloneConfig.read(dataDir, fal)
+        val vmuDir = settings.vmuDir ?: run {
+            Logger.warn(TAG, "[SaveSync] SIGIL | flycast VMU folder has no file path, not routing")
+            return null
+        }
+        return SigilRoute(
+            layout = FLYCAST_STANDALONE_LAYOUT,
+            root = vmuDir,
+            emulatorPackage = emulatorPackage,
+            profile = null,
+            options = settings.sigilOptions
         )
     }
 
@@ -544,7 +563,9 @@ class SigilSaveHandler @Inject constructor(
             ?: PpssppMemoryStick.liveSaveData(config, registered, fal)
             ?: emulatorSaveConfigRepository.resolveEvaluatedSavePath(config.emulatorId)
         val candidates = listOfNotNull(chosen) + registered
-        val roots = candidates.mapNotNull { rootFor(it, layout) }.distinct()
+        val roots = candidates.mapNotNull {
+            if (layout == FLYCAST_STANDALONE_LAYOUT) it.trimEnd('/') else rootFor(it, layout)
+        }.distinct()
         if (roots.isEmpty()) {
             Logger.warn(TAG, "[SaveSync] SIGIL | no root for layout=$layout in ${candidates.firstOrNull()}")
         }

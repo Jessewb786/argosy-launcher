@@ -60,6 +60,16 @@ class PlatformSaveHandlerRegistryRoutingTest {
     }
 
     @Test
+    fun `standalone Flycast routes to the standalone VMU names`() {
+        val standalone = mockk<PlatformSaveHandler>(relaxed = true)
+        every { dreamcastHandler.standalone } returns standalone
+        val config = SavePathRegistry.getConfigForPlatform("flycast", "dc")
+        assertNotNull("standalone flycast config must be usable", config)
+
+        assertSame(standalone, registry.getHandler(config, "dc", "flycast"))
+    }
+
+    @Test
     fun `retroarch + ppsspp folder config routes to PSP folder handler not RetroArch`() {
         val config = SavePathRegistry.getConfigForPlatform("retroarch_64", "psp")
         assertNotNull("retroarch_64_psp config must exist", config)

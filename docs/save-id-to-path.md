@@ -402,6 +402,24 @@ redistribution never copies a fresh one over it. Every other firmware entry is a
 static blob where overwriting is harmless; this one is a volume the user's saves
 live inside.
 
+### Dreamcast (`DreamcastSaveHandler`)
+
+`save_id` is the disc's IP.BIN product number. Port A1's card is named after it,
+with each of ` /\:*?|<>` replaced by `_` (standalone also replaces `"`):
+
+```
+built-in flycast core   <save dir>/T13301N.A1.bin
+standalone Flycast      <VMU folder>/T13301N_vmu_save_A1.bin
+```
+
+The standalone names come from `hostfs::getVmuPath` in Flycast's
+`core/oslib/oslib.cpp`. The VMU folder is `Dreamcast.VMUPath` from `emu.cfg`
+when it is set, else Flycast's `data` folder. `emu.cfg` sits beside `data`. With
+`PerGameVmu` off, every game shares `vmu_save_A1.bin`, and only Sigil's
+`flycast_standalone` layout can sort that card's saves by game.
+`FlycastStandaloneConfig` reads both settings. `DreamcastSaveHandler.standalone`
+names the file when Sigil doesn't route the save.
+
 ### RetroArch and the file-based default
 
 Not id-derived at all. The save is named for the ROM, not the title:

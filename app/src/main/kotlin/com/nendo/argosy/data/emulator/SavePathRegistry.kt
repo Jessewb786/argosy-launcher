@@ -631,7 +631,6 @@ object SavePathRegistry {
             usesFolderBasedSaves = true
         ),
 
-        // Dreamcast - uses shared VMU files, not yet supported
         "redream" to SavePathConfig(
             emulatorId = "redream",
             defaultPaths = listOf(
@@ -648,8 +647,7 @@ object SavePathRegistry {
                 "{extStorage}/Flycast/data"
             ),
             saveExtensions = listOf("bin"),
-            usesSharedMemoryCard = true,
-            supported = false
+            usesSharedMemoryCard = true
         ),
 
         // Saturn - not yet supported
@@ -878,12 +876,13 @@ object SavePathRegistry {
 
     fun getConfigForPlatform(emulatorId: String, platformSlug: String): SavePathConfig? {
         val canonicalSlug = PlatformDefinitions.getCanonicalSlug(platformSlug)
-        return configs["${emulatorId}_$canonicalSlug"]
+        val config = configs["${emulatorId}_$canonicalSlug"]
             ?: configs["${emulatorId}_$platformSlug"]
             ?: configs[emulatorId]
             ?: familyBaseIdFor(emulatorId)?.let { base ->
                 configs["${base}_$canonicalSlug"] ?: configs["${base}_$platformSlug"] ?: configs[base]
             }
+        return config?.takeIf { it.isUsable }
     }
 
     fun getConfigForPlatformByPackage(packageName: String, platformSlug: String): SavePathConfig? {

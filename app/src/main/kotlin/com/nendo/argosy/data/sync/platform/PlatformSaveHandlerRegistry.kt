@@ -69,7 +69,9 @@ class PlatformSaveHandlerRegistry @Inject constructor(
         }
         if (emulatorId in RETROARCH_EMULATOR_IDS) return unitSaveHandler
         if (canonical == "switch") return switchSaveHandler
-        if (canonical == "dreamcast") return dreamcastSaveHandler
+        if (canonical == "dreamcast") {
+            return if (config?.emulatorId == FLYCAST_STANDALONE_ID) dreamcastSaveHandler.standalone else dreamcastSaveHandler
+        }
         if (emulatorId in UNIT_EMULATOR_IDS && config != null) return unitSaveHandler
         folderHandlers[canonical]?.let { return it }
         if (emulatorId in UNIT_EMULATOR_IDS) return unitSaveHandler
@@ -180,6 +182,7 @@ class PlatformSaveHandlerRegistry @Inject constructor(
         private const val TAG = "PlatformSaveHandlerRegistry"
         val RETROARCH_EMULATOR_IDS = setOf("retroarch", "retroarch_64", "retroarch_32")
         val UNIT_EMULATOR_IDS = RETROARCH_EMULATOR_IDS + EmulatorRegistry.BUILTIN_ID + EmulatorRegistry.LEGACY_BUILTIN_ID
+        private const val FLYCAST_STANDALONE_ID = "flycast"
     }
 }
 
