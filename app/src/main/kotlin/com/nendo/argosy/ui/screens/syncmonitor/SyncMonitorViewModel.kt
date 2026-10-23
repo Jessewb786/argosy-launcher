@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -177,8 +176,7 @@ class SyncMonitorViewModel @Inject constructor(
             viewModelScope.launch {
                 platformRepository.updateSyncEnabled(row.platformId, true)
                 if (!_uiState.value.isConnected) return@launch
-                platformSyncQueue.isLibraryBusy.first { !it }
-                platformSyncQueue.enqueuePlatform(row.platformId, row.name)
+                platformSyncQueue.enqueuePlatformAfterLibrary(row.platformId, row.name)
             }
             return
         }
