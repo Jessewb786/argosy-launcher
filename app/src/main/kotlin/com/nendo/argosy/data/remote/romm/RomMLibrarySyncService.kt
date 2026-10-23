@@ -246,15 +246,12 @@ class RomMLibrarySyncService @Inject constructor(
     }
 
     suspend fun syncPlatform(platformId: Long): SyncResult = withContext(NonCancellable + Dispatchers.IO) {
-        if (!syncMutex.tryLock()) {
-            return@withContext SyncResult(0, 0, 0, 0, emptyList(), alreadyInProgress = true)
-        }
-
-        try {
-            return@withContext doSyncPlatform(platformId)
-        } finally {
-            flushDecodedImageCache()
-            syncMutex.unlock()
+        syncMutex.withLock {
+            try {
+                doSyncPlatform(platformId)
+            } finally {
+                flushDecodedImageCache()
+            }
         }
     }
 
