@@ -556,9 +556,9 @@ class GameDetailViewModel @Inject constructor(
     }
 
     fun loadGame(gameId: Long) {
+        if (gameId != currentGameId) downloadDelegate.reset()
         currentGameId = gameId
         pageLoadTime = System.currentTimeMillis()
-        downloadDelegate.reset()
         imageCacheManager.pauseBackgroundCaching()
         gameThemeAudio.enter(gameId)
         viewModelScope.launch { prefetchGameSaveDataUseCase(gameId) }
