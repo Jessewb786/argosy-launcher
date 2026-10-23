@@ -1840,10 +1840,8 @@ class DualScreenManager(
 
     /**
      * Ends the session whose emulator [emulatorLeftScreen] reported gone. On a dual-screen device it
-     * kills the stopped emulator at once, alongside the session end's save sync, so a presentation
-     * window it left on the other display goes away without waiting on the sync; it retries until
-     * the process is cached or a new session starts. On any other device [SessionEndCoordinator]
-     * stops the emulator once its session end completes.
+     * also force-stops the emulator [EMULATOR_RELEASE_ATTEMPTS] times beside the save sync, ending
+     * early if a new session starts. Elsewhere [SessionEndCoordinator] stops it after the sync.
      */
     fun endSessionAfterEmulatorLeft() {
         val emulatorPackage = sessionStateStore.getEmulatorPackage()
