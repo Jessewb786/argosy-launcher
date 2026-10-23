@@ -236,6 +236,7 @@ class ArgosyActivity : ComponentActivity() {
                 dualScreenEnabled = sessionStateStore.isDualScreenEnabled(),
                 docked = !desktopMode && DisplayAffinityHelper.dockedExternalDisplayId(this) != null
             )
+            if (launch != NonDefaultDisplayLaunch.RUN_HERE) forwardDeepLinkToDefaultDisplay()
             if (launch == NonDefaultDisplayLaunch.YIELD) {
                 Log.d(TAG, "ArgosyActivity on non-default display with dual-screen disabled, finishing")
                 finish()
@@ -674,6 +675,16 @@ class ArgosyActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun forwardDeepLinkToDefaultDisplay() {
+        if (intent?.data?.scheme != "argosy") return
+        val forwarded = Intent(intent).setClass(this, ArgosyActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val options = android.app.ActivityOptions.makeBasic()
+            .setLaunchDisplayId(Display.DEFAULT_DISPLAY)
+            .toBundle()
+        startActivity(forwarded, options)
     }
 
     private fun handDisplayToCompanion(displayId: Int) {

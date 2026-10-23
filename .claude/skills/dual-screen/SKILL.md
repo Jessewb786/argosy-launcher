@@ -96,8 +96,10 @@ LAW: inside `ArgosyApp` and anything it hosts, reach DSM through the Holder, nev
 `context as? ArgosyActivity`.
 - Why: on the companion that cast is null, and roughly twenty sites went silently inert when the
   companion held PRIMARY - overlay events, keyboard toggle, media routing, the screen dimmer.
-- Exception: genuinely ArgosyActivity-owned things, e.g. `pendingDeepLink`, which exists because
-  ArgosyActivity receives the Intent.
+- Exception: genuinely ArgosyActivity-owned things. Deep links are not one: ArgosyActivity
+  receives the Intent and publishes it to `DualScreenManager.pendingDeepLink`, and an
+  ArgosyActivity created on another display forwards the Intent to the default-display instance
+  before it yields or hands that display to the companion.
 
 ## PresentationSlot
 
