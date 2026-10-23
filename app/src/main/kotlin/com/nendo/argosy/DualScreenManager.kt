@@ -843,6 +843,37 @@ class DualScreenManager(
             if (value == null) _sessionControls.value = com.nendo.argosy.ui.dualscreen.dashboard.SessionControls()
         }
 
+    /**
+     * Quits the running game from the dashboard. A built-in game quits itself. An external one is
+     * covered by the launcher on its display, which ends the session the way leaving any game does.
+     */
+    fun quitSession() {
+        sessionQuickActions?.let {
+            it.quit()
+            return
+        }
+        if (!_swappedCompanionState.value.externalEmulator) return
+        val gameDisplay = emulatorDisplayId ?: return
+        val roles = displayAffinityHelper.getRoleDisplayIds(_isRolesSwapped.value) ?: return
+        if (gameDisplay != roles.first && gameDisplay != roles.second) return
+        val launcher = if (gameDisplay == android.view.Display.DEFAULT_DISPLAY) {
+            ArgosyActivity::class.java
+        } else {
+            SecondaryHomeActivity::class.java
+        }
+        Log.d(TAG, "Quitting the external game on display $gameDisplay")
+        activityContext.startActivity(
+            Intent(activityContext, launcher).apply {
+                addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP
+                )
+            },
+            displayAffinityHelper.getActivityOptions(forEmulator = false, overrideDisplayId = gameDisplay)
+        )
+    }
+
     private val _sessionControls = MutableStateFlow(com.nendo.argosy.ui.dualscreen.dashboard.SessionControls())
     val sessionControls: StateFlow<com.nendo.argosy.ui.dualscreen.dashboard.SessionControls> = _sessionControls
 
@@ -2057,6 +2088,8 @@ class DualScreenManager(
                         isHardcore = sessionStateStore.isHardcore(),
                         isDirty = sessionStateStore.isSaveDirty(),
                         isLoaded = true,
+                        externalEmulator = sessionStateStore.getEmulatorPackage()
+                            ?.let { it != com.nendo.argosy.data.emulator.EmulatorRegistry.BUILTIN_PACKAGE } == true,
                         backgroundPath = art.backgroundPath,
                         manual = documents.firstOrNull {
                             it.category == com.nendo.argosy.data.model.VariantCategory.MANUAL.key

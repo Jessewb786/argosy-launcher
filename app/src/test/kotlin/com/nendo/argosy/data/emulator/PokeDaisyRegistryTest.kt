@@ -2,6 +2,7 @@ package com.nendo.argosy.data.emulator
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -27,10 +28,10 @@ class PokeDaisyRegistryTest {
 
     @Test
     fun `only emulators that draw their own second screen claim both screens`() {
-        assertTrue(pokeDaisy.drawsBothScreens)
-        assertTrue(EmulatorRegistry.getById("melondualds")!!.drawsBothScreens)
-        assertFalse(EmulatorRegistry.getById("melonds")!!.drawsBothScreens)
-        assertFalse(EmulatorRegistry.getById("pizza_boy_gba")!!.drawsBothScreens)
+        assertEquals(BothScreensHost.LARGEST_DISPLAY, pokeDaisy.bothScreensHost)
+        assertEquals(BothScreensHost.LARGEST_DISPLAY, EmulatorRegistry.getById("melondualds")!!.bothScreensHost)
+        assertNull(EmulatorRegistry.getById("melonds")!!.bothScreensHost)
+        assertNull(EmulatorRegistry.getById("pizza_boy_gba")!!.bothScreensHost)
     }
 
     @Test

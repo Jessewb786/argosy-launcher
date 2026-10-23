@@ -3,6 +3,7 @@ package com.nendo.argosy.ui.screens.common
 import android.content.Context
 import android.os.Bundle
 import com.nendo.argosy.DualScreenManagerHolder
+import com.nendo.argosy.data.emulator.BothScreensHost
 import com.nendo.argosy.data.emulator.EmulatorRegistry
 import com.nendo.argosy.data.preferences.EmulatorDisplayTarget
 import com.nendo.argosy.data.preferences.SessionStateStore
@@ -69,15 +70,20 @@ class EmulatorLaunchTargetResolver @Inject constructor(
     ): Int? = displayAffinityHelper.getDisplayTargetId(placementTarget(stored, gamesDefault), rolesSwapped)
 
     private fun bothScreensDisplayId(emulatorPackage: String?): Int? {
-        val emulator = emulatorPackage?.let(EmulatorRegistry::getByPackage) ?: return null
-        if (!emulator.drawsBothScreens || !displayAffinityHelper.hasSecondaryDisplay) return null
-        return displayAffinityHelper.largestDisplayId()
+        val host = emulatorPackage?.let(::bothScreensHostOf) ?: return null
+        return displayAffinityHelper.bothScreensDisplayId(host)
     }
 
     private fun placedOn(displayId: Int?, rolesSwapped: Boolean): Int =
         displayId ?: displayAffinityHelper.getEmulatorDisplayId(rolesSwapped)
 
     companion object {
+        fun bothScreensHostOf(packageName: String): BothScreensHost? =
+            (EmulatorRegistry.getByPackage(packageName)
+                ?: EmulatorRegistry.findFamilyForPackage(packageName)
+                    ?.let { EmulatorRegistry.createDefFromFamily(it, packageName) })
+                ?.bothScreensHost
+
         fun placementTarget(
             stored: EmulatorDisplayTarget,
             gamesDefault: EmulatorDisplayTarget
