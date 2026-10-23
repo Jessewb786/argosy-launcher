@@ -29,6 +29,7 @@ import com.nendo.argosy.util.FileNames
 import com.nendo.argosy.util.Logger
 import com.nendo.argosy.util.SafeCoroutineScope
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -157,7 +158,7 @@ data class DownloadCompletionEvent(
 )
 
 @Singleton
-class DownloadManager @Inject constructor(
+class DownloadManager internal constructor(
     private val gameDao: GameDao,
     private val gameDiscDao: GameDiscDao,
     private val gameFileDao: GameFileDao,
@@ -178,8 +179,40 @@ class DownloadManager @Inject constructor(
     private val customGridShapeStore: CustomGridShapeStore,
     private val extContentOrganizer: ExtContentOrganizer,
     private val romStagingManager: RomStagingManager,
-    private val platformFolderResolver: PlatformFolderResolver
+    private val platformFolderResolver: PlatformFolderResolver,
+    private val scope: CoroutineScope
 ) {
+    @Inject constructor(
+        gameDao: GameDao,
+        gameDiscDao: GameDiscDao,
+        gameFileDao: GameFileDao,
+        downloadQueueDao: DownloadQueueDao,
+        platformDao: PlatformDao,
+        romMRepository: RomMRepository,
+        preferencesRepository: UserPreferencesRepository,
+        soundManager: SoundFeedbackManager,
+        m3uManager: M3uManager,
+        thermalManager: dagger.Lazy<DownloadThermalManager>,
+        steamContentManager: dagger.Lazy<com.nendo.argosy.data.steam.SteamContentManager>,
+        mediaDownloadManager: dagger.Lazy<MediaDownloadManager>,
+        musicDirectoryManager: MusicDirectoryManager,
+        attributionRepository: StorageAttributionRepository,
+        syncPreferencesRepository: SyncPreferencesRepository,
+        homeTileRepository: com.nendo.argosy.data.repository.HomeTileRepository,
+        homeTilePromptQueue: com.nendo.argosy.data.repository.HomeTilePromptQueue,
+        customGridShapeStore: CustomGridShapeStore,
+        extContentOrganizer: ExtContentOrganizer,
+        romStagingManager: RomStagingManager,
+        platformFolderResolver: PlatformFolderResolver
+    ) : this(
+        gameDao, gameDiscDao, gameFileDao, downloadQueueDao, platformDao, romMRepository,
+        preferencesRepository, soundManager, m3uManager, thermalManager, steamContentManager,
+        mediaDownloadManager, musicDirectoryManager, attributionRepository, syncPreferencesRepository,
+        homeTileRepository, homeTilePromptQueue, customGridShapeStore, extContentOrganizer,
+        romStagingManager, platformFolderResolver,
+        SafeCoroutineScope(Dispatchers.Main, TAG)
+    )
+
     private val _state = MutableStateFlow(DownloadQueueState())
     val state: StateFlow<DownloadQueueState> = _state.asStateFlow()
 
@@ -224,7 +257,6 @@ class DownloadManager @Inject constructor(
     private val _completionEvents = MutableSharedFlow<DownloadCompletionEvent>()
     val completionEvents: SharedFlow<DownloadCompletionEvent> = _completionEvents.asSharedFlow()
 
-    private val scope = SafeCoroutineScope(Dispatchers.Main, "DownloadManager")
     private val downloadJobs = mutableMapOf<Long, Job>()
 
     init {
