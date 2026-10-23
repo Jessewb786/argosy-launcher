@@ -3,6 +3,7 @@ package com.nendo.argosy.domain.usecase
 import android.util.Log
 import com.nendo.argosy.data.preferences.UserPreferencesRepository
 import com.nendo.argosy.data.repository.GameRepository
+import com.nendo.argosy.data.repository.PlatformRepository
 import com.nendo.argosy.data.storage.GameFileRelocator
 import com.nendo.argosy.data.storage.RelocationOutcome
 import com.nendo.argosy.data.storage.StorageAttributionRepository
@@ -27,6 +28,7 @@ data class MigrationResult(
  */
 class MigrateStorageUseCase @Inject constructor(
     private val gameRepository: GameRepository,
+    private val platformRepository: PlatformRepository,
     private val preferencesRepository: UserPreferencesRepository,
     private val attributionRepository: StorageAttributionRepository,
     private val relocator: GameFileRelocator
@@ -63,6 +65,11 @@ class MigrateStorageUseCase @Inject constructor(
                 }
 
                 val platformFolder = gameRepository.getDownloadDirForPlatformId(current.platformId)
+                if (keepsOwnFolder(current.platformId, File(localPath), platformFolder)) {
+                    Log.d(TAG, "Migration: ${current.title} stays in its platform's own folder")
+                    skipped++
+                    return@forEachIndexed
+                }
                 val outcome = relocator.relocate(current, platformFolder, newRoot) { file ->
                     GameFileRelocator.mapped(file, oldRoot, newRoot, platformFolder, File(newRoot, current.platformSlug))
                 }
@@ -90,4 +97,8 @@ class MigrateStorageUseCase @Inject constructor(
         attributionRepository.markDirty(StorageCategory.GAMES)
         MigrationResult(migrated, skipped, failed)
     }
+
+    private suspend fun keepsOwnFolder(platformId: Long, launch: File, platformFolder: File): Boolean =
+        !platformRepository.getById(platformId)?.customRomPath.isNullOrBlank() &&
+            GameFileRelocator.isUnder(launch, platformFolder)
 }

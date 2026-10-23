@@ -3,14 +3,17 @@ package com.nendo.argosy.domain.usecase
 import com.nendo.argosy.data.local.dao.GameFileDao
 import com.nendo.argosy.data.local.entity.GameEntity
 import com.nendo.argosy.data.local.entity.GameFileEntity
+import com.nendo.argosy.data.local.entity.PlatformEntity
 import com.nendo.argosy.data.model.GameSource
 import com.nendo.argosy.data.music.MusicDirectoryManager
 import com.nendo.argosy.data.preferences.UserPreferencesRepository
 import com.nendo.argosy.data.repository.GameRepository
+import com.nendo.argosy.data.repository.PlatformRepository
 import com.nendo.argosy.data.storage.GameFileRelocator
 import com.nendo.argosy.data.storage.GamePathRewriter
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.test.runTest
@@ -29,6 +32,8 @@ class MigrateStorageUseCaseTest {
     val tempFolder = TemporaryFolder()
 
     private lateinit var gameRepository: GameRepository
+    private lateinit var platformRepository: PlatformRepository
+    private lateinit var customDir: File
     private lateinit var preferencesRepository: UserPreferencesRepository
     private lateinit var gameFileDao: GameFileDao
     private lateinit var pathRewriter: GamePathRewriter
@@ -42,6 +47,7 @@ class MigrateStorageUseCaseTest {
     @Before
     fun setup() {
         gameRepository = mockk(relaxed = true)
+        platformRepository = mockk(relaxed = true)
         preferencesRepository = mockk(relaxed = true)
         gameFileDao = mockk(relaxed = true)
         pathRewriter = mockk(relaxed = true)
@@ -52,8 +58,17 @@ class MigrateStorageUseCaseTest {
         newDir = tempFolder.newFolder("new")
 
         coEvery { gameRepository.getById(any()) } answers { games[firstArg()] }
+        customDir = tempFolder.newFolder("custom-psx")
         coEvery { gameRepository.getDownloadDirForPlatformId(any()) } answers {
-            File(oldDir, if (firstArg<Long>() == 2L) "snes" else "psx")
+            when (firstArg<Long>()) {
+                CUSTOM_PLATFORM -> customDir
+                2L -> File(oldDir, "snes")
+                else -> File(oldDir, "psx")
+            }
+        }
+        coEvery { platformRepository.getById(any()) } answers {
+            val custom = customDir.absolutePath.takeIf { firstArg<Long>() == CUSTOM_PLATFORM }
+            mockk<PlatformEntity> { every { customRomPath } returns custom }
         }
         coEvery { gameRepository.getGamesWithLocalPaths() } answers { games.values.toList() }
         val captured = slot<List<Pair<String, String>>>()
@@ -61,6 +76,7 @@ class MigrateStorageUseCaseTest {
 
         useCase = MigrateStorageUseCase(
             gameRepository,
+            platformRepository,
             preferencesRepository,
             mockk(relaxed = true),
             GameFileRelocator(gameFileDao, music, pathRewriter)
@@ -141,6 +157,29 @@ class MigrateStorageUseCaseTest {
     }
 
     @Test
+    fun `a game in its platform's own folder stays put`() = runTest {
+        val rom = File(customDir, "game.chd").apply { writeText("x") }
+        add(createGameEntity(localPath = rom.absolutePath, platformId = CUSTOM_PLATFORM))
+
+        val result = useCase(oldDir.absolutePath, newDir.absolutePath)
+
+        assertTrue(rom.exists())
+        assertEquals(1, result.skipped)
+        assertTrue(rewrites.isEmpty())
+    }
+
+    @Test
+    fun `a game left under the old root by a platform with its own folder moves`() = runTest {
+        val rom = write("psx/game.chd")
+        add(createGameEntity(localPath = rom.absolutePath, platformId = CUSTOM_PLATFORM))
+
+        val result = useCase(oldDir.absolutePath, newDir.absolutePath)
+
+        assertEquals(1, result.migrated)
+        assertFalse(rom.exists())
+    }
+
+    @Test
     fun `a game already under the new root is counted without copying`() = runTest {
         val moved = File(newDir, "psx/game.chd").apply { parentFile?.mkdirs(); writeText("x") }
         add(createGameEntity(localPath = moved.absolutePath))
@@ -209,4 +248,8 @@ class MigrateStorageUseCaseTest {
         igdbId = null,
         source = GameSource.LOCAL_ONLY
     )
+
+    private companion object {
+        const val CUSTOM_PLATFORM = 3L
+    }
 }
