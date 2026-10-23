@@ -6,23 +6,31 @@ import android.content.Intent
 import android.os.Bundle
 import com.nendo.argosy.DualScreenManager
 import com.nendo.argosy.DualScreenManagerHolder
+import com.nendo.argosy.data.emulator.ActiveSession
+import com.nendo.argosy.data.emulator.PlaySessionTracker
 import io.mockk.coEvery
 import io.mockk.coVerifyOrder
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Test
+import java.time.Instant
 
 class GameStartRouterTest {
 
     private val appContext = mockk<Context>(relaxed = true)
     private val resolver = mockk<EmulatorLaunchTargetResolver>()
     private val options = mockk<Bundle>()
+    private val activeSession = MutableStateFlow<ActiveSession?>(null)
+    private val tracker = mockk<PlaySessionTracker>(relaxed = true) {
+        every { activeSession } returns this@GameStartRouterTest.activeSession
+    }
     private val intent = mockk<Intent>(relaxed = true) {
         every { component } returns mockk<ComponentName> { every { packageName } returns EMULATOR }
     }
@@ -41,7 +49,9 @@ class GameStartRouterTest {
         coEvery { resolver.launchOptionsFor(7L, 2, EMULATOR) } returns options
         var failure: Throwable? = null
 
-        GameStartRouter(appContext, resolver, this)
+        activeSession.value = sessionFor(7L)
+
+        GameStartRouter(appContext, resolver, tracker, this)
             .start(gameId = 7L, intent = intent, overrideDisplayId = 2, onFailure = { failure = it })
         advanceUntilIdle()
 
@@ -50,6 +60,7 @@ class GameStartRouterTest {
             manager.startGame(GameLaunchRequest(intent, options))
         }
         verify(exactly = 0) { appContext.startActivity(any(), any()) }
+        verify(exactly = 0) { tracker.cancelSession() }
         assertNull(failure)
     }
 
@@ -57,7 +68,7 @@ class GameStartRouterTest {
     fun `without a manager the application starts the game as a new task`() = runTest {
         coEvery { resolver.launchOptionsFor(7L, null, EMULATOR) } returns options
 
-        GameStartRouter(appContext, resolver, this).start(gameId = 7L, intent = intent)
+        GameStartRouter(appContext, resolver, tracker, this).start(gameId = 7L, intent = intent)
         advanceUntilIdle()
 
         verify(exactly = 1) { intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
@@ -72,12 +83,28 @@ class GameStartRouterTest {
         }
         coEvery { resolver.launchOptionsFor(7L, null, EMULATOR) } returns options
         var failure: Throwable? = null
+        activeSession.value = sessionFor(7L)
 
-        GameStartRouter(appContext, resolver, this)
+        GameStartRouter(appContext, resolver, tracker, this)
             .start(gameId = 7L, intent = intent, onFailure = { failure = it })
         advanceUntilIdle()
 
         assertSame(refusal, failure)
+        verify(exactly = 1) { tracker.cancelSession() }
+    }
+
+    @Test
+    fun `a refused start leaves another game's session running`() = runTest {
+        DualScreenManagerHolder.instance = mockk<DualScreenManager> {
+            every { startGame(any()) } returns Result.failure(SecurityException("denied"))
+        }
+        coEvery { resolver.launchOptionsFor(7L, null, EMULATOR) } returns options
+        activeSession.value = sessionFor(8L)
+
+        GameStartRouter(appContext, resolver, tracker, this).start(gameId = 7L, intent = intent)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { tracker.cancelSession() }
     }
 
     @Test
@@ -87,14 +114,19 @@ class GameStartRouterTest {
         val broken = IllegalStateException("db closed")
         coEvery { resolver.launchOptionsFor(7L, null, EMULATOR) } throws broken
         var failure: Throwable? = null
+        activeSession.value = sessionFor(7L)
 
-        GameStartRouter(appContext, resolver, this)
+        GameStartRouter(appContext, resolver, tracker, this)
             .start(gameId = 7L, intent = intent, onFailure = { failure = it })
         advanceUntilIdle()
 
         assertSame(broken, failure)
         verify(exactly = 0) { manager.startGame(any()) }
+        verify(exactly = 1) { tracker.cancelSession() }
     }
+
+    private fun sessionFor(gameId: Long) =
+        ActiveSession(gameId = gameId, startTime = Instant.EPOCH, emulatorPackage = EMULATOR)
 
     private companion object {
         const val EMULATOR = "com.pokedaisy.app"
