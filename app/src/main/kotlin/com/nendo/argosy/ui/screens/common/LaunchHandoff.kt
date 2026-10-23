@@ -2,6 +2,7 @@ package com.nendo.argosy.ui.screens.common
 
 import android.content.Intent
 import com.nendo.argosy.core.input.SoundType
+import com.nendo.argosy.data.emulator.EXTRA_ALREADY_LAUNCHED
 import com.nendo.argosy.data.emulator.ExternalSessionStart
 import com.nendo.argosy.data.emulator.LaunchProgressTracker
 import com.nendo.argosy.data.emulator.PlaySessionTracker
@@ -41,7 +42,7 @@ class LaunchHandoff internal constructor(
     /**
      * Places [start]'s game, finishes [ticket] as launched and requests [intent]'s window with that
      * placement after the hold; [session] starts once the window is requested, and Launching outlasts
-     * a stop of the launching screen until then. A cancelled ticket opens nothing. A failed placement
+     * a stop of the launching screen until then. A game the launch already opened skips the hold. A cancelled ticket opens nothing. A failed placement
      * or start, or a cut-short hold, clears Launching at once; failures reach [GameStart.onFailure].
      */
     suspend fun handOff(
@@ -56,11 +57,13 @@ class LaunchHandoff internal constructor(
         val placed = request.getOrElse { return fail(ticket, it, start) }
         tracker.finish(ticket, launched = true)
         soundManager.play(SoundType.LAUNCH_GAME)
-        try {
-            delay(holdMs)
-        } catch (cancelled: CancellationException) {
-            tracker.openFailed(ticket)
-            throw cancelled
+        if (!intent.getBooleanExtra(EXTRA_ALREADY_LAUNCHED, false)) {
+            try {
+                delay(holdMs)
+            } catch (cancelled: CancellationException) {
+                tracker.openFailed(ticket)
+                throw cancelled
+            }
         }
         val failure = startRouter.startPlaced(placed).exceptionOrNull()
         if (failure == null) {
