@@ -972,4 +972,7 @@
     <string name="gamelist_row_genre_board_game">桌游</string>
     <string name="gamelist_row_genre_quiz">问答</string>
     <string name="gamelist_row_genre_sim">模拟</string>
+    <string name="common_game_confirm_hide_title">隐藏%1$s？</string>
+    <string name="common_game_confirm_hide_message">在游戏库中将来源筛选为已隐藏，即可再次显示隐藏的游戏。</string>
+    <string name="common_game_confirm_hide_confirm">隐藏</string>
 </resources>

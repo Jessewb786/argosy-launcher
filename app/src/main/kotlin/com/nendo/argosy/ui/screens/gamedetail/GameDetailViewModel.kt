@@ -150,6 +150,10 @@ class GameDetailViewModel @Inject constructor(
 
     private val sessionStateStore by lazy { com.nendo.argosy.data.preferences.SessionStateStore(context) }
 
+    val gameConfirm = com.nendo.argosy.ui.common.GameConfirmController(
+        gameActions::deleteDownloadConfirm, gameActions::hideConfirm, viewModelScope
+    )
+
     private val _uiState = MutableStateFlow(GameDetailUiState())
     val uiState: StateFlow<GameDetailUiState> = _uiState.asStateFlow()
 
@@ -1413,7 +1417,10 @@ class GameDetailViewModel @Inject constructor(
                         viewModelScope.launch { loadGame(currentGameId) }
                     }
                     else -> {
-                        downloadDelegate.deleteLocalFile(viewModelScope, currentGameId) { loadGame(currentGameId) }
+                        val gameId = currentGameId
+                        gameConfirm.requestDelete(gameId) { withSoundtrack ->
+                            downloadDelegate.deleteLocalFile(viewModelScope, gameId, withSoundtrack) { loadGame(gameId) }
+                        }
                     }
                 }
             }
@@ -1421,7 +1428,18 @@ class GameDetailViewModel @Inject constructor(
                 toggleMoreOptions()
                 downloadDelegate.removeFromLibrary(viewModelScope, currentGameId)
             }
-            MoreOptionAction.ToggleHide -> { toggleHideGame(); onBack() }
+            MoreOptionAction.ToggleHide -> {
+                toggleMoreOptions()
+                if (_uiState.value.game?.isHidden == true) {
+                    toggleHideGame()
+                    onBack()
+                } else {
+                    gameConfirm.requestHide(currentGameId) {
+                        toggleHideGame()
+                        onBack()
+                    }
+                }
+            }
         }
     }
 

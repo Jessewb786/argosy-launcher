@@ -996,4 +996,7 @@
     <string name="gamelist_row_genre_board_game">桌遊</string>
     <string name="gamelist_row_genre_quiz">問答</string>
     <string name="gamelist_row_genre_sim">模擬</string>
+    <string name="common_game_confirm_hide_title">隱藏%1$s？</string>
+    <string name="common_game_confirm_hide_message">在遊戲庫中將來源篩選為隱藏，即可再次顯示隱藏的遊戲。</string>
+    <string name="common_game_confirm_hide_confirm">隱藏</string>
 </resources>

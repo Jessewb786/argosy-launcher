@@ -1339,6 +1339,8 @@ private fun GameDetailModals(
         )
     }
 
+    com.nendo.argosy.ui.common.GameConfirmHost(viewModel.gameConfirm)
+
     if (uiState.showCreateCollectionDialog) {
         CreateCollectionDialog(
             onDismiss = viewModel::hideCreateCollectionDialog,

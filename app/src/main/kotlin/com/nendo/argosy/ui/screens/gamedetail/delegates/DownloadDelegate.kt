@@ -410,9 +410,9 @@ class DownloadDelegate @Inject constructor(
         }
     }
 
-    fun deleteLocalFile(scope: CoroutineScope, gameId: Long, onGameDeleted: () -> Unit) {
+    fun deleteLocalFile(scope: CoroutineScope, gameId: Long, withSoundtrack: Boolean, onGameDeleted: () -> Unit) {
         scope.launch {
-            gameActions.deleteLocalFile(gameId)
+            gameActions.deleteLocalFile(gameId, withSoundtrack)
             notificationManager.showSuccess(
                 NotificationText.Res(R.string.gamedetail_notice_download_deleted)
             )

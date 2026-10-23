@@ -1080,4 +1080,7 @@
     <string name="gamelist_row_genre_board_game">Настольная</string>
     <string name="gamelist_row_genre_quiz">Викторина</string>
     <string name="gamelist_row_genre_sim">Симулятор</string>
+    <string name="common_game_confirm_hide_title">Скрыть %1$s?</string>
+    <string name="common_game_confirm_hide_message">Скрытые игры можно снова показать в Библиотеке, выбрав в фильтре Источник значение Скрытые.</string>
+    <string name="common_game_confirm_hide_confirm">Скрыть</string>
 </resources>

@@ -1066,4 +1066,7 @@
     <string name="gamelist_row_genre_board_game">Juego de mesa</string>
     <string name="gamelist_row_genre_quiz">Trivia</string>
     <string name="gamelist_row_genre_sim">Simulación</string>
+    <string name="common_game_confirm_hide_title">¿Ocultar %1$s?</string>
+    <string name="common_game_confirm_hide_message">Los juegos ocultos se pueden volver a mostrar en la Biblioteca filtrando Origen por Ocultos.</string>
+    <string name="common_game_confirm_hide_confirm">Ocultar</string>
 </resources>

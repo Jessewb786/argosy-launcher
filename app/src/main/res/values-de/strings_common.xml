@@ -1032,4 +1032,7 @@
     <string name="gamelist_row_genre_board_game">Brettspiel</string>
     <string name="gamelist_row_genre_quiz">Quiz</string>
     <string name="gamelist_row_genre_sim">Simulation</string>
+    <string name="common_game_confirm_hide_title">%1$s ausblenden?</string>
+    <string name="common_game_confirm_hide_message">Ausgeblendete Spiele lassen sich in der Bibliothek wieder anzeigen, indem du Quelle auf Ausgeblendet filterst.</string>
+    <string name="common_game_confirm_hide_confirm">Ausblenden</string>
 </resources>

@@ -1044,13 +1044,6 @@ data class StorageAttributionState(
     val mediaTileLatched: Boolean = false
 )
 
-data class GameStorageDeleteConfirm(
-    val gameId: Long,
-    val title: String,
-    val hasSoundtrack: Boolean,
-    val unsyncedSaves: Int
-)
-
 data class GameStorageCategoryDeleteConfirm(
     val gameId: Long,
     val bucket: com.nendo.argosy.domain.usecase.storage.GameStorageBucket,
@@ -1065,7 +1058,7 @@ data class StoragePlatformGamesState(
     val games: List<com.nendo.argosy.domain.usecase.storage.GameStorageBreakdown> = emptyList(),
     val coverPaths: Map<Long, String?> = emptyMap(),
     val highlightedCategoryIndex: Int = 0,
-    val deleteConfirm: GameStorageDeleteConfirm? = null,
+    val deleteConfirm: com.nendo.argosy.ui.common.GameConfirm.DeleteDownload? = null,
     val categoryDeleteConfirm: GameStorageCategoryDeleteConfirm? = null
 )
 

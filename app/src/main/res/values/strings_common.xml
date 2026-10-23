@@ -2089,4 +2089,12 @@
     <string name="gamelist_row_genre_quiz">Quiz</string>
     <!-- Short game genre name on a narrow tab in the game list row. Full genre: "Simulator" (simulation games). -->
     <string name="gamelist_row_genre_sim">Sim</string>
+    <!-- Title of the dialog confirming that a game is hidden. %1$s is the game's title. "Hide" is
+         a verb: the game leaves the normal lists. -->
+    <string name="common_game_confirm_hide_title">Hide %1$s?</string>
+    <!-- Body of the hide confirmation. "Source" and "Hidden" name a tab and an option in the
+         Library filter, so keep them matching those labels. -->
+    <string name="common_game_confirm_hide_message">Hidden games can be shown again in the Library by filtering Source to Hidden.</string>
+    <!-- Confirm button of the hide dialog. Verb. -->
+    <string name="common_game_confirm_hide_confirm">Hide</string>
 </resources>

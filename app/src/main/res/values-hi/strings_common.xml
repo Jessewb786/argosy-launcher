@@ -1032,4 +1032,7 @@
     <string name="gamelist_row_genre_board_game">बोर्ड गेम</string>
     <string name="gamelist_row_genre_quiz">क्विज़</string>
     <string name="gamelist_row_genre_sim">सिम्युलेटर</string>
+    <string name="common_game_confirm_hide_title">%1$s छिपाएं?</string>
+    <string name="common_game_confirm_hide_message">छिपे हुए गेम लाइब्रेरी में सोर्स को छिपे हुए पर फ़िल्टर करके फिर से दिखाए जा सकते हैं।</string>
+    <string name="common_game_confirm_hide_confirm">छिपाएं</string>
 </resources>
