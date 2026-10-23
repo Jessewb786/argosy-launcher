@@ -35,27 +35,22 @@ private val AMBIGUOUS_EXTENSIONS = setOf(
 
 object PlatformDefinitions {
 
-    /**
-     * Platforms whose saves are keyed by an extracted disc/cart title or game ID (via Sigil) rather
-     * than ROM filename. Single source of truth -- consumed by title-id extraction and the
-     * game-detail "Refresh Title ID" option.
-     *
-     * `xbox` is a member even though no save path exists for it: the id still matches the game to
-     * its upstream record, and extraction is what produces it. Membership here does not imply a
-     * syncable layout, which [com.nendo.argosy.data.emulator.SavePathRegistry] decides separately.
-     */
-    val TITLE_ID_PLATFORMS = setOf(
+    private val TITLE_ID_PLATFORMS = setOf(
         "switch", "vita", "psvita", "psp", "3ds", "wiiu", "wii", "gc", "ngc", "gamecube", "ps2",
-        "ps3", "xbox", "xbox360"
+        "ps3", "xbox", "xbox360", "psx", "dreamcast", "gb", "gbc", "snes", "n64"
     )
 
     /**
-     * Platforms whose roms are already-compressed containers, so an archive of one barely expands.
-     * Single source of truth -- consumed by the download storage gate, which reserves close to the
-     * archive's own size for these instead of a multiple of it.
-     *
-     * Aliases are listed alongside canonical slugs, as in [TITLE_ID_PLATFORMS], because callers
-     * test raw incoming slugs against this set as well as canonicalised ones.
+     * Whether Sigil reads a title id off this platform's games: the platforms in its slug table
+     * (argosy-sigil `src/sigil.c`). Says nothing about saves, which
+     * [com.nendo.argosy.data.emulator.SavePathRegistry] decides separately.
+     */
+    fun hasTitleId(platformSlug: String): Boolean =
+        platformSlug.lowercase() in TITLE_ID_PLATFORMS || getCanonicalSlug(platformSlug) in TITLE_ID_PLATFORMS
+
+    /**
+     * Platforms whose roms are already-compressed containers. The download storage gate reserves
+     * about the archive's own size for these. Holds raw slug aliases beside canonical slugs.
      */
     val PACKED_PAYLOAD_PLATFORMS = setOf(
         "switch", "ps3", "ps4", "wiiu", "vita", "psvita"

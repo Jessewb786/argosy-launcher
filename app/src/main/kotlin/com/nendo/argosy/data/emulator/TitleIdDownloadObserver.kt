@@ -13,7 +13,8 @@ import javax.inject.Singleton
 
 private const val TAG = "TitleIdDownloadObserver"
 
-private val TITLE_ID_PLATFORMS = com.nendo.argosy.data.platform.PlatformDefinitions.TITLE_ID_PLATFORMS
+private fun hasTitleId(platformSlug: String) =
+    com.nendo.argosy.data.platform.PlatformDefinitions.hasTitleId(platformSlug)
 
 sealed interface TitleIdRecheck {
     data class Found(val titleId: String, val replaced: String?) : TitleIdRecheck
@@ -58,10 +59,9 @@ class TitleIdDownloadObserver @Inject constructor(
 
         if (cartFeatureScanner.appliesTo(game.platformSlug)) {
             cartFeatureScanner.scan(game.copy(localPath = event.localPath))
-            return
         }
 
-        if (game.platformSlug !in TITLE_ID_PLATFORMS) {
+        if (!hasTitleId(game.platformSlug)) {
             Logger.debug(TAG, "Platform ${game.platformSlug} doesn't use title IDs, skipping")
             return
         }
@@ -89,7 +89,7 @@ class TitleIdDownloadObserver @Inject constructor(
     suspend fun extractTitleIdForGame(gameId: Long): Boolean {
         val game = gameDao.getById(gameId) ?: return false
 
-        if (game.platformSlug !in TITLE_ID_PLATFORMS) {
+        if (!hasTitleId(game.platformSlug)) {
             return false
         }
 
@@ -118,7 +118,7 @@ class TitleIdDownloadObserver @Inject constructor(
     suspend fun recheckTitleId(gameId: Long): TitleIdRecheck {
         val game = gameDao.getById(gameId) ?: return TitleIdRecheck.Unsupported
 
-        if (game.platformSlug !in TITLE_ID_PLATFORMS) {
+        if (!hasTitleId(game.platformSlug)) {
             return TitleIdRecheck.Unsupported
         }
 

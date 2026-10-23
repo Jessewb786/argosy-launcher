@@ -770,7 +770,7 @@ class GameDetailViewModel @Inject constructor(
                 }
             }
 
-            val needsTitleId = game.platformSlug in com.nendo.argosy.data.platform.PlatformDefinitions.TITLE_ID_PLATFORMS
+            val needsTitleId = com.nendo.argosy.data.platform.PlatformDefinitions.hasTitleId(game.platformSlug)
             if (needsTitleId && game.titleId == null && game.localPath != null) {
                 viewModelScope.launch {
                     titleIdDownloadObserver.extractTitleIdForGame(gameId)
