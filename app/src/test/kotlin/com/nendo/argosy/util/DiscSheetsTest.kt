@@ -99,6 +99,49 @@ class DiscSheetsTest {
         assertEquals(setOf("Game.mdf"), names(DiscSheets.companions(mds, psxExtensions)))
     }
 
+    private val saturnExtensions = setOf("iso", "bin", "cue", "chd", "ccd", "toc", "mds", "zip", "7z")
+
+    @Test
+    fun `a ccd takes its img and sub even where the platform lists neither`() {
+        val dir = tempDir.newFolder("saturn")
+        val ccd = touch(dir, "Game.ccd")
+        touch(dir, "Game.img")
+        touch(dir, "Game.sub")
+        touch(dir, "Other.sub")
+        touch(dir, "Game.srm")
+
+        assertEquals(setOf("Game.img", "Game.sub"), names(DiscSheets.companions(ccd, saturnExtensions)))
+    }
+
+    @Test
+    fun `an mds takes its mdf, a cue its sbi`() {
+        val dir = tempDir.newFolder("saturn")
+        val mds = touch(dir, "Game.mds")
+        touch(dir, "Game.mdf")
+        assertEquals(setOf("Game.mdf"), names(DiscSheets.companions(mds, saturnExtensions)))
+
+        val cue = touch(dir, "Disc.cue", "FILE \"Disc.bin\" BINARY\n")
+        touch(dir, "Disc.bin")
+        touch(dir, "Disc.sbi")
+        assertEquals(setOf("Disc.bin", "Disc.sbi"), names(DiscSheets.companions(cue, psxExtensions)))
+    }
+
+    @Test
+    fun `a toc's companions are the files it lists`() {
+        val dir = tempDir.newFolder("saturn")
+        val toc = touch(
+            dir,
+            "Game.toc",
+            "CD_ROM\nTRACK MODE1_RAW\nDATAFILE \"data.raw\"\nTRACK AUDIO\nFILE \"audio.raw\" 0 03:00:00\n" +
+                "TRACK AUDIO\nAUDIOFILE \"audio.raw\" 03:00:00 01:00:00\n"
+        )
+        touch(dir, "data.raw")
+        touch(dir, "audio.raw")
+        touch(dir, "unrelated.raw")
+
+        assertEquals(setOf("data.raw", "audio.raw"), names(DiscSheets.companions(toc, saturnExtensions)))
+    }
+
     @Test
     fun `only sheet extensions count as loaders`() {
         assertTrue(DiscSheets.isLoader("Game.CUE"))
