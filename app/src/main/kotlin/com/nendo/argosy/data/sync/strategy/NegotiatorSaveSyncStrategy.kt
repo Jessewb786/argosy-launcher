@@ -48,7 +48,8 @@ class NegotiatorSaveSyncStrategy @Inject constructor(
                     fileSizeBytes = it.fileSizeBytes
                 )
             },
-            romIds = romIds
+            romIds = romIds,
+            restoreUnlisted = true
         )
 
         val response = try {

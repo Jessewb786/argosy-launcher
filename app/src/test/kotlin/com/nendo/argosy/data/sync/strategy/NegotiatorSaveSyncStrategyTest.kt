@@ -11,6 +11,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import retrofit2.Response
 
@@ -115,6 +116,22 @@ class NegotiatorSaveSyncStrategyTest {
         assertEquals(1, payloadSlot.captured.saves.size)
         assertEquals(42L, payloadSlot.captured.saves[0].romId)
         assertEquals("abc", payloadSlot.captured.saves[0].contentHash)
+    }
+
+    @Test
+    fun `both scopes ask the server to offer saves this device no longer lists`() = runTest {
+        val payloads = mutableListOf<com.nendo.argosy.data.remote.romm.RomMSyncNegotiatePayload>()
+        coEvery { api.negotiateSync(capture(payloads)) } returns Response.success(
+            RomMSyncNegotiateResponse(sessionId = 1L, operations = emptyList())
+        )
+
+        strategy.planReconcile(emptyList())
+        strategy.planForGame(emptyList(), romId = 1576L)
+
+        val adapter = com.squareup.moshi.Moshi.Builder().build()
+            .adapter(com.nendo.argosy.data.remote.romm.RomMSyncNegotiatePayload::class.java)
+        assertEquals(2, payloads.size)
+        payloads.forEach { assertTrue(adapter.toJson(it).contains("\"restore_unlisted\":true")) }
     }
 
     @Test
