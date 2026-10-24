@@ -253,19 +253,21 @@ class RomMLibrarySyncSkipFullSyncTest {
     }
 
     @Test
-    fun `a full pass that skipped a platform leaves the changes watermark for the next changes pass`() = runTest {
+    fun `a full pass that skipped a platform records its time but keeps the changes watermark`() = runTest {
         service.syncLibrary()
 
-        coVerify(exactly = 0) { preferencesRepository.setLastRommSyncTime(any()) }
+        coVerify(exactly = 1) { preferencesRepository.setLastRommSyncTime(any()) }
+        coVerify(exactly = 0) { preferencesRepository.setRommChangesWatermark(any()) }
     }
 
     @Test
-    fun `a full pass with nothing skipped advances the changes watermark`() = runTest {
+    fun `a full pass with nothing skipped records its time and advances the changes watermark`() = runTest {
         coEvery { platformDao.getById(2L) } returns local(2L, "nes", skipFullSync = false)
 
         service.syncLibrary()
 
         coVerify(exactly = 1) { preferencesRepository.setLastRommSyncTime(any()) }
+        coVerify(exactly = 1) { preferencesRepository.setRommChangesWatermark(any()) }
     }
 
     @Test

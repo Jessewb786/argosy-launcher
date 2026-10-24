@@ -227,6 +227,7 @@ class RomMLibrarySyncService @Inject constructor(
             androidGameScanner.get().relinkInstalledRommAndroidApps()
             playSessionDao.relinkOrphans(scope.ownerUserId)
             userPreferencesRepository.setLastRommSyncTime(syncStartedAt)
+            userPreferencesRepository.setRommChangesWatermark(syncStartedAt)
             syncVirtualCollectionsUseCase.get()()
             recomputeSiblingGroups(completesFullPass = false)
             writeGameCounts(enabledRemoteIds.values.map { storagePlatformId(it) }, scope.ownerUserId)
@@ -701,7 +702,9 @@ class RomMLibrarySyncService @Inject constructor(
                 Logger.info(TAG, "doSyncLibrary: relinked $relinkedSessions play sessions to current game rows")
             }
 
-            if (!skipsPlatforms) userPreferencesRepository.setLastRommSyncTime(Instant.now())
+            val passFinishedAt = Instant.now()
+            userPreferencesRepository.setLastRommSyncTime(passFinishedAt)
+            if (!skipsPlatforms) userPreferencesRepository.setRommChangesWatermark(passFinishedAt)
             if (errors.isEmpty()) {
                 userPreferencesRepository.setLastRommFullSyncTime(
                     resumeGeneration.takeIf { resuming } ?: syncStartedAt

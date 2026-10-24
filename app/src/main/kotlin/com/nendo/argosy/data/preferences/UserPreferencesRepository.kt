@@ -112,6 +112,7 @@ class UserPreferencesRepository @Inject constructor(
             quickNavigation = controls.quickNavigation,
             navBarAutoHide = controls.navBarAutoHide,
             lastRommSync = sync.lastRommSync,
+            rommChangesWatermark = sync.rommChangesWatermark,
             lastFavoritesSync = sync.lastFavoritesSync,
             lastFavoritesCheck = sync.lastFavoritesCheck,
             syncFilters = sync.syncFilters,
@@ -441,6 +442,8 @@ class UserPreferencesRepository @Inject constructor(
     suspend fun setRAWebApiKey(key: String?) = syncPrefs.setRAWebApiKey(key)
     suspend fun setRAProxy(enabled: Boolean, address: String) = syncPrefs.setRAProxy(enabled, address)
     suspend fun setLastRommSyncTime(time: Instant) = syncPrefs.setLastRommSyncTime(time)
+
+    suspend fun setRommChangesWatermark(time: Instant) = syncPrefs.setRommChangesWatermark(time)
     suspend fun setLastRommFullSyncTime(time: Instant) = syncPrefs.setLastRommFullSyncTime(time)
     suspend fun getSyncResumeGeneration(): Instant? = syncPrefs.getSyncResumeGeneration()
     suspend fun getSyncResumeCompletedPlatformIds(): Set<Long> = syncPrefs.getSyncResumeCompletedPlatformIds()
@@ -860,6 +863,7 @@ data class UserPreferences(
     val quickNavigation: Boolean = true,
     val navBarAutoHide: Boolean = true,
     val lastRommSync: Instant? = null,
+    val rommChangesWatermark: Instant? = null,
     val lastFavoritesSync: Instant? = null,
     val lastFavoritesCheck: Instant? = null,
     val syncFilters: SyncFilterPreferences = SyncFilterPreferences(),
