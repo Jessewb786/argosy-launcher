@@ -760,6 +760,7 @@ private fun routeDisplaysConfirm(vm: SettingsViewModel, state: SettingsUiState):
         }
         DisplaysItem.DimLevel -> vm.cycleScreenDimmerLevel()
         DisplaysItem.DualScreenEnabled -> vm.setDualScreenEnabled(!state.display.dualScreenEnabled)
+        DisplaysItem.DualScreenMatchSize -> vm.setDualScreenMatchSize(!state.display.dualScreenMatchSize)
         DisplaysItem.DisplayRoles -> {
             vm.requestEnumPicker(DisplaysItem.DisplayRoles.key)
             return InputResult.handled(SoundType.OPEN_MODAL)
@@ -1479,6 +1480,10 @@ private fun routePlatformDetailConfirm(vm: SettingsViewModel, state: SettingsUiS
                 .find { it.platformId == config.platform.id }
                 ?.combineContent ?: false
             vm.togglePlatformCombineContent(config.platform.id, !current)
+        }
+        PlatformDetailItem.SkipFullSync -> {
+            val current = storageConfig?.skipFullSync ?: false
+            vm.togglePlatformSkipFullSync(config.platform.id, !current)
         }
         PlatformDetailItem.SyncNow -> vm.syncPlatform(config.platform.id, config.platform.getDisplayName())
         PlatformDetailItem.RemoveFiles -> vm.requestRemoveLocalFiles()

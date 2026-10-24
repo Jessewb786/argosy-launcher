@@ -445,6 +445,13 @@ internal fun routeSetBuiltinFastForwardMode(vm: SettingsViewModel, mode: com.nen
     }
 }
 
+internal fun routeSetBuiltinSelectAsBack(vm: SettingsViewModel, mode: com.nendo.argosy.data.local.entity.SelectAsBackMode) {
+    vm._uiState.update { it.copy(builtinControls = it.builtinControls.copy(selectAsBack = mode)) }
+    vm.viewModelScope.launch {
+        vm.libretroSettingsRepo.setBuiltinSelectAsBack(mode)
+    }
+}
+
 internal fun routeSetBuiltinFastForwardPreservePitch(vm: SettingsViewModel, enabled: Boolean) {
     vm._uiState.update { it.copy(builtinControls = it.builtinControls.copy(fastForwardPreservePitch = enabled)) }
     vm.viewModelScope.launch {
@@ -1206,11 +1213,13 @@ internal fun routeLoadControllerPorts(vm: SettingsViewModel) {
         )
         val ports = portDevices.mapIndexedNotNull { port, devices ->
             if (devices.size < 2) return@mapIndexedNotNull null
+            val deviceIds = devices.map { it.id }
             ControllerPortChoiceUi(
                 port = port,
-                deviceIds = devices.map { it.id },
+                deviceIds = deviceIds,
                 deviceNames = devices.map { it.name },
-                selectedIndex = devices.indexOfFirst { it.id == stored[port] }.coerceAtLeast(0)
+                selectedIndex = CorePortDeviceCatalog.selectedDeviceIndex(deviceIds, stored[port]),
+                autoIndex = CorePortDeviceCatalog.autoDeviceIndex(deviceIds) ?: 0
             )
         }
         vm._uiState.update { state ->
@@ -1239,7 +1248,7 @@ internal fun routeSelectControllerType(vm: SettingsViewModel, port: Int, index: 
         val legacyApplies = ControllerTypeSelection.legacyApplies(platform.platformSlug)
         val encoded = vm.configureEmulatorUseCase.getControllerTypesForPlatform(platform.platformId)
         val stored = ControllerTypeSelection.decode(encoded, coreId, legacyApplies)
-        val updated = if (index == 0) stored - port else stored + (port to deviceId)
+        val updated = if (index == choice.autoIndex) stored - port else stored + (port to deviceId)
         vm.configureEmulatorUseCase.setControllerTypesForPlatform(
             platform.platformId,
             ControllerTypeSelection.update(encoded, coreId, legacyApplies, updated)

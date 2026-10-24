@@ -87,6 +87,8 @@ class StateCacheManager @Inject constructor(
         private const val BUFFER_SIZE = 8192
         private val LOCAL_ONLY_STATUSES = setOf(StateCacheEntity.STATUS_LOCAL_NEWER, StateCacheEntity.STATUS_PENDING_UPLOAD)
         private val UPLOAD_TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")
+        private val STATE_NAME_TIMESTAMP =
+            Regex("""\[(\d{4}-\d{2}-\d{2})[_ ](\d{2}-\d{2}-\d{2})(?:-(\d{3}))?]""")
         private val SLOT_REGEX = Regex("""\.state(\d+)?$""")
         private val UNDERSCORE_SLOT_REGEX = Regex("""_(\d+)\.[^.]+$""")
     }
@@ -1428,15 +1430,24 @@ class StateCacheManager @Inject constructor(
 
     fun parseServerStateTimestamp(timestamp: String): Instant? = parseTimestamp(timestamp)
 
+    /**
+     * The capture time a state's name carries: `[yyyy-MM-dd_HH-mm-ss]` from Argosy, or RomM's
+     * `[yyyy-MM-dd HH-mm-ss-SSS]` (web player) and `[yyyy-MM-dd_HH-mm-ss-SSS]` (server tag).
+     */
     fun parseStateFileTimestamp(fileName: String): Instant? {
-        val match = Regex("""\[(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})]""").find(fileName) ?: return null
+        val match = STATE_NAME_TIMESTAMP.find(fileName) ?: return null
+        val (date, time, millis) = match.destructured
         return try {
-            java.time.LocalDateTime.parse(match.groupValues[1], UPLOAD_TIMESTAMP_FORMAT)
+            java.time.LocalDateTime.parse("${date}_$time", UPLOAD_TIMESTAMP_FORMAT)
+                .plusNanos((millis.toLongOrNull() ?: 0L) * 1_000_000L)
                 .atZone(java.time.ZoneId.systemDefault()).toInstant()
         } catch (e: Exception) {
             null
         }
     }
+
+    fun serverStateWrittenAt(state: RomMState): Instant? =
+        parseStateFileTimestamp(state.fileName) ?: parseTimestamp(state.updatedAt)
 
     fun parseTimestamp(timestamp: String): Instant? {
         return try {
@@ -1494,7 +1505,7 @@ class StateCacheManager @Inject constructor(
     )
 
     fun parseStateFileName(fileName: String): ParsedStateFileName {
-        val ts = """ \[\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}]"""
+        val ts = """ \[\d{4}-\d{2}-\d{2}[_ ]\d{2}-\d{2}-\d{2}(?:-\d{3})?]"""
 
         // {game} [{ts}].{channel}.state.auto
         val channelAutoMatch = Regex("""^(.+)$ts\.(.+?)\.state\.auto$""").find(fileName)

@@ -42,8 +42,10 @@ class LaunchHandoff internal constructor(
     /**
      * Places [start]'s game, finishes [ticket] as launched and requests [intent]'s window with that
      * placement after the hold; [session] starts once the window is requested, and Launching outlasts
-     * a stop of the launching screen until then. A game the launch already opened skips the hold. A cancelled ticket opens nothing. A failed placement
-     * or start, or a cut-short hold, clears Launching at once; failures reach [GameStart.onFailure].
+     * a stop of the launching screen until then. A game the launch already opened skips the hold. A
+     * cancelled ticket opens nothing. A failed placement or start, or a cut-short hold, clears
+     * Launching at once. A failure cancels the game's running play session, as a resumed game has,
+     * and reaches [GameStart.onFailure].
      */
     suspend fun handOff(
         ticket: LaunchProgressTracker.Ticket,
@@ -76,6 +78,7 @@ class LaunchHandoff internal constructor(
 
     private fun fail(ticket: LaunchProgressTracker.Ticket, failure: Throwable, start: GameStart) {
         tracker.openFailed(ticket)
+        startRouter.cancelSessionOf(start.gameId)
         start.onFailure?.invoke(failure)
     }
 }
