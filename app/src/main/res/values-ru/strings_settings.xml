@@ -253,7 +253,7 @@
     <string name="settings_displays_display_roles_title">Экран управления</string>
     <string name="settings_displays_display_roles_subtitle">Экран, на котором открываются меню; второй показывает то, что вы смотрите</string>
     <string name="settings_displays_match_screen_size_title">Одинаковый размер игровых экранов</string>
-    <string name="settings_displays_match_screen_size_subtitle">Экраны DS и 3DS показываются одного размера и сходятся у шарнира</string>
+    <string name="settings_displays_match_screen_size_subtitle">Экраны DS показываются одного размера и сходятся у шарнира</string>
     <string name="settings_displays_display_roles_auto">Авто</string>
     <string name="settings_displays_display_roles_standard">Экран-компаньон</string>
     <string name="settings_displays_display_roles_swapped">Основной экран</string>

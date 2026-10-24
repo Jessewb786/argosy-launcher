@@ -258,7 +258,7 @@
     <string name="settings_displays_display_roles_title">Steuerbildschirm</string>
     <string name="settings_displays_display_roles_subtitle">Der Bildschirm, auf dem Menüs erscheinen; der andere zeigt, was du gerade ansiehst</string>
     <string name="settings_displays_match_screen_size_title">Spielbildschirme gleich groß</string>
-    <string name="settings_displays_match_screen_size_subtitle">DS- und 3DS-Bildschirme erscheinen gleich groß und treffen sich am Scharnier</string>
+    <string name="settings_displays_match_screen_size_subtitle">DS-Bildschirme erscheinen gleich groß und treffen sich am Scharnier</string>
     <string name="settings_displays_display_roles_auto">Auto</string>
     <string name="settings_displays_display_roles_standard">Begleitbildschirm</string>
     <string name="settings_displays_display_roles_swapped">Hauptbildschirm</string>

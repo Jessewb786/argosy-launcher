@@ -36,20 +36,6 @@ class DualScreenMatchScaleTest {
     }
 
     @Test
-    fun `a 3DS keeps its wider top screen at the lower screen's physical scale`() {
-        val matched = MatchedScreens.of(thorTop, thorBottom, 400f / 240f, 320f / 240f)
-
-        assertEquals(
-            matched.secondary.height / thorBottom.pixelsPerInch,
-            matched.primary.height / thorTop.pixelsPerInch,
-            0.01f
-        )
-        val lowerInchesPerPixel = matched.secondary.width / thorBottom.pixelsPerInch / 320f
-        val upperInchesPerPixel = matched.primary.width / thorTop.pixelsPerInch / 400f
-        assertEquals(lowerInchesPerPixel, upperInchesPerPixel, 0.0001f)
-    }
-
-    @Test
     fun `the upper screen rests on the bottom edge of its view, centred across`() {
         val matched = MatchedScreens.of(thorTop, thorBottom, ds, ds)
 

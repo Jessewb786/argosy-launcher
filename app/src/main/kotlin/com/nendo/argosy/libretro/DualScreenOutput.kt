@@ -6,6 +6,7 @@ import android.graphics.RectF
 /**
  * How a two-screen console's single framebuffer is split across two displays. Crops are the
  * fraction trimmed from each edge and are only valid while [coreOptions] are set.
+ * [matchesScreenSize] is whether Match Game Screen Sizes applies to this console.
  */
 data class DualScreenOutput(
     val coreId: String,
@@ -13,7 +14,8 @@ data class DualScreenOutput(
     val primary: RectF,
     val secondary: RectF,
     val primaryAspect: Float,
-    val secondaryAspect: Float
+    val secondaryAspect: Float,
+    val matchesScreenSize: Boolean = false
 ) {
     /**
      * Where a touch on the second display lands in the whole frame, or null when it lands on the
@@ -92,7 +94,8 @@ data class DualScreenOutput(
             primary = RectF(0f, 0f, 0f, splitTrim(MELONDS_FRAME_ROWS)),
             secondary = RectF(0f, splitTrim(MELONDS_FRAME_ROWS), 0f, 0f),
             primaryAspect = 256f / 192f,
-            secondaryAspect = 256f / 192f
+            secondaryAspect = 256f / 192f,
+            matchesScreenSize = true
         )
 
         private val MELONDS_DS = MELONDS.copy(

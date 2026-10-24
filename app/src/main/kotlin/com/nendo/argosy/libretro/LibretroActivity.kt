@@ -3439,7 +3439,9 @@ class LibretroActivity : ComponentActivity() {
         @Suppress("DEPRECATION")
         val primaryPanel = windowManager.defaultDisplay.panelSpec(panels)
         val secondaryPanel = secondDisplay?.panelSpec(panels)
-        matchedScreens = if (dualScreenMatchSize && primaryPanel != null && secondaryPanel != null) {
+        matchedScreens = if (
+            dualScreenMatchSize && output.matchesScreenSize && primaryPanel != null && secondaryPanel != null
+        ) {
             MatchedScreens.of(primaryPanel, secondaryPanel, output.primaryAspect, output.secondaryAspect)
         } else {
             null
