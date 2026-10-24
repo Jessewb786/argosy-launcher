@@ -3445,6 +3445,7 @@ class LibretroActivity : ComponentActivity() {
 
     private fun secondScreenDisplay(): android.view.Display? =
         screenCatalog.secondScreenFor(windowManager.defaultDisplay.displayId)
+            ?.takeIf { it.displayId != android.view.Display.DEFAULT_DISPLAY }
 
     /**
      * Rebuilds the second screen's window. Its surface belongs to the display, not to us, so it is
