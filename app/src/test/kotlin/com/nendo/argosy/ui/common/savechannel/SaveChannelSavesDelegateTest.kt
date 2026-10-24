@@ -249,10 +249,12 @@ class SaveChannelSavesDelegateTest {
         channelName: String? = null,
         archival: Boolean = false,
         locked: Boolean = false,
-        serverSaveId: Long? = null
+        serverSaveId: Long? = null,
+        uploaded: Boolean = serverSaveId != null
     ) = UnifiedSaveEntry(
         localCacheId = cacheId,
         serverSaveId = serverSaveId,
+        localCopyUploaded = uploaded,
         timestamp = Instant.ofEpochMilli(ms),
         size = 100L,
         channelName = channelName,
@@ -321,6 +323,22 @@ class SaveChannelSavesDelegateTest {
         delegate.showDeleteVersionConfirmation()
 
         assertEquals(SaveDeleteTarget.Version(4L, 4000L, onServer = true), holder.state.value.deleteTarget)
+    }
+
+    @Test
+    fun `a rollback that only took a server id by name match is the only copy`() {
+        focusSlot(
+            listOf(
+                cached(5, 5000, "flip", locked = true),
+                cached(4, 4000, "flip", locked = true, serverSaveId = 40L, uploaded = false)
+            ),
+            { it.channelName == "flip" }
+        )
+        holder.state.value = holder.state.value.copy(saveFocusColumn = SaveFocusColumn.HISTORY, selectedHistoryIndex = 1)
+
+        delegate.showDeleteVersionConfirmation()
+
+        assertEquals(SaveDeleteTarget.Version(4L, 4000L, onServer = false), holder.state.value.deleteTarget)
     }
 
     @Test

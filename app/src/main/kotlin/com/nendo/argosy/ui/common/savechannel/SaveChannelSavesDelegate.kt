@@ -903,7 +903,7 @@ class SaveChannelSavesDelegate @Inject constructor(
             if (archived.isEmpty()) return
             SaveDeleteTarget.Archived(
                 cacheIds = archived.mapNotNull { it.localCacheId },
-                allOnServer = archived.all { it.serverSaveId != null }
+                allOnServer = archived.all { it.localCopyUploaded }
             )
         } else {
             val channelName = slot.channelName ?: return
@@ -923,7 +923,7 @@ class SaveChannelSavesDelegate @Inject constructor(
                 deleteTarget = SaveDeleteTarget.Version(
                     cacheId = item.cacheId,
                     timestamp = item.timestamp,
-                    onServer = item.serverSaveId != null
+                    onServer = holder.rawEntries.any { it.localCacheId == item.cacheId && it.localCopyUploaded }
                 )
             )
         }

@@ -1607,7 +1607,7 @@ class GameDetailViewModel @Inject constructor(
 
     fun confirmRename() = saveManagement.saveChannelDelegate.confirmRename(viewModelScope)
 
-    fun saveChannelSecondaryAction() = saveManagement.saveChannelDelegate.secondaryAction(viewModelScope, ::handleSaveStatusChanged)
+    fun saveChannelSecondaryAction() = saveManagement.saveChannelDelegate.secondaryAction()
 
     fun saveChannelTertiaryAction() = saveManagement.saveChannelDelegate.tertiaryAction(viewModelScope)
 

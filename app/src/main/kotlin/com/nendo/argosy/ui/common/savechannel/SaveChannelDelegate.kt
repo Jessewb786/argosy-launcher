@@ -314,11 +314,7 @@ class SaveChannelDelegate @Inject constructor(
     fun confirmReplaceAutoWithSlot(scope: CoroutineScope) =
         statesDelegate.confirmReplaceAutoWithSlot(scope)
 
-    @Suppress("UNUSED_PARAMETER")
-    fun secondaryAction(
-        scope: CoroutineScope,
-        onSaveStatusChanged: (SaveStatusEvent) -> Unit
-    ) {
+    fun secondaryAction() {
         val state = _state.value
         if (state.showSlotPicker) return
         if (state.showRestoreConfirmation || state.showRenameDialog ||
