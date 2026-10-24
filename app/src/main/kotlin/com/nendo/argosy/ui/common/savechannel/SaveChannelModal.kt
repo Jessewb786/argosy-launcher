@@ -930,7 +930,7 @@ private fun buildFooterHints(state: SaveChannelState): List<FooterHintItem> {
                     if (state.canDeleteVersion) {
                         hints.add(
                             FooterHintItem(
-                                InputButton.X,
+                                InputButton.Y,
                                 stringResource(R.string.ui_save_channel_footer_delete_version)
                             )
                         )
@@ -938,7 +938,7 @@ private fun buildFooterHints(state: SaveChannelState): List<FooterHintItem> {
                     if (state.canLockAsSlot) {
                         hints.add(
                             FooterHintItem(
-                                InputButton.Y,
+                                InputButton.X,
                                 stringResource(R.string.ui_save_channel_footer_save_as)
                             )
                         )
@@ -1262,6 +1262,11 @@ private fun DeleteLegacyConfirmationOverlay(
 }
 
 @Composable
+private fun localDeleteNote(onServer: Boolean): String = stringResource(
+    if (onServer) R.string.ui_save_channel_delete_local_note else R.string.ui_save_channel_delete_only_copy_note
+)
+
+@Composable
 private fun DeleteConfirmationOverlay(target: SaveDeleteTarget, onHintClick: (InputButton) -> Unit) {
     val title = when (target) {
         is SaveDeleteTarget.Channel -> stringResource(R.string.ui_save_channel_delete_slot_title)
@@ -1283,7 +1288,8 @@ private fun DeleteConfirmationOverlay(target: SaveDeleteTarget, onHintClick: (In
     }
     val note = when (target) {
         is SaveDeleteTarget.Channel -> stringResource(R.string.ui_save_channel_delete_slot_note)
-        else -> stringResource(R.string.ui_save_channel_delete_local_note)
+        is SaveDeleteTarget.Version -> localDeleteNote(target.onServer)
+        is SaveDeleteTarget.Archived -> localDeleteNote(target.allOnServer)
     }
     NestedModal(
         title = title,

@@ -338,7 +338,7 @@ class SaveChannelDelegate @Inject constructor(
                             savesDelegate.showDeleteConfirmation()
                         }
                     }
-                    SaveFocusColumn.HISTORY -> savesDelegate.showSlotPicker(scope)
+                    SaveFocusColumn.HISTORY -> savesDelegate.showDeleteVersionConfirmation()
                 }
             }
             SaveTab.STATES -> statesDelegate.showStateDeleteConfirmation()
@@ -349,7 +349,7 @@ class SaveChannelDelegate @Inject constructor(
 
     fun setSlotPickerIndex(index: Int) = savesDelegate.setSlotPickerIndex(index)
 
-    fun tertiaryAction() {
+    fun tertiaryAction(scope: CoroutineScope) {
         val state = _state.value
         if (state.showSlotPicker) return
         if (state.showRestoreConfirmation || state.showRenameDialog ||
@@ -361,7 +361,7 @@ class SaveChannelDelegate @Inject constructor(
             SaveTab.SAVES -> {
                 when (state.saveFocusColumn) {
                     SaveFocusColumn.SLOTS -> savesDelegate.showRenameSlotDialog()
-                    SaveFocusColumn.HISTORY -> savesDelegate.showDeleteVersionConfirmation()
+                    SaveFocusColumn.HISTORY -> savesDelegate.showSlotPicker(scope)
                 }
             }
             SaveTab.STATES -> {

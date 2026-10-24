@@ -899,9 +899,12 @@ class SaveChannelSavesDelegate @Inject constructor(
         if (slot.isCreateAction) return
 
         val target = if (slot.isArchivedBucket) {
-            val cacheIds = holder.rawEntries.filter { it.isArchival }.mapNotNull { it.localCacheId }
-            if (cacheIds.isEmpty()) return
-            SaveDeleteTarget.Archived(cacheIds)
+            val archived = holder.rawEntries.filter { it.isArchival && it.localCacheId != null }
+            if (archived.isEmpty()) return
+            SaveDeleteTarget.Archived(
+                cacheIds = archived.mapNotNull { it.localCacheId },
+                allOnServer = archived.all { it.serverSaveId != null }
+            )
         } else {
             val channelName = slot.channelName ?: return
             holder.rawEntries.firstOrNull { it.channelName == channelName && it.isLocked } ?: return
@@ -917,7 +920,11 @@ class SaveChannelSavesDelegate @Inject constructor(
         _state.update {
             it.copy(
                 showDeleteConfirmation = true,
-                deleteTarget = SaveDeleteTarget.Version(item.cacheId, item.timestamp)
+                deleteTarget = SaveDeleteTarget.Version(
+                    cacheId = item.cacheId,
+                    timestamp = item.timestamp,
+                    onServer = item.serverSaveId != null
+                )
             )
         }
     }

@@ -250,6 +250,8 @@
     </plurals>
     <!-- Note under a save or archived-saves deletion: only this device's copies go. -->
     <string name="ui_save_channel_delete_local_note">This removes the copy on this device. A copy on the server stays. This cannot be undone.</string>
+    <!-- Note on the same dialog when at least one save being deleted was never uploaded. -->
+    <string name="ui_save_channel_delete_only_copy_note">This device holds the only copy. It will be gone for good.</string>
 
     <!-- Heading of the warning shown when a save state was written by a different build of the
          emulator core. Rendered in caps. -->

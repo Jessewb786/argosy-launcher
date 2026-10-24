@@ -248,13 +248,15 @@ class SaveChannelSavesDelegateTest {
         ms: Long,
         channelName: String? = null,
         archival: Boolean = false,
-        locked: Boolean = false
+        locked: Boolean = false,
+        serverSaveId: Long? = null
     ) = UnifiedSaveEntry(
         localCacheId = cacheId,
+        serverSaveId = serverSaveId,
         timestamp = Instant.ofEpochMilli(ms),
         size = 100L,
         channelName = channelName,
-        source = UnifiedSaveEntry.Source.LOCAL,
+        source = if (serverSaveId != null) UnifiedSaveEntry.Source.BOTH else UnifiedSaveEntry.Source.LOCAL,
         isLocked = locked,
         isArchival = archival
     )
@@ -277,7 +279,7 @@ class SaveChannelSavesDelegateTest {
         )
 
         delegate.showDeleteConfirmation()
-        assertEquals(SaveDeleteTarget.Archived(listOf(1L, 2L)), holder.state.value.deleteTarget)
+        assertEquals(SaveDeleteTarget.Archived(listOf(1L, 2L), allOnServer = false), holder.state.value.deleteTarget)
         delegate.confirmDelete(this) {}
         advanceUntilIdle()
 
@@ -300,12 +302,42 @@ class SaveChannelSavesDelegateTest {
 
         holder.state.value = holder.state.value.copy(selectedHistoryIndex = 1)
         delegate.showDeleteVersionConfirmation()
-        assertEquals(SaveDeleteTarget.Version(4L, 4000L), holder.state.value.deleteTarget)
+        assertEquals(SaveDeleteTarget.Version(4L, 4000L, onServer = false), holder.state.value.deleteTarget)
         delegate.confirmDelete(this) {}
         advanceUntilIdle()
 
         coVerify(exactly = 1) { saveCacheManager.deleteCachedSave(4L) }
         coVerify(exactly = 0) { saveCacheManager.deleteCachedSave(5L) }
+    }
+
+    @Test
+    fun `a version with a server copy is marked as kept on the server`() {
+        focusSlot(
+            listOf(cached(5, 5000, "flip", locked = true), cached(4, 4000, "flip", locked = true, serverSaveId = 40L)),
+            { it.channelName == "flip" }
+        )
+        holder.state.value = holder.state.value.copy(saveFocusColumn = SaveFocusColumn.HISTORY, selectedHistoryIndex = 1)
+
+        delegate.showDeleteVersionConfirmation()
+
+        assertEquals(SaveDeleteTarget.Version(4L, 4000L, onServer = true), holder.state.value.deleteTarget)
+    }
+
+    @Test
+    fun `archived copies count as kept on the server only when every one was uploaded`() {
+        focusSlot(
+            listOf(cached(1, 1000, archival = true, serverSaveId = 10L), cached(2, 2000, archival = true, serverSaveId = 20L)),
+            SaveSlotItem::isArchivedBucket
+        )
+        delegate.showDeleteConfirmation()
+        assertEquals(SaveDeleteTarget.Archived(listOf(1L, 2L), allOnServer = true), holder.state.value.deleteTarget)
+
+        focusSlot(
+            listOf(cached(1, 1000, archival = true, serverSaveId = 10L), cached(2, 2000, archival = true)),
+            SaveSlotItem::isArchivedBucket
+        )
+        delegate.showDeleteConfirmation()
+        assertEquals(SaveDeleteTarget.Archived(listOf(1L, 2L), allOnServer = false), holder.state.value.deleteTarget)
     }
 
     @Test

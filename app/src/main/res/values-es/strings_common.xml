@@ -114,6 +114,7 @@
         <item quantity="other">¿Eliminar %1$d partidas archivadas?</item>
     </plurals>
     <string name="ui_save_channel_delete_local_note">Esto elimina la copia de este dispositivo. La copia del servidor se conserva. Esta acción no se puede deshacer.</string>
+    <string name="ui_save_channel_delete_only_copy_note">Este dispositivo tiene la única copia. Se perderá para siempre.</string>
     <plurals name="ui_save_channel_notice_versions_deleted">
         <item quantity="one">%1$d partida eliminada</item>
         <item quantity="other">%1$d partidas eliminadas</item>

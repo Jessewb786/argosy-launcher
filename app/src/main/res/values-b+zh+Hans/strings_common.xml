@@ -109,6 +109,7 @@
         <item quantity="other">删除 %1$d 个已归档的存档？</item>
     </plurals>
     <string name="ui_save_channel_delete_local_note">这将移除此设备上的副本，服务器上的副本会保留。此操作无法撤销。</string>
+    <string name="ui_save_channel_delete_only_copy_note">唯一的副本在此设备上，删除后将永久丢失。</string>
     <plurals name="ui_save_channel_notice_versions_deleted">
         <item quantity="other">已删除 %1$d 个存档</item>
     </plurals>

@@ -113,6 +113,7 @@
         <item quantity="other">%1$d आर्काइव किए गए सेव हटाएं?</item>
     </plurals>
     <string name="ui_save_channel_delete_local_note">इससे इस डिवाइस की कॉपी हट जाएगी। सर्वर की कॉपी बनी रहेगी। इसे वापस नहीं लाया जा सकता।</string>
+    <string name="ui_save_channel_delete_only_copy_note">इकलौती कॉपी इसी डिवाइस पर है। यह हमेशा के लिए मिट जाएगी।</string>
     <plurals name="ui_save_channel_notice_versions_deleted">
         <item quantity="one">%1$d सेव हटाया गया</item>
         <item quantity="other">%1$d सेव हटाए गए</item>

@@ -113,6 +113,7 @@
         <item quantity="other">%1$d archivierte Spielstände löschen?</item>
     </plurals>
     <string name="ui_save_channel_delete_local_note">Dies entfernt die Kopie auf diesem Gerät. Eine Kopie auf dem Server bleibt erhalten. Dies kann nicht rückgängig gemacht werden.</string>
+    <string name="ui_save_channel_delete_only_copy_note">Dieses Gerät hat die einzige Kopie. Sie ist danach endgültig verloren.</string>
     <plurals name="ui_save_channel_notice_versions_deleted">
         <item quantity="one">%1$d Spielstand gelöscht</item>
         <item quantity="other">%1$d Spielstände gelöscht</item>

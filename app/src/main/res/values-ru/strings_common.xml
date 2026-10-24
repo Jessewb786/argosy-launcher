@@ -115,6 +115,7 @@
         <item quantity="other">Удалить %1$d архивного сохранения?</item>
     </plurals>
     <string name="ui_save_channel_delete_local_note">Это удалит копию на этом устройстве. Копия на сервере останется. Это действие нельзя отменить.</string>
+    <string name="ui_save_channel_delete_only_copy_note">Единственная копия хранится на этом устройстве. Она будет удалена навсегда.</string>
     <plurals name="ui_save_channel_notice_versions_deleted">
         <item quantity="one">Удалено %1$d сохранение</item>
         <item quantity="few">Удалено %1$d сохранения</item>

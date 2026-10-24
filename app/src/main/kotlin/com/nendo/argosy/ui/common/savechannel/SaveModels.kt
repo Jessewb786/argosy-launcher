@@ -4,8 +4,8 @@ enum class SaveFocusColumn { SLOTS, HISTORY }
 
 sealed interface SaveDeleteTarget {
     data class Channel(val channelName: String) : SaveDeleteTarget
-    data class Version(val cacheId: Long, val timestamp: Long) : SaveDeleteTarget
-    data class Archived(val cacheIds: List<Long>) : SaveDeleteTarget
+    data class Version(val cacheId: Long, val timestamp: Long, val onServer: Boolean) : SaveDeleteTarget
+    data class Archived(val cacheIds: List<Long>, val allOnServer: Boolean) : SaveDeleteTarget
 }
 
 data class SaveSlotItem(
