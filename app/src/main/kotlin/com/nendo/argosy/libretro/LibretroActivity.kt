@@ -298,6 +298,8 @@ class LibretroActivity : ComponentActivity() {
     private var limitHotkeysToPlayer1 by mutableStateOf(true)
     private var selectAsBack by mutableStateOf(com.nendo.argosy.data.local.entity.SelectAsBackMode.AUTO)
     private val backAsSelect = BackAsSelectTranslator { selectAsBack }
+    private var dualScreenMatchSize = false
+    private var matchedScreens: MatchedScreens? = null
     private var firstFrameRendered = false
     private var framesSinceSample = 0
     private var measuredFps by mutableIntStateOf(0)
@@ -892,6 +894,7 @@ class LibretroActivity : ComponentActivity() {
         videoSettings.resolveCustomShader(settings)
         limitHotkeysToPlayer1 = settings.limitHotkeysToPlayer1
         selectAsBack = settings.selectAsBack
+        dualScreenMatchSize = settings.dualScreenMatchSize
         videoSettings.onRewindToggled = { enabled ->
             if (enabled && !hardcoreMode) {
                 setupRewind(settings)
@@ -3428,6 +3431,30 @@ class LibretroActivity : ComponentActivity() {
         retroView.setScreenSplit(output.primary, output.primaryAspect)
         retroView.secondaryCrop = output.secondary
         retroView.secondaryAspectRatio = output.secondaryAspect
+        applyMatchedScreens(output, secondScreenDisplay())
+    }
+
+    private fun applyMatchedScreens(output: DualScreenOutput, secondDisplay: android.view.Display?) {
+        val panels = KnownPanels.forModel()
+        @Suppress("DEPRECATION")
+        val primaryPanel = windowManager.defaultDisplay.panelSpec(panels)
+        val secondaryPanel = secondDisplay?.panelSpec(panels)
+        matchedScreens = if (dualScreenMatchSize && primaryPanel != null && secondaryPanel != null) {
+            MatchedScreens.of(primaryPanel, secondaryPanel, output.primaryAspect, output.secondaryAspect)
+        } else {
+            null
+        }
+        val column = splitColumn ?: return
+        column.post {
+            val padding = matchedScreens?.primaryPadding(column.width, column.height)
+            column.setPadding(padding?.left ?: 0, padding?.top ?: 0, padding?.right ?: 0, 0)
+            column.setBackgroundColor(if (padding != null) android.graphics.Color.BLACK else android.graphics.Color.TRANSPARENT)
+        }
+    }
+
+    private fun android.view.Display.panelSpec(panels: List<PanelSpec>): PanelSpec? {
+        val mode = mode
+        return KnownPanels.specFor(panels, mode.physicalWidth, mode.physicalHeight)
     }
 
     /**
@@ -3436,6 +3463,9 @@ class LibretroActivity : ComponentActivity() {
      */
     private fun clearScreenSplit() {
         dualScreenOutput = null
+        matchedScreens = null
+        splitColumn?.setPadding(0, 0, 0, 0)
+        splitColumn?.setBackgroundColor(android.graphics.Color.TRANSPARENT)
         if (!::retroView.isInitialized) return
         retroView.setScreenSplit(null, 0f)
         retroView.secondaryCrop = RectF(0f, 0f, 0f, 0f)
@@ -3463,6 +3493,7 @@ class LibretroActivity : ComponentActivity() {
         val presentation = SecondScreenPresentation(
             context = this,
             display = display,
+            pictureHeightPx = matchedScreens?.secondary?.height,
             onSurfaceChanged = { surface ->
                 if (::retroView.isInitialized) retroView.setSecondaryOutput(surface)
             },

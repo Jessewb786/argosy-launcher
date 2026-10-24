@@ -2,14 +2,18 @@ package com.nendo.argosy.libretro
 
 import android.app.Presentation
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Display
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.FrameLayout
 import com.nendo.argosy.util.hideSystemBars
 
 /**
@@ -32,6 +36,7 @@ import com.nendo.argosy.util.hideSystemBars
 class SecondScreenPresentation(
     context: Context,
     display: Display,
+    private val pictureHeightPx: Int?,
     private val onSurfaceChanged: (Surface?) -> Unit,
     private val onTouch: (x: Float, y: Float, width: Int, height: Int) -> Unit,
     private val onTouchReleased: () -> Unit
@@ -50,12 +55,28 @@ class SecondScreenPresentation(
 
         surfaceView = SurfaceView(context).apply {
             setZOrderOnTop(true)
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
         }
-        setContentView(surfaceView)
+        setContentView(
+            FrameLayout(context).apply {
+                addView(
+                    surfaceView,
+                    FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        pictureHeightPx ?: ViewGroup.LayoutParams.MATCH_PARENT,
+                        Gravity.TOP
+                    )
+                )
+                if (pictureHeightPx != null) {
+                    addView(
+                        View(context).apply { setBackgroundColor(Color.BLACK) },
+                        FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                        ).apply { topMargin = pictureHeightPx }
+                    )
+                }
+            }
+        )
         window?.hideSystemBars()
 
         surfaceView.setOnTouchListener { view, event ->

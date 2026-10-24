@@ -250,6 +250,8 @@
 
     <string name="settings_displays_display_roles_title">Écran de contrôle</string>
     <string name="settings_displays_display_roles_subtitle">L\'écran où s\'ouvrent les menus ; l\'autre montre ce que vous regardez</string>
+    <string name="settings_displays_match_screen_size_title">Écrans de jeu à la même taille</string>
+    <string name="settings_displays_match_screen_size_subtitle">Les écrans DS et 3DS s\'affichent à la même taille et se rejoignent à la charnière</string>
     <string name="settings_displays_display_roles_auto">Auto</string>
     <string name="settings_displays_display_roles_standard">Écran compagnon</string>
     <string name="settings_displays_display_roles_swapped">Écran principal</string>

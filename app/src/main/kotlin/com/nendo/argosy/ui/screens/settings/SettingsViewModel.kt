@@ -1480,6 +1480,8 @@ class SettingsViewModel @Inject constructor(
 
     fun setDualScreenEnabled(enabled: Boolean) = routeSetDualScreenEnabled(this, enabled)
 
+    fun setDualScreenMatchSize(enabled: Boolean) = displayDelegate.setDualScreenMatchSize(viewModelScope, enabled)
+
 
     fun cycleDisplayRoleOverride(direction: Int = 1) = routeCycleDisplayRoleOverride(this, direction)
 

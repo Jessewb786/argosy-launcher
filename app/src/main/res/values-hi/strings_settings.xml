@@ -247,6 +247,8 @@
 
     <string name="settings_displays_display_roles_title">कंट्रोल स्क्रीन</string>
     <string name="settings_displays_display_roles_subtitle">वह स्क्रीन जिस पर मेन्यू खुलते हैं; दूसरी वह दिखाती है जो आप देख रहे हैं</string>
+    <string name="settings_displays_match_screen_size_title">गेम स्क्रीन का आकार मिलाएँ</string>
+    <string name="settings_displays_match_screen_size_subtitle">DS और 3DS की स्क्रीनें एक ही आकार में दिखती हैं और कब्ज़े पर मिलती हैं</string>
     <string name="settings_displays_display_roles_auto">ऑटो</string>
     <string name="settings_displays_display_roles_standard">कम्पैनियन स्क्रीन</string>
     <string name="settings_displays_display_roles_swapped">मुख्य स्क्रीन</string>

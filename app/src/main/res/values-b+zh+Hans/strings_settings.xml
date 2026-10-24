@@ -244,6 +244,8 @@
 
     <string name="settings_displays_display_roles_title">操作屏幕</string>
     <string name="settings_displays_display_roles_subtitle">菜单打开的那块屏幕；另一块显示你正在看的内容</string>
+    <string name="settings_displays_match_screen_size_title">游戏屏幕同尺寸</string>
+    <string name="settings_displays_match_screen_size_subtitle">DS 和 3DS 的两块屏幕以相同尺寸显示，并在转轴处相接</string>
     <string name="settings_displays_display_roles_auto">自动</string>
     <string name="settings_displays_display_roles_standard">伴侣屏幕</string>
     <string name="settings_displays_display_roles_swapped">主屏幕</string>

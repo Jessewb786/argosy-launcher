@@ -542,6 +542,12 @@
     <string name="settings_displays_dual_screen_subtitle_unsupported">This system does not allow a companion app on the secondary display; toggle off and on to retry</string>
 
 
+    <!-- Switch row title. When on, a DS or 3DS game played in the built-in emulator draws both of
+         its screens at the same physical size on the device's two panels. -->
+    <string name="settings_displays_match_screen_size_title">Match Game Screen Sizes</string>
+    <!-- Second line of that switch row. -->
+    <string name="settings_displays_match_screen_size_subtitle">DS and 3DS screens show at the same size and meet at the hinge</string>
+
     <!-- Row title. Noun phrase: the screen the controller drives. -->
     <string name="settings_displays_display_roles_title">Control Screen</string>
     <!-- Second line of that row. Names what the other screen becomes. -->

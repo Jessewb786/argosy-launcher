@@ -260,6 +260,8 @@
 
     <string name="settings_displays_display_roles_title">Pantalla de control</string>
     <string name="settings_displays_display_roles_subtitle">La pantalla donde se abren los menús; la otra muestra lo que estás mirando</string>
+    <string name="settings_displays_match_screen_size_title">Igualar el tamaño de las pantallas</string>
+    <string name="settings_displays_match_screen_size_subtitle">Las pantallas de DS y 3DS se ven al mismo tamaño y se unen en la bisagra</string>
     <string name="settings_displays_display_roles_auto">Auto</string>
     <string name="settings_displays_display_roles_standard">Pantalla complementaria</string>
     <string name="settings_displays_display_roles_swapped">Pantalla principal</string>

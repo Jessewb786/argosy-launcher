@@ -42,6 +42,7 @@ class BuiltinEmulatorPreferencesRepository @Inject constructor(
         val BUILTIN_FAST_FORWARD_SPEED = intPreferencesKey("builtin_fast_forward_speed")
         val BUILTIN_FAST_FORWARD_MODE = stringPreferencesKey("builtin_fast_forward_mode")
         val BUILTIN_SELECT_AS_BACK = stringPreferencesKey("builtin_select_as_back")
+        val BUILTIN_DUAL_SCREEN_MATCH_SIZE = booleanPreferencesKey("builtin_dual_screen_match_size")
         val BUILTIN_FAST_FORWARD_PRESERVE_PITCH = booleanPreferencesKey("builtin_fast_forward_preserve_pitch")
         val BUILTIN_ROTATION = intPreferencesKey("builtin_rotation")
         val BUILTIN_OVERSCAN_CROP = intPreferencesKey("builtin_overscan_crop")
@@ -112,6 +113,7 @@ class BuiltinEmulatorPreferencesRepository @Inject constructor(
             fastForwardSpeed = prefs[Keys.BUILTIN_FAST_FORWARD_SPEED] ?: 4,
             fastForwardMode = FastForwardMode.fromString(prefs[Keys.BUILTIN_FAST_FORWARD_MODE]),
             selectAsBack = SelectAsBackMode.fromString(prefs[Keys.BUILTIN_SELECT_AS_BACK]),
+            dualScreenMatchSize = prefs[Keys.BUILTIN_DUAL_SCREEN_MATCH_SIZE] ?: false,
             fastForwardPreservePitch = prefs[Keys.BUILTIN_FAST_FORWARD_PRESERVE_PITCH] ?: false,
             rotation = prefs[Keys.BUILTIN_ROTATION] ?: -1,
             overscanCrop = prefs[Keys.BUILTIN_OVERSCAN_CROP] ?: 0,
@@ -278,6 +280,10 @@ class BuiltinEmulatorPreferencesRepository @Inject constructor(
 
     suspend fun setBuiltinSelectAsBack(mode: SelectAsBackMode) {
         dataStore.edit { it[Keys.BUILTIN_SELECT_AS_BACK] = mode.name }
+    }
+
+    suspend fun setBuiltinDualScreenMatchSize(enabled: Boolean) {
+        dataStore.edit { it[Keys.BUILTIN_DUAL_SCREEN_MATCH_SIZE] = enabled }
     }
 
     suspend fun setBuiltinFastForwardPreservePitch(enabled: Boolean) {

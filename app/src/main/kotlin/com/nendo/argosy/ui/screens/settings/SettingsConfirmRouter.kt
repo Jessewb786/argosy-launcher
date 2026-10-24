@@ -760,6 +760,7 @@ private fun routeDisplaysConfirm(vm: SettingsViewModel, state: SettingsUiState):
         }
         DisplaysItem.DimLevel -> vm.cycleScreenDimmerLevel()
         DisplaysItem.DualScreenEnabled -> vm.setDualScreenEnabled(!state.display.dualScreenEnabled)
+        DisplaysItem.DualScreenMatchSize -> vm.setDualScreenMatchSize(!state.display.dualScreenMatchSize)
         DisplaysItem.DisplayRoles -> {
             vm.requestEnumPicker(DisplaysItem.DisplayRoles.key)
             return InputResult.handled(SoundType.OPEN_MODAL)

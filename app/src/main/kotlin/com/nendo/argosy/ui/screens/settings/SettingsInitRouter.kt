@@ -641,6 +641,9 @@ internal fun routeLoadSettings(vm: SettingsViewModel) {
             hasSecondaryDisplay = vm.displayAffinityHelper.hasSecondaryDisplay,
             hasPhysicalSecondaryDisplay = vm.displayAffinityHelper.hasPhysicalSecondaryDisplay,
             dualScreenEnabled = prefs.dualScreenEnabled,
+            dualScreenMatchSize = vm.libretroSettingsRepo.getBuiltinEmulatorSettings().first().dualScreenMatchSize,
+            dualScreenMatchSizeAvailable = vm.displayAffinityHelper.hasPhysicalSecondaryDisplay &&
+                com.nendo.argosy.libretro.KnownPanels.forModel().isNotEmpty(),
             displayRoleOverride = prefs.displayRoleOverride,
             gamesLaunchTarget = prefs.gamesDisplayTarget,
             appsLaunchTarget = prefs.appsDisplayTarget,
