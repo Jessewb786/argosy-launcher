@@ -998,7 +998,9 @@ class LibretroActivity : ComponentActivity() {
                 saveRAMState = existingSram
                 rtcState = restoredRtc
                 shader = effectiveShader
-                skipDuplicateFrames = if (coreName == "dolphin") false else settings.skipDuplicateFrames
+                skipDuplicateFrames = settings.skipDuplicateFrames &&
+                    coreName != "dolphin" &&
+                    DualScreenOutput.forCore(coreName) == null
                 timingFollowsGeometry = coreName == "dolphin"
                 preferLowLatencyAudio = settings.lowLatencyAudio
                 forceSoftwareTiming = settings.forceSoftwareTiming
