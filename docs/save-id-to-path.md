@@ -432,6 +432,13 @@ Not id-derived at all. The save is named for the ROM, not the title:
 `retroarch.cfg`, including the `savefiles_in_content_dir` case where the save
 sits beside the ROM.
 
+A multi-disc game on a playlist platform (psx, saturn, dreamcast, dc, amiga) is
+launched through `<folder>.m3u`, which `M3uManager` writes for whichever discs
+are on disk, even one. Emulators name the save after that playlist, so the
+game's `localPath` is the playlist and `<rom name>` above is the playlist's name
+whichever discs are present. The game's title id is RomM's, read from the first
+disc; a local read only ever takes disc 1.
+
 ## What wiring the three actually took
 
 The JNI binding is slug-driven with no mirrored enum, so nothing about it

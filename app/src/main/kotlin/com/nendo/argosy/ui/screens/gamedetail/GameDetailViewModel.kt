@@ -1065,12 +1065,13 @@ class GameDetailViewModel @Inject constructor(
         if (!picker.showFilePicker) return
         pickerModalDelegate.dismissFilePicker()
         if (picker.filePickerManageMode) {
+            val gameId = currentGameId
             downloadDelegate.applyManagedFiles(
                 viewModelScope,
-                currentGameId,
+                gameId,
                 picker.filePickerRows,
                 picker.filePickerSelected
-            )
+            ) { if (currentGameId == gameId) loadGame(gameId) }
         } else {
             downloadDelegate.downloadWithSelection(
                 viewModelScope,

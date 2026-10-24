@@ -206,10 +206,12 @@ class DownloadDelegate @Inject constructor(
         scope: CoroutineScope,
         gameId: Long,
         rows: List<FilePickerRow>,
-        selected: Set<Long>
+        selected: Set<Long>,
+        onApplied: () -> Unit
     ) {
         scope.launch {
             val (added, removed) = filePickerFlow.applyManagedSelection(gameId, rows, selected)
+            if (removed > 0) onApplied()
             val parts = buildList {
                 if (added > 0) {
                     add(

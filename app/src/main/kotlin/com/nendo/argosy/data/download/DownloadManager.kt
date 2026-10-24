@@ -1414,11 +1414,13 @@ class DownloadManager internal constructor(
             progress.isGameFileDownload && progress.gameFileId != null -> {
                 gameFileDao.updateLocalPath(progress.gameFileId, finalPath, Instant.now())
                 maybeComputeRomHashPrefix(progress.gameFileId, progress.gameId, finalPath)
-                claimLaunchTargetIfBase(progress, finalPath)
+                val isDisc = gameFileDao.getById(progress.gameFileId)
+                    ?.let { m3uManager.recordDiscFile(progress.gameId, it.fileName, finalPath) } == true
+                if (!isDisc) claimLaunchTargetIfBase(progress, finalPath)
             }
             progress.isDiscDownload && progress.discId != null -> {
                 gameDiscDao.updateLocalPath(progress.discId, finalPath)
-                m3uManager.generateM3uIfComplete(progress.gameId)
+                m3uManager.refreshPlaylist(progress.gameId)
             }
             else -> {
                 gameDao.updateLocalPath(progress.gameId, finalPath, GameSource.ROMM_SYNCED, FileOrigin.ROMM_DOWNLOAD)
@@ -2155,10 +2157,12 @@ class DownloadManager internal constructor(
             when {
                 discId != null -> {
                     gameDiscDao.updateLocalPath(discId, finalPath)
-                    m3uManager.generateM3uIfComplete(gameId)
+                    m3uManager.refreshPlaylist(gameId)
                 }
                 queueEntry.gameFileId != null -> {
                     gameFileDao.updateLocalPath(queueEntry.gameFileId, finalPath, Instant.now())
+                    gameFileDao.getById(queueEntry.gameFileId)
+                        ?.let { m3uManager.recordDiscFile(gameId, it.fileName, finalPath) }
                 }
                 else -> {
                     gameDao.updateLocalPath(gameId, finalPath, GameSource.ROMM_SYNCED, FileOrigin.ROMM_DOWNLOAD)

@@ -517,20 +517,14 @@ class GameLauncher @Inject constructor(
 
         Logger.debug(TAG, "Multi-disc game has ${discs.size} discs")
 
-        val missingDiscs = discs.filter { it.localPath == null }
-        if (missingDiscs.isNotEmpty()) {
-            return LaunchResult.MissingDiscs(missingDiscs.map { it.discNumber }).also {
-                Logger.warn(TAG, "launchMultiDiscGame() failed: missing discs ${missingDiscs.map { d -> d.discNumber }}")
+        val presentDiscs = discs.filter { disc -> disc.localPath?.let { File(it).exists() } == true }
+        if (presentDiscs.isEmpty()) {
+            return LaunchResult.MissingDiscs(discs.map { it.discNumber }).also {
+                Logger.warn(TAG, "launchMultiDiscGame() failed: no disc on disk")
             }
         }
-
-        for (disc in discs) {
-            val discFile = disc.localPath?.let { File(it) }
-            if (discFile == null || !discFile.exists()) {
-                return LaunchResult.MissingDiscs(listOf(disc.discNumber)).also {
-                    Logger.warn(TAG, "launchMultiDiscGame() failed: disc ${disc.discNumber} file not found")
-                }
-            }
+        if (presentDiscs.size < discs.size) {
+            Logger.info(TAG, "launchMultiDiscGame(): launching with discs ${presentDiscs.map { it.discNumber }} of ${discs.size}")
         }
 
         val emulator = resolveEmulator(game)
@@ -557,20 +551,20 @@ class GameLauncher @Inject constructor(
                     m3uResult.discFile
                 }
                 is M3uResult.NotApplicable -> {
-                    Logger.debug(TAG, "M3u not applicable: ${m3uResult.reason}, falling back to disc 1")
-                    File(discs.minByOrNull { it.discNumber }!!.localPath!!)
+                    Logger.debug(TAG, "M3u not applicable: ${m3uResult.reason}, falling back to the first disc on disk")
+                    File(presentDiscs.minBy { it.discNumber }.localPath!!)
                 }
                 is M3uResult.Error -> {
-                    Logger.warn(TAG, "M3u error: ${m3uResult.message}, falling back to disc 1")
-                    File(discs.minByOrNull { it.discNumber }!!.localPath!!)
+                    Logger.warn(TAG, "M3u error: ${m3uResult.message}, falling back to the first disc on disk")
+                    File(presentDiscs.minBy { it.discNumber }.localPath!!)
                 }
             }
         } else {
             val targetDisc: GameDiscEntity = when {
-                requestedDiscId != null -> discs.find { it.id == requestedDiscId }
-                game.lastPlayedDiscId != null -> discs.find { it.id == game.lastPlayedDiscId }
+                requestedDiscId != null -> presentDiscs.find { it.id == requestedDiscId }
+                game.lastPlayedDiscId != null -> presentDiscs.find { it.id == game.lastPlayedDiscId }
                 else -> null
-            } ?: discs.minByOrNull { it.discNumber }
+            } ?: presentDiscs.minByOrNull { it.discNumber }
                 ?: return LaunchResult.Error("Could not determine which disc to launch").also {
                     Logger.error(TAG, "launchMultiDiscGame() failed: could not determine target disc")
                 }

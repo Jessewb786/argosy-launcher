@@ -3,6 +3,7 @@ package com.nendo.argosy.domain.usecase.game
 import com.nendo.argosy.data.download.ZipExtractor
 import com.nendo.argosy.data.local.dao.DownloadQueueDao
 import com.nendo.argosy.data.local.dao.GameDao
+import com.nendo.argosy.data.local.dao.GameDiscDao
 import com.nendo.argosy.data.local.dao.GameFileDao
 import com.nendo.argosy.data.local.dao.OrphanedFileDao
 import com.nendo.argosy.data.local.dao.PendingSyncQueueDao
@@ -33,6 +34,7 @@ class DeleteGameUseCase @Inject constructor(
     private val gameRepository: GameRepository,
     private val downloadQueueDao: DownloadQueueDao,
     private val gameFileDao: GameFileDao,
+    private val gameDiscDao: GameDiscDao,
     private val saveCacheManager: SaveCacheManager,
     private val stateCacheManager: com.nendo.argosy.data.repository.StateCacheManager,
     private val saveSyncDao: SaveSyncDao,
@@ -61,6 +63,9 @@ class DeleteGameUseCase @Inject constructor(
             .filterNot { it.startsWith(musicDirPrefix) }
             .filter { File(it).parentFile?.name?.lowercase() == ZipExtractor.EXTCONTENT_FOLDER }
         gameFileDao.clearLocalPathsByGameIdExcludingPrefix(gameId, musicDirPrefix)
+        val discPaths = gameDiscDao.getDiscsForGame(gameId).mapNotNull { disc ->
+            disc.localPath?.also { gameDiscDao.clearLocalPath(disc.id) }
+        }
 
         val keptSaves = saveCacheManager.deleteServerHeldCachesForGame(gameId)
         val keptStates = stateCacheManager.deleteServerHeldStatesForGame(gameId)
@@ -72,7 +77,8 @@ class DeleteGameUseCase @Inject constructor(
         }
 
         withContext(Dispatchers.IO) {
-            deleteSharedAddons(sharedAddonPaths, platformFolder)
+            deleteRecordedFiles(sharedAddonPaths, platformFolder)
+            deleteRecordedFiles(discPaths, platformFolder)
             try {
                 val file = File(path)
                 if (!file.exists()) return@withContext
@@ -111,12 +117,7 @@ class DeleteGameUseCase @Inject constructor(
         return true
     }
 
-    /**
-     * Under Combine Content a game's updates and DLC sit in the platform-wide `extcontent/`, which
-     * the base rom's parent folder no longer covers. Only paths this game's own rows named are
-     * removed, so a neighbour's add-ons in the same folder are never touched.
-     */
-    private fun deleteSharedAddons(paths: List<String>, platformFolder: File) {
+    private fun deleteRecordedFiles(paths: List<String>, platformFolder: File) {
         if (paths.isEmpty()) return
         val platformCanonical = runCatching { platformFolder.canonicalPath }.getOrNull() ?: return
         for (path in paths) {
@@ -124,7 +125,7 @@ class DeleteGameUseCase @Inject constructor(
             val parentCanonical = runCatching { file.parentFile?.canonicalPath }.getOrNull() ?: continue
             if (!parentCanonical.startsWith(platformCanonical)) continue
             if (file.isFile && !file.delete()) {
-                Logger.warn(TAG, "Failed to delete shared add-on ${file.name}")
+                Logger.warn(TAG, "Failed to delete ${file.name}")
             }
         }
     }

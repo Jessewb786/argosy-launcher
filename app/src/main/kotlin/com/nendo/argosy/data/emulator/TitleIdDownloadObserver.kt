@@ -2,6 +2,7 @@ package com.nendo.argosy.data.emulator
 
 import com.nendo.argosy.data.download.DownloadManager
 import com.nendo.argosy.data.local.dao.GameDao
+import com.nendo.argosy.data.local.dao.GameDiscDao
 import com.nendo.argosy.data.local.entity.GameEntity
 import com.nendo.argosy.util.Logger
 import com.nendo.argosy.util.SafeCoroutineScope
@@ -27,6 +28,7 @@ sealed interface TitleIdRecheck {
 class TitleIdDownloadObserver @Inject constructor(
     private val downloadManager: DownloadManager,
     private val gameDao: GameDao,
+    private val gameDiscDao: GameDiscDao,
     private val titleIdExtractor: TitleIdExtractor,
     private val emulatorResolver: EmulatorResolver,
     private val baseRomFileResolver: BaseRomFileResolver,
@@ -136,9 +138,16 @@ class TitleIdDownloadObserver @Inject constructor(
     }
 
     private suspend fun resolveGameFile(game: GameEntity): File? {
+        if (game.isMultiDisc) return firstDiscOnDisk(game.id)
         val recorded = File(game.localPath ?: return null)
         if (!recorded.exists()) return null
         return baseRomFileResolver.resolve(game, recorded).takeIf { it.exists() }
+    }
+
+    private suspend fun firstDiscOnDisk(gameId: Long): File? {
+        val firstDisc = gameDiscDao.getDiscsForGame(gameId).minByOrNull { it.discNumber } ?: return null
+        return firstDisc.localPath?.let(::File)
+            ?.takeIf { it.isFile && !it.extension.equals("m3u", ignoreCase = true) }
     }
 
     private suspend fun extractAndStoreTitleId(

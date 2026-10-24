@@ -436,6 +436,7 @@ class GameRepository @Inject constructor(
             val m3u = File(path)
             if (!m3u.extension.equals("m3u", ignoreCase = true)) continue
             if (M3uManager.isMultiDiscContainer(m3u)) continue
+            if (gameDao.getById(info.id)?.isMultiDisc == true) continue
 
             val replacement = M3uManager.parseFirstDisc(m3u)
             if (replacement == null) {
