@@ -701,7 +701,7 @@ class RomMLibrarySyncService @Inject constructor(
                 Logger.info(TAG, "doSyncLibrary: relinked $relinkedSessions play sessions to current game rows")
             }
 
-            userPreferencesRepository.setLastRommSyncTime(Instant.now())
+            if (!skipsPlatforms) userPreferencesRepository.setLastRommSyncTime(Instant.now())
             if (errors.isEmpty()) {
                 userPreferencesRepository.setLastRommFullSyncTime(
                     resumeGeneration.takeIf { resuming } ?: syncStartedAt
