@@ -74,6 +74,7 @@ class SwitchSaveHandler @Inject constructor(
                         return@withContext ExtractResult(false, null, "No save ID for Switch save")
                     }
                     constructSavePath(basePath, saveId, context.emulatorPackage)
+                        ?: return@withContext ExtractResult(false, null, "No emulator profile for Switch saves yet")
                 }
 
             fal.mkdirs(targetPath)
@@ -226,6 +227,9 @@ class SwitchSaveHandler @Inject constructor(
             findOrCreateZeroProfileFolder(basePath)
         } else {
             findActiveProfileFolder(basePath, emulatorPackage)
+        } ?: run {
+            Logger.debug(TAG, "resolveSaveTargetPath: no emulator profile yet | base=$basePath")
+            return null
         }
         val targetPath = "$profileFolder/$normalizedTitleId"
 
@@ -233,25 +237,23 @@ class SwitchSaveHandler @Inject constructor(
         return targetPath
     }
 
-    fun findActiveProfileFolder(basePath: String, emulatorPackage: String? = null): String {
-        if (!fal.exists(basePath) || !fal.isDirectory(basePath)) {
-            Logger.debug(TAG, "findActiveProfileFolder: baseDir doesn't exist, cannot determine profile")
-            return basePath
-        }
-
-        if (emulatorPackage != null) {
+    fun findActiveProfileFolder(basePath: String, emulatorPackage: String? = null): String? {
+        val configuredProfile = emulatorPackage?.let { pkg ->
             val dataPath = basePath
                 .substringBefore("/nand/user/save")
                 .substringBefore("/user/save")
-            switchProfileParser.parseActiveProfile(emulatorPackage, dataPath)?.let { profileUuid ->
-                val profilePath = "$basePath/0000000000000000/$profileUuid"
-                if (fal.exists(profilePath) && fal.isDirectory(profilePath)) {
-                    Logger.debug(TAG, "findActiveProfileFolder: using profile from emulator config | pkg=$emulatorPackage, uuid=$profileUuid")
-                    return profilePath
-                } else {
-                    Logger.debug(TAG, "findActiveProfileFolder: parsed profile path doesn't exist | path=$profilePath")
-                }
-            }
+            switchProfileParser.parseActiveProfile(pkg, dataPath)
+                ?.takeIf { isValidProfileFolderId(it) }
+                ?.let { "$basePath/0000000000000000/$it" }
+        }
+        if (configuredProfile != null && fal.exists(configuredProfile) && fal.isDirectory(configuredProfile)) {
+            Logger.debug(TAG, "findActiveProfileFolder: using profile from emulator config | pkg=$emulatorPackage, path=$configuredProfile")
+            return configuredProfile
+        }
+
+        if (!fal.exists(basePath) || !fal.isDirectory(basePath)) {
+            Logger.debug(TAG, "findActiveProfileFolder: baseDir doesn't exist | configured=$configuredProfile")
+            return configuredProfile
         }
 
         var mostRecentPath: String? = null
@@ -279,8 +281,8 @@ class SwitchSaveHandler @Inject constructor(
             }
         }
 
-        val result = mostRecentPath ?: firstNonZeroProfile ?: basePath
-        Logger.debug(TAG, "findActiveProfileFolder: selected=$result (byFileTime=${mostRecentPath != null}, firstNonZero=$firstNonZeroProfile)")
+        val result = mostRecentPath ?: firstNonZeroProfile ?: configuredProfile
+        Logger.debug(TAG, "findActiveProfileFolder: selected=$result (byFileTime=${mostRecentPath != null}, firstNonZero=$firstNonZeroProfile, configured=$configuredProfile)")
 
         return result
     }
@@ -373,13 +375,13 @@ class SwitchSaveHandler @Inject constructor(
         baseDir: String,
         saveId: String,
         emulatorPackage: String? = null
-    ): String {
+    ): String? {
         val normalizedSaveId = SwitchTitleIds.baseApplicationId(saveId).uppercase()
         val profileFolder = if (isDeviceSave(normalizedSaveId)) {
             findOrCreateZeroProfileFolder(baseDir)
         } else {
             findActiveProfileFolder(baseDir, emulatorPackage)
-        }
+        } ?: return null
         return "$profileFolder/$normalizedSaveId"
     }
 
