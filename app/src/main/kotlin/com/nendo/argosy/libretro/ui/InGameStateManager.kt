@@ -47,6 +47,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.nendo.argosy.R
 import com.nendo.argosy.libretro.SaveStateManager
+import com.nendo.argosy.ui.common.ScreenshotImage
 import com.nendo.argosy.util.formatSaveSize
 import com.nendo.argosy.util.formatSaveTimestamp
 import com.nendo.argosy.ui.components.FooterBarWithState
@@ -611,14 +612,13 @@ private fun SlotCard(
         ) {
             val screenshotFile = slot.screenshotFile
             if (screenshotFile != null && screenshotFile.exists()) {
-                AsyncImage(
+                ScreenshotImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(screenshotFile)
                         .memoryCacheKey("${screenshotFile.absolutePath}_${slot.timestamp}")
                         .diskCachePolicy(CachePolicy.DISABLED)
                         .build(),
                     contentDescription = slotLabel(slot.slotNumber),
-                    contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
             } else {

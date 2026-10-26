@@ -47,6 +47,7 @@ import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.nendo.argosy.R
+import com.nendo.argosy.ui.common.ScreenshotImage
 import com.nendo.argosy.ui.common.rememberFileImageModel
 import com.nendo.argosy.ui.dualscreen.COVER_ASPECT
 import com.nendo.argosy.ui.screens.gamedetail.components.AchievementList
@@ -423,10 +424,9 @@ private fun StateTile(
             contentAlignment = Alignment.Center
         ) {
             if (request != null) {
-                AsyncImage(
+                ScreenshotImage(
                     model = request,
                     contentDescription = null,
-                    contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
             }

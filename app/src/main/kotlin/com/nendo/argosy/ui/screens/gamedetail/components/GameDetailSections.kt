@@ -76,6 +76,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.nendo.argosy.R
+import com.nendo.argosy.ui.common.ScreenshotImage
 import com.nendo.argosy.ui.common.rememberFileImageModel
 import com.nendo.argosy.ui.common.supersedesCommunityRating
 import com.nendo.argosy.ui.screens.gamedetail.GameDetailUi
@@ -554,17 +555,15 @@ fun ScreenshotsSection(
                         .background(MaterialTheme.colorScheme.surfaceVariant)
                 ) {
                     if (useRemote) {
-                        AsyncImage(
+                        ScreenshotImage(
                             model = screenshot.remoteUrl,
                             contentDescription = null,
-                            contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()
                         )
                     } else {
-                        AsyncImage(
+                        ScreenshotImage(
                             model = java.io.File(screenshot.cachedPath!!),
                             contentDescription = null,
-                            contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize(),
                             onError = { failedCachePaths[index] = true }
                         )

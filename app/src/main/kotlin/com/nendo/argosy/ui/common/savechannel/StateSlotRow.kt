@@ -21,15 +21,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.nendo.argosy.R
 import com.nendo.argosy.domain.model.UnifiedStateEntry
+import com.nendo.argosy.ui.common.ScreenshotImage
 import com.nendo.argosy.ui.common.displayName
 import com.nendo.argosy.ui.common.sizeFormatted
 import com.nendo.argosy.ui.common.slotLabel
@@ -80,10 +79,9 @@ fun StateSlotRow(
             contentAlignment = Alignment.Center
         ) {
             if (screenshotFile != null) {
-                AsyncImage(
+                ScreenshotImage(
                     model = screenshotFile,
                     contentDescription = entry.displayName(context),
-                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(width = 64.dp, height = 48.dp)
                 )
