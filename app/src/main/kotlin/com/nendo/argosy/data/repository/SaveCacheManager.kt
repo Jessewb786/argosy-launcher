@@ -12,6 +12,7 @@ import com.nendo.argosy.data.local.dao.SaveSyncDao
 import com.nendo.argosy.data.local.entity.GameEntity
 import com.nendo.argosy.data.local.entity.SaveCacheEntity
 import com.nendo.argosy.data.local.entity.SaveSyncEntity
+import com.nendo.argosy.data.emulator.SwitchTitleIds
 import com.nendo.argosy.data.platform.PlatformDefinitions
 import com.nendo.argosy.data.preferences.SyncPreferencesRepository
 import com.nendo.argosy.data.preferences.UserPreferencesRepository
@@ -68,6 +69,7 @@ class SaveCacheManager @Inject constructor(
 
     companion object {
         private const val TAG = "SaveCacheManager"
+        private const val SWITCH_TITLE_ID_LENGTH = 16
         private const val COPY_DIR_SUFFIX = "_copy"
         const val UNIT_CACHE_SUFFIX = ".unit.zip"
         private val RZIP_MAGIC = "#RZIPv".toByteArray(Charsets.US_ASCII)
@@ -1018,6 +1020,9 @@ class SaveCacheManager @Inject constructor(
     ): Boolean {
         val entry = game ?: return true
         val saveId = entry.saveId ?: entry.titleId ?: return true
+        if (PlatformDefinitions.getCanonicalSlug(entry.platformSlug) == "switch") {
+            return switchArchiveHoldsTitle(cacheFile, saveId, targetPath)
+        }
         val handler = saveHandlerRegistry.getFolderHandler(entry.platformSlug) ?: return true
 
         val roots = saveArchiver.peekRootEntryNames(cacheFile)
@@ -1034,6 +1039,21 @@ class SaveCacheManager @Inject constructor(
             Log.d(TAG, "[RESTORE] archive matched on $tier | saveId=$saveId, roots=$roots")
         }
         return true
+    }
+
+    private fun switchArchiveHoldsTitle(cacheFile: File, saveId: String, targetPath: String): Boolean {
+        val root = saveArchiver.peekRootFolderName(cacheFile)
+            ?.takeIf { it.length == SWITCH_TITLE_ID_LENGTH && it.all { c -> c.isDigit() || c.uppercaseChar() in 'A'..'F' } }
+            ?: return true
+        val archiveTitle = SwitchTitleIds.baseApplicationId(root.uppercase())
+        val gameTitle = SwitchTitleIds.baseApplicationId(saveId.uppercase())
+        if (archiveTitle == gameTitle) return true
+        Logger.error(
+            TAG,
+            "[RESTORE] refusing Switch archive rooted at another title | root=$root, saveId=$saveId, " +
+                "target=$targetPath, zip=${cacheFile.name}"
+        )
+        return false
     }
 
     /**
