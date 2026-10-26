@@ -241,15 +241,12 @@ class LaunchOverlayStateTest {
     }
 
     @Test
-    fun `the presentation display draws only the steps that ask something`() {
+    fun `the presentation display draws only the recap, never a question`() {
         val recap = LaunchRecap(gameTitle = "Game", lastSession = null, unlocks = emptyList())
-        val mirrored = listOf(
+        assertTrue(LaunchStep.Recap(recap).mirrorsToPresentation)
+        val kept = quietSteps + listOf(
             LaunchStep.Prompt(SyncProgress.Error("x"), listOf(LaunchPromptOption.APPLY_LOCAL)),
             LaunchStep.ChooseLauncher(listOf(LaunchPromptOption.LAUNCH_WITH_GAMENATIVE)),
-            LaunchStep.Recap(recap)
-        )
-        for (step in mirrored) assertTrue("$step", step.mirrorsToPresentation)
-        val kept = quietSteps + listOf(
             LaunchStep.Save(SyncProgress.PreLaunch.Connecting(null, success = false)),
             LaunchStep.Save(SyncProgress.Error("x")),
             LaunchStep.DownloadingCore(fraction = 0.5f)

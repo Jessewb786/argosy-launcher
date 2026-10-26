@@ -17,11 +17,11 @@ import kotlin.math.roundToInt
 enum class CalmLaunchBar { NONE, INDETERMINATE, DETERMINATE }
 
 /**
- * Whether the presentation display draws this step. It draws only what asks the player
- * something; every other step leaves the game showcase up.
+ * Whether the presentation display draws this step. Questions stay on the surface taking input;
+ * only the recap card mirrors, and every other step leaves the game showcase up.
  */
 val LaunchStep.mirrorsToPresentation: Boolean
-    get() = this is LaunchStep.Question || this is LaunchStep.Recap
+    get() = this is LaunchStep.Recap
 
 data class CalmLaunchUi(
     @StringRes val line: Int?,
