@@ -398,7 +398,8 @@ class SaveSyncOrchestrator @Inject constructor(
                     romPath = game.localPath,
                     coreName = coreName,
                     cachedSaveId = game.saveId ?: game.titleId,
-                    gameId = game.id
+                    gameId = game.id,
+                    emulatorPackage = emulatorResolver.getEmulatorPackageForGame(game.id, game.platformId, game.platformSlug)
                 ) ?: return@withContext DiskCheck.Untouched
                 if (!hasExtension(target, expectedExtension)) return@withContext DiskCheck.Failed
                 Logger.info(TAG, "[SaveSync] DISK gameId=${game.id} | no save on disk for emulator=$emulatorId, placing active cache id=${active.id} | path=$target")

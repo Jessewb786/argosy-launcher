@@ -368,7 +368,8 @@ class AccountSwitchArtifactService @Inject constructor(
             romPath = game.localPath,
             coreName = coreName,
             cachedSaveId = game.saveId ?: game.titleId,
-            gameId = game.id
+            gameId = game.id,
+            emulatorPackage = emulatorPackage
         )
     }
 

@@ -175,7 +175,7 @@ class SaveSyncOrchestratorDiskCheckTest {
             savePathResolver.discoverSavePathChecked(any(), any(), any(), any(), any(), any(), any(), any())
         } returns SaveLookup.Absent
         val constructed = "/storage/emulated/0/RetroArch/saves/mGBA/game.srm"
-        coEvery { savePathResolver.constructSavePath(any(), any(), any(), any(), any(), any(), any(), any()) } returns constructed
+        coEvery { savePathResolver.constructSavePath(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns constructed
 
         assertEquals(SaveSyncOrchestrator.DiskCheck.Restored, check(secureSaves = false))
         coVerify(exactly = 1) { saveCacheManager.restoreSave(active.id, constructed, emulatorId) }
@@ -188,7 +188,7 @@ class SaveSyncOrchestratorDiskCheckTest {
         coEvery {
             savePathResolver.discoverSavePathChecked(any(), any(), any(), any(), any(), any(), any(), any())
         } returns SaveLookup.Absent
-        coEvery { savePathResolver.constructSavePath(any(), any(), any(), any(), any(), any(), any(), any()) } returns
+        coEvery { savePathResolver.constructSavePath(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns
             "/storage/emulated/0/RetroArch/saves/game.srm"
 
         assertEquals(SaveSyncOrchestrator.DiskCheck.Untouched, check(secureSaves = false))
@@ -229,7 +229,7 @@ class SaveSyncOrchestratorDiskCheckTest {
             savePathResolver.discoverSavePathChecked(any(), any(), any(), any(), any(), any(), any(), any())
         } returns SaveLookup.Absent
         val constructed = "/storage/emulated/0/RetroArch/saves/Snes9x/game.srm"
-        coEvery { savePathResolver.constructSavePath(any(), any(), any(), any(), any(), any(), any(), any()) } returns constructed
+        coEvery { savePathResolver.constructSavePath(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns constructed
 
         assertEquals(SaveSyncOrchestrator.DiskCheck.Restored, placeFromOtherEmulator(secureSaves = true))
         assertEquals(SaveSyncOrchestrator.DiskCheck.Restored, placeFromOtherEmulator(secureSaves = false))
@@ -260,7 +260,7 @@ class SaveSyncOrchestratorDiskCheckTest {
         coEvery {
             savePathResolver.discoverSavePathChecked(any(), any(), any(), any(), any(), any(), any(), any())
         } returns SaveLookup.Absent
-        coEvery { savePathResolver.constructSavePath(any(), any(), any(), any(), any(), any(), any(), any()) } returns "/saves/game.srm"
+        coEvery { savePathResolver.constructSavePath(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns "/saves/game.srm"
         assertEquals(SaveSyncOrchestrator.DiskCheck.Failed, placeFromOtherEmulator(secureSaves = false, expectedExtension = "sav"))
 
         coVerify(exactly = 0) { saveCacheManager.restoreSave(any(), any(), any()) }

@@ -120,6 +120,39 @@ class SavePathResolverDiscoveryTest {
     }
 
     @Test
+    fun `a Switch save with nothing on disk is placed in the emulator's title folder, not a literal package path`() = runTest {
+        stubBuiltinSettings()
+        val pkg = "dev.eden.eden_emulator"
+        val expected = "${basePath.absolutePath}/0000000000000000/PROFILE/$titleId"
+        every { switchSaveHandler.resolveBasePath(any(), null, pkg) } returns basePath.absolutePath
+        every { switchSaveHandler.constructSavePath(basePath.absolutePath, titleId, pkg) } returns expected
+
+        val path = resolver.constructSavePath(
+            emulatorId = "eden", gameTitle = "Portal", platformSlug = "switch", romPath = null,
+            cachedSaveId = titleId, gameId = 5L, emulatorPackage = pkg
+        )
+
+        assertEquals(expected, path)
+    }
+
+    @Test
+    fun `a package-template folder save with nothing on disk resolves the package in its base folder`() = runTest {
+        stubBuiltinSettings()
+        val pkg = "xyz.aethersx2.android"
+        val cardDir = File(tempDir, "Android/data/$pkg/files/memcards").apply { mkdirs() }
+        val folderHandler = mockk<com.nendo.argosy.data.sync.platform.FolderSaveHandler>(relaxed = true)
+        every { saveHandlerRegistry.getFolderHandler("ps2") } returns folderHandler
+        every { folderHandler.constructSavePath(any(), any()) } answers { "${firstArg<String>()}/${secondArg<String>()}" }
+
+        val path = resolver.constructSavePath(
+            emulatorId = "nethersx2", gameTitle = "Norrath", platformSlug = "ps2", romPath = null,
+            cachedSaveId = "SLUS-20642", gameId = 6L, emulatorPackage = pkg
+        )
+
+        assertEquals("${cardDir.absolutePath}/SLUS-20642", path)
+    }
+
+    @Test
     fun `a GameCube save with nothing on disk is placed in the region card folder Dolphin reads`() = runTest {
         stubBuiltinSettings()
         val rom = File(tempDir, "roms/Zelda.iso").apply { parentFile?.mkdirs(); writeBytes(byteArrayOf(0)) }
