@@ -301,6 +301,7 @@ class LibretroActivity : ComponentActivity() {
     private var dualScreenMatchSize = false
     private var matchedScreens: MatchedScreens? = null
     private var firstFrameRendered = false
+    private var arrivalRevealed by mutableStateOf(false)
     private var framesSinceSample = 0
     private var measuredFps by mutableIntStateOf(0)
     private lateinit var audioController: LibretroAudioController
@@ -451,15 +452,15 @@ class LibretroActivity : ComponentActivity() {
             dsm.sessionQuickActions = createSessionQuickActions()
             dsm.sessionRefocus = {
                 @Suppress("DEPRECATION")
-                val options = android.app.ActivityOptions.makeBasic()
-                    .setLaunchDisplayId(windowManager.defaultDisplay.displayId)
+                val options = com.nendo.argosy.ui.screens.common.GameLaunchOptions
+                    .forDisplay(windowManager.defaultDisplay.displayId)
                 startActivity(
                     Intent(this, LibretroActivity::class.java).addFlags(
                         Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or
                             Intent.FLAG_ACTIVITY_SINGLE_TOP or
                             Intent.FLAG_ACTIVITY_NO_ANIMATION
                     ),
-                    options.toBundle()
+                    options
                 )
             }
         }
@@ -888,7 +889,8 @@ class LibretroActivity : ComponentActivity() {
             frameRegistry = frameRegistry,
             scope = lifecycleScope,
             shaderRegistryProvider = { ShaderRegistry(this) },
-            getRetroView = { retroView }
+            getRetroView = { retroView },
+            setAudioVolume = { audioController.setVolume(it) }
         )
         videoSettings.applySettings(settings)
         videoSettings.resolveCustomShader(settings)
@@ -1030,6 +1032,7 @@ class LibretroActivity : ComponentActivity() {
                 Log.e(TAG, "GLRetroView error: code=$errorCode, message=$errorMessage")
                 Log.e(TAG, "Context: gameId=$gameId, core=$coreName, rom=$romPath")
                 gameLoadFailed = true
+                arrivalRevealed = true
                 coreLoadedSuccessfully = false
                 inGameMessage = errorMessage
                 finish()
@@ -1055,6 +1058,8 @@ class LibretroActivity : ComponentActivity() {
                     is GLRetroView.GLRetroEvents.FrameRendered -> {
                         if (!firstFrameRendered) {
                             firstFrameRendered = true
+                            arrivalRevealed = true
+                            audioController.riseFromFirstFrame(lifecycleScope)
                             if (seatPromptVisible) retroView.pauseEmulation()
                             Log.i(TAG, "[Startup] First frame rendered - emulation running successfully")
                             Log.d(TAG, "[Startup] gameId=$gameId, core=$coreName, hardcore=$hardcoreMode")
@@ -1495,6 +1500,7 @@ class LibretroActivity : ComponentActivity() {
                 LocalXYIconsSwapped provides swapXY,
                 LocalSwapStartSelect provides swapStartSelect
             ) {
+                com.nendo.argosy.libretro.ui.GameArrival(revealed = arrivalRevealed)
                 com.nendo.argosy.libretro.touch.OnScreenControlsHost(
                     retroView = retroView,
                     platformSlug = platformSlug,
@@ -3495,6 +3501,7 @@ class LibretroActivity : ComponentActivity() {
         val presentation = SecondScreenPresentation(
             context = this,
             display = display,
+            arrivesCovered = !arrivalRevealed,
             pictureHeightPx = matchedScreens?.secondary?.height,
             onSurfaceChanged = { surface ->
                 if (::retroView.isInitialized) retroView.setSecondaryOutput(surface)
@@ -3514,6 +3521,12 @@ class LibretroActivity : ComponentActivity() {
             .isSuccess
         secondScreen = presentation.takeIf { shown }
         Log.i(TAG, "Second screen: show on display ${display.displayId} shown=$shown")
+        if (shown && !arrivalRevealed) {
+            lifecycleScope.launch {
+                snapshotFlow { arrivalRevealed }.first { it }
+                if (secondScreen === presentation) presentation.reveal()
+            }
+        }
     }
 
     private fun hideSecondScreen() {

@@ -179,6 +179,7 @@ class ArgosyActivity : ComponentActivity() {
     @Inject lateinit var resolveMediaPlayTargetUseCase:
         com.nendo.argosy.domain.usecase.media.ResolveMediaPlayTargetUseCase
     @Inject lateinit var mediaPlaybackTracker: com.nendo.argosy.data.media.MediaPlaybackTracker
+    @Inject lateinit var launchProgressTracker: com.nendo.argosy.data.emulator.LaunchProgressTracker
     @Inject lateinit var mediaAvailabilityVerifier: com.nendo.argosy.data.media.MediaAvailabilityVerifier
     @Inject lateinit var mediaDownloadDelegate:
         com.nendo.argosy.ui.screens.media.delegates.MediaDownloadDelegate
@@ -321,6 +322,7 @@ class ArgosyActivity : ComponentActivity() {
                 getRelatedMediaUseCase = getRelatedMediaUseCase,
                 resolveMediaPlayTargetUseCase = resolveMediaPlayTargetUseCase,
                 mediaPlaybackTracker = mediaPlaybackTracker,
+                launchProgressTracker = launchProgressTracker,
                 mediaAvailabilityVerifier = mediaAvailabilityVerifier,
                 mediaDownloadDelegate = mediaDownloadDelegate,
                 mediaSeriesDelegate = mediaSeriesDelegate,
@@ -453,8 +455,11 @@ class ArgosyActivity : ComponentActivity() {
         } else {
             if (displayAffinityHelper.hasSecondaryDisplay && !dualScreenManager.isRolesSwapped.value) {
                 window.decorView.postDelayed({
-                    if (!sessionStateStore.hasActiveSession() &&
-                        !dualScreenManager.swappedIsGameActive.value
+                    if (com.nendo.argosy.ui.dualscreen.companionTakesFocusOnFirstResume(
+                            sessionActive = sessionStateStore.hasActiveSession(),
+                            gameActive = dualScreenManager.swappedIsGameActive.value,
+                            launchLive = launchProgressTracker.launchLive.value
+                        )
                     ) {
                         dualScreenManager.controlCompanion?.refocusSelf()
                     }

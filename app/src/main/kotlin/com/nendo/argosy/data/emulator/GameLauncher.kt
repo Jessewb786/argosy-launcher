@@ -64,13 +64,16 @@ sealed class LaunchResult {
     /**
      * @property variantFileId the `game_files` row that launched in place of the primary rom; null
      * when the primary rom launched, whichever variant the caller requested.
+     * @property session the external play session the caller starts once the game's window has
+     * been requested; null when no session is owed to the caller.
      */
     data class Success(
         val intent: Intent,
         val discId: Long? = null,
         val alreadyLaunched: Boolean = false,
         val inProcess: Boolean = false,
-        val variantFileId: Long? = null
+        val variantFileId: Long? = null,
+        val session: ExternalSessionStart? = null
     ) : LaunchResult()
     data class SelectDisc(val gameId: Long, val discs: List<DiscOption>) : LaunchResult()
     data class SelectVariant(val gameId: Long, val variants: List<VariantOption>) : LaunchResult()
@@ -695,8 +698,8 @@ class GameLauncher @Inject constructor(
             }
             Logger.info(TAG, "[BuiltIn] Core not downloaded for ${game.platformSlug} (selected=$selectedCoreId), attempting download...")
             launchProgressTracker.report(LaunchStep.DownloadingCore(fraction = null))
-            val downloadResult = libretroCoreMgr.downloadCoreForPlatform(game.platformSlug, selectedCoreId) { fraction ->
-                launchProgressTracker.report(LaunchStep.DownloadingCore(fraction))
+            val downloadResult = libretroCoreMgr.downloadCoreForPlatform(game.platformSlug, selectedCoreId) { fraction, zipBytes ->
+                launchProgressTracker.report(LaunchStep.DownloadingCore(fraction, zipBytes))
             }
             corePath = downloadResult.getOrElse { err ->
                 val reason = err.message ?: "Unknown error"

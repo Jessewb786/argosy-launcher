@@ -53,6 +53,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -135,6 +136,7 @@ class DualScreenManager(
     internal val resolveMediaPlayTargetUseCase:
         com.nendo.argosy.domain.usecase.media.ResolveMediaPlayTargetUseCase,
     private val mediaPlaybackTracker: com.nendo.argosy.data.media.MediaPlaybackTracker,
+    private val launchProgressTracker: com.nendo.argosy.data.emulator.LaunchProgressTracker,
     internal val mediaAvailabilityVerifier:
         com.nendo.argosy.data.media.MediaAvailabilityVerifier? = null,
     internal val mediaDownloadDelegate:
@@ -797,6 +799,7 @@ class DualScreenManager(
         observeActiveAccount()
         observeMedia()
         observeAchievementUnlocks()
+        observeLaunchLive()
     }
     interface CompanionHost {
         fun onForegroundChanged(isForeground: Boolean)
@@ -1385,12 +1388,33 @@ class DualScreenManager(
         }
     }
 
+    private var launchLiveObserverJob: Job? = null
+    private var launchWasLive = false
+    private val focusedLaunchers = HashMap<Int, java.lang.ref.WeakReference<android.app.Activity>>()
+
+    private fun observeLaunchLive() {
+        launchLiveObserverJob?.cancel()
+        launchLiveObserverJob = scope.launch {
+            launchProgressTracker.launchLive.collect { live ->
+                val fell = launchWasLive && !live
+                launchWasLive = live
+                if (live) focusCheck?.cancel()
+                if (!fell) return@collect
+                yield()
+                focusedLaunchers.values.mapNotNull { it.get() }
+                    .filter { it.hasWindowFocus() }
+                    .forEach(::onLauncherWindowFocused)
+            }
+        }
+    }
+
     init {
         observePreferences()
         observeActiveAccount()
         observeMedia()
         observeMediaDim()
         observeAchievementUnlocks()
+        observeLaunchLive()
     }
 
     /**
@@ -1871,11 +1895,15 @@ class DualScreenManager(
     /**
      * A launcher window gaining focus on the display its game ran on is the launcher's signal that
      * the game closed. The session ends once [emulatorLeftScreen] confirms it; a game on another
-     * display keeps running.
+     * display keeps running. While a launch is live the focus gain is a launcher surface returning
+     * before its game window exists, not the game closing; the check waits for the launch to clear.
+     * A launch that goes live while the check is settling stops it the same way.
      */
     fun onLauncherWindowFocused(activity: android.app.Activity) {
-        if (isMovingGame || focusCheck?.isActive == true) return
         val ownDisplay = activity.window.decorView.display?.displayId ?: return
+        focusedLaunchers[ownDisplay] = java.lang.ref.WeakReference(activity)
+        if (launchProgressTracker.launchLive.value) return
+        if (isMovingGame || focusCheck?.isActive == true) return
         val gameDisplay = emulatorDisplayId
         if (gameDisplay != null && gameDisplay != ownDisplay) return
         focusCheck = scope.launch {
@@ -1885,6 +1913,7 @@ class DualScreenManager(
             if (!emulatorLeftScreen(activity, onGameDisplay = gameDisplay == ownDisplay) { activity.hasWindowFocus() }) {
                 return@launch
             }
+            if (launchProgressTracker.launchLive.value) return@launch
             Log.d(TAG, "Launcher focused on display $ownDisplay and the game is gone, ending session")
             endSessionAfterEmulatorLeft()
         }
@@ -2059,28 +2088,34 @@ class DualScreenManager(
             swappedSessionTimer?.stop(appContext)
             swappedSessionTimer = com.nendo.argosy.hardware.CompanionSessionTimer().also { it.start(appContext) }
             companionSessionGameId = gameId
-            scope.launch { refreshCompanionAchievements(gameId) }
-            scope.launch(Dispatchers.IO) {
-                val game = gameDao.getById(gameId) ?: return@launch
-                val art = imageCacheManager.loadArt(gameId)
-                val platform = platformRepository.getById(game.platformId)
-                val documents = com.nendo.argosy.ui.screens.gamedetail.components.gameDocuments(
-                    game = game,
-                    files = gameFileDao.getFilesForGame(gameId),
-                    romMRepository = romMRepository
-                )
+            activityIndependentScope.launch { refreshCompanionAchievements(gameId) }
+            activityIndependentScope.launch(Dispatchers.IO) {
+                val game = companionLookup(gameId) { gameDao.getById(gameId) }
+                val art = companionLookup(gameId) { imageCacheManager.loadArt(gameId) }
+                    ?: com.nendo.argosy.data.model.ResolvedGameArt()
+                val platform = game?.let { companionLookup(gameId) { platformRepository.getById(it.platformId) } }
+                val documents = game?.let {
+                    companionLookup(gameId) {
+                        com.nendo.argosy.ui.screens.gamedetail.components.gameDocuments(
+                            game = it,
+                            files = gameFileDao.getFilesForGame(gameId),
+                            romMRepository = romMRepository
+                        )
+                    }
+                }.orEmpty()
                 _swappedCompanionState.update {
+                    if (companionSessionGameId != gameId || !_swappedIsGameActive.value) return@update it
                     com.nendo.argosy.hardware.CompanionInGameState(
                         gameId = gameId,
-                        title = game.title,
+                        title = game?.title.orEmpty(),
                         coverPath = art.coverPath,
-                        platformName = platform?.getDisplayName() ?: game.platformSlug,
-                        developer = game.developer,
-                        releaseYear = game.releaseYear,
-                        playTimeMinutes = game.playTimeMinutes,
-                        playCount = game.playCount,
-                        achievementCount = game.achievementCount,
-                        earnedAchievementCount = game.earnedAchievementCount,
+                        platformName = platform?.getDisplayName() ?: game?.platformSlug.orEmpty(),
+                        developer = game?.developer,
+                        releaseYear = game?.releaseYear,
+                        playTimeMinutes = game?.playTimeMinutes ?: 0,
+                        playCount = game?.playCount ?: 0,
+                        achievementCount = game?.achievementCount ?: 0,
+                        earnedAchievementCount = game?.earnedAchievementCount ?: 0,
                         sessionStartTimeMillis = sessionStateStore.getSessionStartTimeMillis(),
                         channelName = sessionStateStore.getChannelName(),
                         isHardcore = sessionStateStore.isHardcore(),
@@ -2120,6 +2155,14 @@ class DualScreenManager(
             }
         }
     }
+
+    private suspend fun <T> companionLookup(gameId: Long, lookup: suspend () -> T): T? =
+        runCatching { lookup() }
+            .onFailure {
+                if (it is kotlin.coroutines.cancellation.CancellationException) throw it
+                Log.w(TAG, "Companion in-game lookup failed for game $gameId", it)
+            }
+            .getOrNull()
 
     /**
      * The hardcore claim of the running session changed after it started (RetroAchievements
