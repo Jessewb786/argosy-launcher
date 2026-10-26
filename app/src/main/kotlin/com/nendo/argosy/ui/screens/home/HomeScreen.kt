@@ -65,6 +65,7 @@ import androidx.compose.material3.Text
 import com.nendo.argosy.ui.common.AlwaysCrossfadeFactory
 import com.nendo.argosy.ui.common.backgroundBlurDp
 import com.nendo.argosy.ui.common.rememberFileImageModel
+import com.nendo.argosy.ui.common.stackedScreenshotBackdrop
 import com.nendo.argosy.ui.components.SectionBreadcrumb
 import com.nendo.argosy.ui.icons.InputIcons
 import androidx.compose.runtime.Composable
@@ -571,15 +572,18 @@ fun HomeScreen(
     val showArtLayer = !isGridLayout &&
         (!backdropEnabled || uiState.homeBackgroundMode == HomeBackgroundMode.GAME_ART)
 
+    var backgroundIsScreenshot = false
     val effectiveBackgroundPath = if (uiState.useGameBackground) {
         uiState.focusedGame?.let { game ->
             val background = com.nendo.argosy.ui.common.rememberResolvedBackgroundPath(game.id, game.backgroundPath)
             val cover = com.nendo.argosy.ui.common.rememberResolvedCoverPath(game.id, game.coverPath)
-            when {
+            val chosen = when {
                 background?.startsWith("/") == true -> background
                 cover?.startsWith("/") == true -> cover
                 else -> background ?: cover
             }
+            backgroundIsScreenshot = game.backgroundIsScreenshotOrArt && chosen != null && chosen == background
+            chosen
         }
     } else {
         uiState.customBackgroundPath
@@ -681,11 +685,12 @@ fun HomeScreen(
                     if (effectiveBackgroundPath != null) {
                         val backgroundContext = LocalContext.current
                         val backgroundModel = rememberFileImageModel(effectiveBackgroundPath)
-                        val backgroundRequest = remember(backgroundModel) {
+                        val backgroundRequest = remember(backgroundModel, backgroundIsScreenshot) {
                             ImageRequest.Builder(backgroundContext)
                                 .data(backgroundModel)
                                 .size(640, 360)
                                 .transitionFactory(AlwaysCrossfadeFactory(380))
+                                .apply { if (backgroundIsScreenshot) stackedScreenshotBackdrop() }
                                 .build()
                         }
                         AsyncImage(

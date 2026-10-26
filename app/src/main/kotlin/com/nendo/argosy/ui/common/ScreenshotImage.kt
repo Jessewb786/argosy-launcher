@@ -54,6 +54,14 @@ fun ScreenshotImage(
 
 private const val ASPECT_KEY_PRECISION = 100f
 
+/**
+ * Crops a stacked dual-screen screenshot to its top screen for a landscape backdrop. Any other
+ * image passes through unchanged. Never call it for a cover: a cover can share a stacked frame's
+ * shape.
+ */
+fun ImageRequest.Builder.stackedScreenshotBackdrop(): ImageRequest.Builder =
+    transformations(StackedScreenshotTransformation(StackedScreenshot.DEFAULT_SLOT_ASPECT))
+
 private fun screenshotRequest(context: Context, model: Any?, slotAspect: Float): ImageRequest {
     val transformation = StackedScreenshotTransformation(slotAspect)
     val source = model as? ImageRequest

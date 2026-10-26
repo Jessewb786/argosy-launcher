@@ -100,6 +100,7 @@ import com.nendo.argosy.ui.theme.generated.ColorTokens
 import com.nendo.argosy.ui.theme.generated.ComponentDefaults
 import com.nendo.argosy.util.formatPlayTime
 import com.nendo.argosy.util.formatTimeToBeat
+import com.nendo.argosy.ui.common.stackedScreenshotBackdrop
 
 private const val PERCENT = 100f
 private const val DEFAULT_STRENGTH = 90f
@@ -140,6 +141,7 @@ internal fun CompanionDetail.withLiveArt(art: com.nendo.argosy.data.model.Resolv
     return copy(
         artUrl = art.coverPath ?: artUrl,
         backdropUrl = art.backgroundPath ?: backdropUrl,
+        backdropIsScreenshotOrArt = art.backgroundPath != null || backdropIsScreenshotOrArt,
         spineUrl = art.boxSpinePath ?: spineUrl,
         box3dUrl = art.box3dPath ?: box3dUrl,
         backUrl = art.boxBackPath ?: backUrl,
@@ -173,8 +175,16 @@ private fun GameShowcaseContent(
         val gutter = maxWidth * GUTTER_SHARE
         Box(Modifier.fillMaxSize().frostedBackdropSource(backdrop).background(theme.surfaceBase)) {
             (detail.backdropUrl ?: detail.artUrl)?.let { background ->
+                val isScreenshot = detail.backdropIsScreenshotOrArt && background == detail.backdropUrl
+                val model = rememberFileImageModel(background)
+                val context = androidx.compose.ui.platform.LocalContext.current
                 AsyncImage(
-                    model = rememberFileImageModel(background),
+                    model = remember(model, isScreenshot) {
+                        coil.request.ImageRequest.Builder(context)
+                            .data(model)
+                            .apply { if (isScreenshot) stackedScreenshotBackdrop() }
+                            .build()
+                    },
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier

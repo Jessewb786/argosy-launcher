@@ -59,6 +59,8 @@ import com.nendo.argosy.DualScreenManagerHolder
 import com.nendo.argosy.R
 import com.nendo.argosy.core.notification.NotificationText
 import com.nendo.argosy.ui.common.rememberFileImageModel
+import com.nendo.argosy.ui.common.stackedScreenshotBackdrop
+import coil.request.ImageRequest
 import com.nendo.argosy.ui.components.FooterHints
 import com.nendo.argosy.ui.components.FooterSpacer
 import com.nendo.argosy.ui.components.InputButton
@@ -525,8 +527,15 @@ private fun GameDetailContent(
             val liveBackgroundPath = com.nendo.argosy.ui.common.rememberResolvedBackgroundPath(game.id, game.backgroundPath)
             val effectiveBackgroundPath = uiState.repairedBackgroundPath ?: liveBackgroundPath
             if (effectiveBackgroundPath != null) {
+                val backgroundModel = rememberFileImageModel(effectiveBackgroundPath)
+                val backgroundContext = LocalContext.current
                 AsyncImage(
-                    model = rememberFileImageModel(effectiveBackgroundPath),
+                    model = remember(backgroundModel) {
+                        ImageRequest.Builder(backgroundContext)
+                            .data(backgroundModel)
+                            .stackedScreenshotBackdrop()
+                            .build()
+                    },
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
