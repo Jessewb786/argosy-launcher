@@ -10,7 +10,9 @@ import com.nendo.argosy.data.emulator.PlaySessionTracker
 import com.nendo.argosy.data.local.dao.AchievementDao
 import com.nendo.argosy.data.local.dao.GameDao
 import com.nendo.argosy.data.local.dao.PendingSocialSyncDao
+import com.nendo.argosy.data.local.dao.PlayRecordDeletionDao
 import com.nendo.argosy.data.local.dao.PlaySessionDao
+import com.nendo.argosy.data.local.dao.cutoffsFor
 import com.nendo.argosy.data.local.dao.resolved
 import com.nendo.argosy.data.model.ArtSlot
 import com.nendo.argosy.data.local.entity.AchievementEntity
@@ -69,6 +71,7 @@ class SocialRepository @Inject constructor(
     private val socialService: ArgosSocialService,
     private val preferencesRepository: UserPreferencesRepository,
     private val playSessionDao: PlaySessionDao,
+    private val playRecordDeletionDao: PlayRecordDeletionDao,
     private val pendingSocialSyncDao: PendingSocialSyncDao,
     private val gameDao: GameDao,
     private val achievementDao: AchievementDao,
@@ -854,8 +857,10 @@ class SocialRepository @Inject constructor(
             return SyncResult.Success(0)
         }
 
+        val cutoffs = playRecordDeletionDao.cutoffsFor(ownerUserId)
         var queued = 0
         for (session in sessions) {
+            if (cutoffs.blocks(session.gameId, session.startTime)) continue
             val userId = session.userId ?: continue
             val payload = ArgosSocialService.PlaySessionPayload(
                 userId = userId,
@@ -884,14 +889,12 @@ class SocialRepository @Inject constructor(
             queued++
         }
 
-        if (queued > 0) {
-            val maxEndTime = sessions.maxOf { it.endTime }
-            preferencesRepository.setLastPlaySessionSyncTime(maxEndTime)
-            Log.d(TAG, "Queued $queued play sessions for sync, lastSync updated to $maxEndTime")
+        val maxEndTime = sessions.maxOf { it.endTime }
+        preferencesRepository.setLastPlaySessionSyncTime(maxEndTime)
+        Log.d(TAG, "Queued $queued of ${sessions.size} play sessions for sync, lastSync updated to $maxEndTime")
 
-            if (socialService.isConnected()) {
-                scope.launch { socialSyncCoordinator.get().processQueue() }
-            }
+        if (queued > 0 && socialService.isConnected()) {
+            scope.launch { socialSyncCoordinator.get().processQueue() }
         }
 
         return SyncResult.Success(queued)

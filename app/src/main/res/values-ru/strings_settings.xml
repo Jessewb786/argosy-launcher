@@ -2783,6 +2783,9 @@
     </plurals>
     <string name="settings_play_time_romm_refresh_stopped">Обновление остановлено: %s</string>
     <string name="settings_play_time_list_unknown_game">Неизвестная игра</string>
+    <string name="settings_play_time_delete_title">Удалить историю игры?</string>
+    <string name="settings_play_time_delete_message">Вся история игры %1$s будет удалена с этого устройства. Сеансы до этого момента больше не будут синхронизироваться.</string>
+    <string name="settings_play_time_delete_confirm">Удалить</string>
     <string name="settings_play_time_list_game_detail">%1$s, последняя игра %2$s</string>
     <plurals name="settings_play_time_list_sessions">
         <item quantity="one">%d сессия</item>

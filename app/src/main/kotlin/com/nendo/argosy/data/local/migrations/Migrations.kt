@@ -4245,6 +4245,20 @@ object Migration_214_215 : Migration(214, 215) {
     }
 }
 
+object Migration_215_216 : Migration(215, 216) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `play_record_deletions` (" +
+                "`gameId` INTEGER NOT NULL, `ownerUserId` INTEGER NOT NULL, `deletedBefore` INTEGER NOT NULL, " +
+                "PRIMARY KEY(`gameId`, `ownerUserId`))"
+        )
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_play_record_deletions_ownerUserId` " +
+                "ON `play_record_deletions` (`ownerUserId`)"
+        )
+    }
+}
+
 object Migration_203_204 : Migration(203, 204) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(

@@ -2728,6 +2728,9 @@
     </plurals>
     <string name="settings_play_time_romm_refresh_stopped">Actualización detenida: %s</string>
     <string name="settings_play_time_list_unknown_game">Juego desconocido</string>
+    <string name="settings_play_time_delete_title">¿Eliminar registros de juego?</string>
+    <string name="settings_play_time_delete_message">Todo el historial de juego de %1$s se elimina de este dispositivo. Las sesiones anteriores a este momento no se volverán a sincronizar.</string>
+    <string name="settings_play_time_delete_confirm">Eliminar</string>
     <string name="settings_play_time_list_game_detail">%1$s, última partida %2$s</string>
     <plurals name="settings_play_time_list_sessions">
         <item quantity="one">%d sesión</item>

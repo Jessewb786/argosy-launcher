@@ -2659,6 +2659,9 @@
     </plurals>
     <string name="settings_play_time_romm_refresh_stopped">Aktualisierung abgebrochen: %s</string>
     <string name="settings_play_time_list_unknown_game">Unbekanntes Spiel</string>
+    <string name="settings_play_time_delete_title">Spielaufzeichnungen löschen?</string>
+    <string name="settings_play_time_delete_message">Der gesamte Spielverlauf von %1$s wird von diesem Gerät entfernt. Sitzungen von vor diesem Zeitpunkt werden nicht erneut synchronisiert.</string>
+    <string name="settings_play_time_delete_confirm">Löschen</string>
     <string name="settings_play_time_list_game_detail">%1$s, zuletzt gespielt %2$s</string>
     <plurals name="settings_play_time_list_sessions">
         <item quantity="one">%d Sitzung</item>

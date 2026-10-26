@@ -2583,6 +2583,9 @@
     </plurals>
     <string name="settings_play_time_romm_refresh_stopped">刷新已中止：%s</string>
     <string name="settings_play_time_list_unknown_game">未知游戏</string>
+    <string name="settings_play_time_delete_title">删除游玩记录？</string>
+    <string name="settings_play_time_delete_message">%1$s 在此设备上的全部游玩记录将被删除。此前的游玩会话不会再同步回来。</string>
+    <string name="settings_play_time_delete_confirm">删除</string>
     <string name="settings_play_time_list_game_detail">%1$s，上次游玩 %2$s</string>
     <plurals name="settings_play_time_list_sessions">
         <item quantity="other">%d 次会话</item>

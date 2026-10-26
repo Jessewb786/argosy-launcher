@@ -1235,6 +1235,7 @@ private fun routeDismissTopOverlay(vm: SettingsViewModel): Boolean {
         state.rootScriptDialog != null -> { vm.dismissRootScriptDialog(); true }
         state.storagePlatformGames.deleteConfirm != null -> { vm.dismissStoragePlatformGameDelete(); true }
         state.storagePlatformGames.categoryDeleteConfirm != null -> { vm.dismissStoragePlatformCategoryDelete(); true }
+        state.playTime.deleteConfirm != null -> { vm.dismissPlayTimeGameDelete(); true }
         state.emulators.showSavePathModal -> { vm.dismissSavePathModal(); true }
         state.emulators.showMemcardPicker -> { vm.dismissMemcardPicker(); true }
         state.storage.platformSettingsModalId != null -> { vm.closePlatformSettingsModal(); true }

@@ -5108,6 +5108,12 @@
     <!-- ===== Play Time lists (platform, device, game drill-ins) ===== -->
 
     <string name="settings_play_time_list_unknown_game">Unknown game</string>
+    <!-- Confirm dialog title for erasing one game's play-time history. "Play" is the noun sense (time spent playing). -->
+    <string name="settings_play_time_delete_title">Delete play records?</string>
+    <!-- The argument is the game title. -->
+    <string name="settings_play_time_delete_message">All play history for %1$s is removed from this device. Sessions played before now are not synced back.</string>
+    <!-- Confirm button of the delete play records dialog. Verb. -->
+    <string name="settings_play_time_delete_confirm">Delete</string>
     <!-- Under a game row: its platform, then when it was last played. -->
     <string name="settings_play_time_list_game_detail">%1$s, last played %2$s</string>
     <plurals name="settings_play_time_list_sessions">

@@ -537,4 +537,5 @@
     <string name="settings_shell_footer_play_time_move">ले जाएं</string>
     <string name="settings_shell_footer_play_time_open">खोलें</string>
     <string name="settings_shell_footer_play_time_sort">क्रम</string>
+    <string name="settings_shell_footer_play_time_delete">रिकॉर्ड हटाएँ</string>
 </resources>

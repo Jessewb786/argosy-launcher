@@ -438,6 +438,8 @@
     <string name="settings_shell_footer_play_time_open">Open</string>
     <!-- Play-time game list: changes the ordering. Verb. -->
     <string name="settings_shell_footer_play_time_sort">Sort</string>
+    <!-- Play-time game list: deletes the focused game's play history. Verb phrase. -->
+    <string name="settings_shell_footer_play_time_delete">Delete records</string>
     <string name="settings_shell_footer_category">Category</string>
     <!-- Trigger hint on the top-level settings list: jumps between the header groups. Noun. -->
     <string name="settings_shell_footer_main_group">Section</string>

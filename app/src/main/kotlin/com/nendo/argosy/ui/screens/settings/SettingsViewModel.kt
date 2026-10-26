@@ -1251,6 +1251,10 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun requestPlayTimeGameDelete(gameId: Long) = playTimeDelegate.requestDeleteConfirm(gameId)
+    fun dismissPlayTimeGameDelete() = playTimeDelegate.dismissDeleteConfirm()
+    fun confirmPlayTimeGameDelete() = playTimeDelegate.confirmDelete(viewModelScope)
+
     fun togglePlayTimeGamesSortMode() = playTimeDelegate.setGamesSortMode(
         when (_uiState.value.playTime.gamesSortMode) {
             PlayTimeGamesSortMode.HOURS -> PlayTimeGamesSortMode.SESSIONS

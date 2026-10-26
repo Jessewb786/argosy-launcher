@@ -560,4 +560,5 @@
     <string name="settings_shell_footer_play_time_move">Mover</string>
     <string name="settings_shell_footer_play_time_open">Abrir</string>
     <string name="settings_shell_footer_play_time_sort">Ordenar</string>
+    <string name="settings_shell_footer_play_time_delete">Eliminar registros</string>
 </resources>

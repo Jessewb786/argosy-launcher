@@ -144,6 +144,7 @@ import com.nendo.argosy.ui.screens.settings.sections.createPlayTimeLayoutInfo
 import com.nendo.argosy.ui.screens.settings.sections.playTimeConfirmActionOf
 import com.nendo.argosy.ui.screens.settings.sections.playTimeFigureOf
 import com.nendo.argosy.ui.screens.settings.sections.playTimeItemAtFocusIndex
+import com.nendo.argosy.ui.screens.settings.sections.playTimeListFocusedGameId
 import com.nendo.argosy.ui.screens.settings.sections.SyncSettingsSection
 import com.nendo.argosy.data.preferences.FontSlot
 import com.nendo.argosy.ui.screens.settings.sections.ThemeBackdropSection
@@ -1033,6 +1034,21 @@ fun SettingsScreen(
         )
     }
 
+    val playTimeDelete = uiState.playTime.deleteConfirm
+    if (playTimeDelete != null) {
+        val gameTitle = playTimeDelete.gameTitle
+            .ifBlank { stringResource(R.string.settings_play_time_list_unknown_game) }
+        ArgosyConfirmModalHost(
+            visible = true,
+            title = stringResource(R.string.settings_play_time_delete_title),
+            message = stringResource(R.string.settings_play_time_delete_message, gameTitle),
+            confirmLabel = stringResource(R.string.settings_play_time_delete_confirm),
+            destructive = true,
+            onConfirm = { viewModel.confirmPlayTimeGameDelete() },
+            onDismiss = { viewModel.dismissPlayTimeGameDelete() }
+        )
+    }
+
     AccountModals(uiState, viewModel)
 
     ArgosyConfirmModalHost(
@@ -1806,6 +1822,7 @@ private fun SettingsFooter(
     val playTimeMoveHint = stringResource(R.string.settings_shell_footer_play_time_move)
     val playTimeOpenHint = stringResource(R.string.settings_shell_footer_play_time_open)
     val playTimeSortHint = stringResource(R.string.settings_shell_footer_play_time_sort)
+    val playTimeDeleteHint = stringResource(R.string.settings_shell_footer_play_time_delete)
     val categoryHint = stringResource(R.string.settings_shell_footer_category)
     val mainGroupHint = stringResource(R.string.settings_shell_footer_main_group)
     val deleteHint = stringResource(R.string.settings_shell_footer_delete)
@@ -1967,6 +1984,9 @@ private fun SettingsFooter(
         }
         if (uiState.currentSection == SettingsSection.PLAY_TIME_GAMES) {
             add(InputButton.X to playTimeSortHint)
+            if (playTimeListFocusedGameId(uiState) != null) {
+                add(InputButton.Y to playTimeDeleteHint)
+            }
         }
         if (uiState.currentSection == SettingsSection.STORAGE_PLATFORM_GAMES) {
             val pgInfo = createStoragePlatformGamesLayoutInfo(uiState)

@@ -544,4 +544,5 @@
     <string name="settings_shell_footer_play_time_move">Bewegen</string>
     <string name="settings_shell_footer_play_time_open">Öffnen</string>
     <string name="settings_shell_footer_play_time_sort">Sortieren</string>
+    <string name="settings_shell_footer_play_time_delete">Verlauf löschen</string>
 </resources>

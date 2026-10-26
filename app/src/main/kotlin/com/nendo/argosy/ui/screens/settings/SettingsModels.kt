@@ -1166,10 +1166,16 @@ data class PlayTimeState(
     val isUploading: Boolean = false,
     val isPulling: Boolean = false,
     val uploadNotice: com.nendo.argosy.ui.common.DisplayText? = null,
-    val pullNotice: com.nendo.argosy.ui.common.DisplayText? = null
+    val pullNotice: com.nendo.argosy.ui.common.DisplayText? = null,
+    val deleteConfirm: PlayTimeDeleteConfirm? = null
 ) {
     val isEmpty: Boolean get() = hasLoaded && sessionCount == 0
 }
+
+data class PlayTimeDeleteConfirm(
+    val gameId: Long,
+    val gameTitle: String
+)
 
 data class PlatformMigrationInfo(
     val platformId: Long,

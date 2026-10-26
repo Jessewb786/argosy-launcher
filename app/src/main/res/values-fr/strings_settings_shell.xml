@@ -560,4 +560,5 @@
     <string name="settings_shell_footer_play_time_move">Déplacer</string>
     <string name="settings_shell_footer_play_time_open">Ouvrir</string>
     <string name="settings_shell_footer_play_time_sort">Trier</string>
+    <string name="settings_shell_footer_play_time_delete">Supprimer l\'historique</string>
 </resources>

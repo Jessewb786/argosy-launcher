@@ -528,4 +528,5 @@
     <string name="settings_shell_footer_play_time_move">移動</string>
     <string name="settings_shell_footer_play_time_open">開啟</string>
     <string name="settings_shell_footer_play_time_sort">排序</string>
+    <string name="settings_shell_footer_play_time_delete">刪除紀錄</string>
 </resources>

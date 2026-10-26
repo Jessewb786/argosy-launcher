@@ -139,6 +139,10 @@ object DatabaseModule {
         database.raPatchCacheDao()
 
     @Provides
+    fun providePlayRecordDeletionDao(database: ALauncherDatabase): com.nendo.argosy.data.local.dao.PlayRecordDeletionDao =
+        database.playRecordDeletionDao()
+
+    @Provides
     fun provideSaveCacheDao(database: ALauncherDatabase): SaveCacheDao =
         database.saveCacheDao()
 
