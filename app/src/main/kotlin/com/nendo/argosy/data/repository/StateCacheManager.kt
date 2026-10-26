@@ -1010,23 +1010,28 @@ class StateCacheManager @Inject constructor(
                 return MultipartBody.Part.createFormData("stateFile", uploadFileName, requestBody)
             }
 
-            fun buildScreenshotPart(): MultipartBody.Part? = getScreenshotFile(state)?.let { ssFile ->
+            fun buildScreenshotPart(stateName: String): MultipartBody.Part? = getScreenshotFile(state)?.let { ssFile ->
                 val ssBody = ssFile.asRequestBody("image/png".toMediaType())
-                MultipartBody.Part.createFormData("screenshotFile", "$uploadFileName.png", ssBody)
+                MultipartBody.Part.createFormData("screenshotFile", "$stateName.png", ssBody)
             }
 
             val firstResponse = if (state.rommSaveId != null) {
+                val serverName = if (getScreenshotFile(state) != null) {
+                    runCatching { api.getState(state.rommSaveId).body()?.fileName }.getOrNull()
+                } else {
+                    null
+                }
                 api.updateState(
                     state.rommSaveId,
                     stateFile = buildStatePart(),
-                    screenshotFile = buildScreenshotPart()
+                    screenshotFile = buildScreenshotPart(serverName ?: uploadFileName)
                 )
             } else {
                 api.uploadState(
                     rommId,
                     serverEmulatorTag(state),
                     stateFile = buildStatePart(),
-                    screenshotFile = buildScreenshotPart()
+                    screenshotFile = buildScreenshotPart(uploadFileName)
                 )
             }
 
@@ -1050,7 +1055,7 @@ class StateCacheManager @Inject constructor(
                     rommId,
                     serverEmulatorTag(state),
                     stateFile = buildStatePart(),
-                    screenshotFile = buildScreenshotPart()
+                    screenshotFile = buildScreenshotPart(uploadFileName)
                 )
             } else {
                 firstResponse

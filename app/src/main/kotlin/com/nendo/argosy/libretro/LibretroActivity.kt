@@ -2753,14 +2753,18 @@ class LibretroActivity : ComponentActivity() {
     private val canSerialize: Boolean
         get() = statesSupported && !hardcoreMode && coreLoadedSuccessfully && !coreDestroyed
 
-    private fun performAutoSaveState() {
+    private fun performAutoSaveState(fallbackScreenshot: Bitmap? = null) {
         if (isGuestJoinedSession) return
         if (!canSerialize || !autoSaveEnabled) return
         if (autoSaveStateCaptured) return
         try {
             val stateData = retroView.serializeState()
             autoSaveStateCaptured = true
-            saveStateManager.performSlotSave(SaveStateManager.AUTO_SLOT, stateData, pendingSaveScreenshot)
+            saveStateManager.performSlotSave(
+                SaveStateManager.AUTO_SLOT,
+                stateData,
+                pendingSaveScreenshot ?: fallbackScreenshot
+            )
             Log.d(TAG, "Auto-saved state on close")
         } catch (e: Exception) {
             Log.w(TAG, "Auto-save state failed", e)
@@ -3593,12 +3597,13 @@ class LibretroActivity : ComponentActivity() {
                 super.onPause()
                 return
             }
-            performAutoSaveState()
+            val pauseFrame = if (coreDestroyed) null else captureFrameOrNull()
+            performAutoSaveState(pauseFrame)
             if (!isGuestJoinedSession && !coreDestroyed) {
                 saveStateManager.saveSram(retroView)
             }
-            if (!coreDestroyed) {
-                captureTouchBackdrop()
+            if (pauseFrame != null) {
+                cacheTouchBackdrop(pauseFrame)
             }
             if (isFinishing && !coreDestroyed) {
                 coreDestroyed = true
@@ -3619,9 +3624,13 @@ class LibretroActivity : ComponentActivity() {
         }
     }
 
-    private fun captureTouchBackdrop() {
-        if (platformSlug.isBlank()) return
-        val bmp = try { retroView.captureRawFrame() } catch (_: Exception) { null } ?: return
+    private fun captureFrameOrNull(): Bitmap? = try { retroView.captureRawFrame() } catch (_: Exception) { null }
+
+    private fun cacheTouchBackdrop(bmp: Bitmap) {
+        if (platformSlug.isBlank()) {
+            bmp.recycle()
+            return
+        }
         val orientation = currentOrientationState
         val ctx = applicationContext
         lifecycleScope.launch(Dispatchers.IO) {
