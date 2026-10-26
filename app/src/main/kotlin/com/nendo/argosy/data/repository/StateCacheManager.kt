@@ -1012,7 +1012,7 @@ class StateCacheManager @Inject constructor(
 
             fun buildScreenshotPart(): MultipartBody.Part? = getScreenshotFile(state)?.let { ssFile ->
                 val ssBody = ssFile.asRequestBody("image/png".toMediaType())
-                MultipartBody.Part.createFormData("screenshotFile", ssFile.name, ssBody)
+                MultipartBody.Part.createFormData("screenshotFile", "$uploadFileName.png", ssBody)
             }
 
             val firstResponse = if (state.rommSaveId != null) {
