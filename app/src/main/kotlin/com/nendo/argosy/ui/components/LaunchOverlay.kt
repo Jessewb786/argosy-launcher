@@ -9,16 +9,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
@@ -32,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -50,6 +42,8 @@ import com.nendo.argosy.domain.model.SnapshotConflictChoice
 import com.nendo.argosy.domain.model.SyncProgress
 import com.nendo.argosy.ui.components.launch.CalmLaunchContent
 import com.nendo.argosy.ui.components.launch.LaunchHostSignal
+import com.nendo.argosy.ui.components.launch.LaunchQuestionCard
+import com.nendo.argosy.ui.components.launch.LaunchQuestionChoice
 import com.nendo.argosy.ui.components.launch.LaunchVeil
 import com.nendo.argosy.ui.components.launch.darkensForLaunch
 import com.nendo.argosy.ui.components.launch.mirrorsToPresentation
@@ -63,7 +57,6 @@ import com.nendo.argosy.ui.components.recap.RecapSurface
 import com.nendo.argosy.ui.components.recap.rememberRecapFullCardSurface
 import com.nendo.argosy.ui.input.ModalInputEffect
 import com.nendo.argosy.ui.primitives.ActionButton
-import com.nendo.argosy.ui.theme.Dimens
 import com.nendo.argosy.ui.theme.LocalLauncherTheme
 import com.nendo.argosy.ui.theme.LocalMotionTier
 import com.nendo.argosy.ui.theme.Motion
@@ -370,35 +363,18 @@ private fun LauncherChoiceContent(
     onAnswer: (LaunchPromptOption) -> Unit,
     onCancel: () -> Unit
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(horizontal = Dimens.spacingXl)
-    ) {
-        Text(
-            text = stringResource(R.string.ui_launch_overlay_launcher_choice_title),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Spacer(modifier = Modifier.height(Dimens.spacingSm))
-        Text(
-            text = stringResource(R.string.ui_launch_overlay_launcher_choice_message, gameTitle),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(Dimens.spacingLg))
-        Column(modifier = Modifier.fillMaxWidth(0.85f)) {
-            options.forEachIndexed { index, option ->
-                val launcherName = SteamLaunchers.forPromptOption(option)?.displayName.orEmpty()
-                ConflictOption(
-                    label = launcherName,
-                    subtitle = stringResource(R.string.ui_launch_overlay_launcher_choice_option_subtitle, launcherName),
-                    isFocused = focusIndex == index,
-                    onClick = { onAnswer(option) }
-                )
-            }
-            CancelLaunchOption(isFocused = focusIndex == options.size, onClick = onCancel)
-        }
-    }
+    LaunchQuestionCard(
+        title = stringResource(R.string.ui_launch_overlay_launcher_choice_title),
+        message = stringResource(R.string.ui_launch_overlay_launcher_choice_message, gameTitle),
+        choices = options.map { option ->
+            val launcherName = SteamLaunchers.forPromptOption(option)?.displayName.orEmpty()
+            LaunchQuestionChoice(
+                label = launcherName,
+                description = stringResource(R.string.ui_launch_overlay_launcher_choice_option_subtitle, launcherName),
+                onClick = { onAnswer(option) }
+            )
+        },
+        focusIndex = focusIndex,
+        onCancel = onCancel
+    )
 }
