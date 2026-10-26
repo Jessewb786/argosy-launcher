@@ -373,7 +373,8 @@ private fun CinematicShowcase(
         metadataModifier = Modifier.heightIn(max = availableHeight).verticalScroll(scrollState)
             .onGloballyPositioned {
                 onTitleBoundsChanged(Rect(it.positionInRoot(), Size(it.size.width.toFloat(), it.size.height.toFloat())))
-            }
+            },
+        interactiveCover = true
     )
 }
 
